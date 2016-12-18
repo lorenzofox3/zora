@@ -1,0 +1,34 @@
+TAP version 13
+# assertions - 2ms
+ok 1 should be equal
+not ok 2 should be equal
+  ---
+  operator: equal
+  expected: "bar"
+  actual: "foo"
+  ...
+ok 3 should be equivalent
+not ok 4 should be equivalent
+  ---
+  operator: deepEqual
+  expected: "foo"
+  actual: {"foo":"bar"}
+  ...
+ok 5 should be truthy
+not ok 6 should be truthy
+  ---
+  operator: ok
+  expected: "truthy"
+  actual: false
+  ...
+not ok 7 wanted to fail
+  ---
+  operator: fail
+  expected: "fail not called"
+  actual: "fail called"
+  ...
+# async test - 3002ms
+ok 8 should have passed an async test
+
+1..8
+# duration 3005ms

@@ -513,7 +513,7 @@ const Plan = {
         for (let r of results) {
           const {assertions, executionTime} = yield r;
           for (let assert of assertions) {
-            sinkIterator.next(Object.assign(assert,{id,executionTime}));
+            sinkIterator.next(Object.assign(assert, {id, executionTime}));
           }
           id++;
         }

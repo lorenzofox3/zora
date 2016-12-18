@@ -14,11 +14,12 @@
   "main": "./dist/zora.js",
   "jsnext:main": "./dist/zora.es.js",
   "scripts": {
-    "clean": "rm -rf ./dist && rm -rf ./test/dist",
+    "clean": "rm -rf ./dist",
+    "clean:test": "rm -rf ./test/dist",
     "build": "npm run clean && node ./scripts/build.js",
     "build:test": "rollup -c ./test/rollup.config.js",
-    "test": "npm run clean && npm run build:test && node ./test/dist/index.js",
-    "practice": "npm run build && node ./test/error.js | tape-run"
+    "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js",
+    "print": "node ./cli.js ./test/sample.js > ./test/dist/output.txt"
   },
   "author": {
     "name": "Laurent Renard",
@@ -34,7 +35,8 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "meow": "^3.7.0"
   },
   "devDependencies": {
     "rollup": "^0.37.0",

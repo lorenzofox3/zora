@@ -36,7 +36,7 @@ function testFunc () {
   });
 
   tape('plan running tests', t=> {
-    t.plan(2);
+    t.plan(16);
 
     const p = plan();
 
@@ -52,24 +52,25 @@ function testFunc () {
       let time = 1;
       while (true) {
         const assertion = yield;
+        const {actual, description, expected, message, operator, pass, id, executionTime}=assertion;
         if (time === 1) {
-          t.deepEqual(assertion, {
-            actual: true,
-            description: 'test 1',
-            expected: 'truthy',
-            message: 'should be truthy',
-            operator: 'ok',
-            pass: true
-          });
+          t.equal(actual, true);
+          t.equal(description, 'test 1');
+          t.equal(expected, 'truthy');
+          t.equal(message, 'should be truthy');
+          t.equal(operator, 'ok');
+          t.equal(pass, true);
+          t.equal(id, 1);
+          t.ok(executionTime !== undefined);
         } else {
-          t.deepEqual(assertion, {
-            actual: true,
-            description: 'test 2',
-            expected: 'truthy',
-            message: 'should be truthy',
-            operator: 'ok',
-            pass: true
-          });
+          t.equal(actual, true);
+          t.equal(description, 'test 2');
+          t.equal(expected, 'truthy');
+          t.equal(message, 'should be truthy');
+          t.equal(operator, 'ok');
+          t.equal(pass, true);
+          t.equal(id, 2);
+          t.ok(executionTime !== undefined);
         }
         time++;
       }
