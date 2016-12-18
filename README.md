@@ -72,9 +72,11 @@ plan
     })
     
 export default plan; // export the plan
-    
-    
- //./test/index.js
+```
+
+Then in you entry point
+```Javascript
+//./test/index.js
 import zora from 'zora';
 import plan from './test1.js'; // import all your test plans
 
@@ -87,7 +89,7 @@ masterPlan
 ```
 
 ## In the browser
-Zora itself does not depend on native nodejs modules so the code you will get is regular es2016 code. The only thing to do is probably to bundle your test script with your favourite module bundler (you might want to transpile your code as well for older browsers).
+Zora itself does not depend on native nodejs modules (such file system, processes, etc) so the code you will get is regular es2016 code. The only thing to do is probably to bundle your test script with your favourite module bundler (you might want to transpile your code as well for older browsers).
 
 ### Example with rollup
 I will use [rollup](http://rollupjs.org/) for this example, but you should not have any problem with [webpack](https://webpack.github.io/) or [browserify](http://browserify.org/). The idea is simply to create a test file your testing browsers will be able to run.
@@ -96,9 +98,9 @@ assuming you have your entry point as follow :
 ```Javascript
 //./test/index.js
 import zora from 'zora';
-import test1 from './test1.js;
-import test2 from './test2.js;
-import test3 from './test3.js;
+import test1 from './test1.js'; // some tests here
+import test2 from './test2.js'; // some more tests there
+import test3 from './test3.js'; // another test plan 
 
 const plan = zora()
     .test(test1)
@@ -108,8 +110,64 @@ const plan = zora()
 plan.run();
 ```
 
+where for example ./test/test1.js is 
+```Javascript
+import zora from 'zora';
 
+const plan = zora()
+    .test('mytest',function * (assertions){
+       assertions.ok(true);
+    })
+    .test('mytest',function * (assertions){
+       assertions.ok(true);
+    });
+    
+export default plan;
+```
 
+At the time of writing the browsers probably won't understand the [ES module](http://www.2ality.com/2014/09/es6-modules-final.html) syntax so we need to bundle our test file.
+Using rollup, we would have the following configuration (for more info follow the [tutorial serie](https://code.lengstorf.com/learn-rollup-js/))
 
+```
+const node = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+module.exports = {
+  entry: './test/index.js',
+  dest: './test/dist/index.js',
+  format: 'iife', //iife as the code will run in the browser
+  plugins: [node(), commonjs()], //you can add babel plugin if you need transpilation
+  moduleName:'test'
+};
+```
 
- 
+and that'is it. You can now drop you ./test/dist/index.js in a html document and open it in the browser. You should see something like this in the console
+![tap output in the browser console](console-sc.png)
+
+Even better, you can use tap reporter browser friendly such [tape-run](https://www.npmjs.com/package/tape-run) so you'll have a proper exit code depending on the result of your tests. 
+
+so all together, in your package.json you can have something like that
+```Javascript
+{
+// ...
+  "scripts": {
+    "test": "rollup -c ./test/rollup.config.js && cat ./test/dist/index.js | tape-run"
+  }
+// ...
+}
+```
+
+## CLI
+Assuming your test file exports a test plan (in a commonjs way) you can run 
+``zora ./tests/myTest.js``
+
+##Assertions API
+The assertion api you can use within your test coroutines is pretty simple and highly inspired from [tape](https://github.com/substack/tape)
+* ok
+* notOk
+* equal
+* notEqual
+* deepEqual
+* notDeepEqual
+* fail
+
+You can use any other assertion library as well but a failing assertion will likely throw an exception which won't be properly tape reported
