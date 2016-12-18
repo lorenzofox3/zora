@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "tap test harness for nodejs and browsers",
   "keywords": [
     "tap",
@@ -26,10 +26,6 @@
     "email": "laurent34azerty@gmail.com"
   },
   "license": "MIT",
-  "files": [
-    "./dist",
-    "./cli.js"
-  ],
   "bin": {
     "zora": "./cli.js"
   },
