@@ -1,0 +1,45 @@
+{
+  "name": "zora",
+  "version": "0.0.1",
+  "description": "tap test harness for nodejs and browsers",
+  "keywords": [
+    "tap",
+    "test",
+    "node",
+    "browsers",
+    "testing",
+    "tests",
+    "harness"
+  ],
+  "main": "./dist/zora.js",
+  "jsnext:main": "./dist/zora.es.js",
+  "scripts": {
+    "clean": "rm -rf ./dist && rm -rf ./test/dist",
+    "build": "npm run clean && node ./scripts/build.js",
+    "build:test": "rollup -c ./test/rollup.config.js",
+    "test": "npm run clean && npm run build:test && node ./test/dist/index.js",
+    "practice": "npm run build && node ./test/error.js | tape-run"
+  },
+  "author": {
+    "name": "Laurent Renard",
+    "email": "laurent34azerty@gmail.com"
+  },
+  "license": "MIT",
+  "files": [
+    "./dist",
+    "./cli.js"
+  ],
+  "bin": {
+    "zora": "./cli.js"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "deep-equal": "^1.0.1"
+  },
+  "devDependencies": {
+    "rollup": "^0.37.0",
+    "rollup-plugin-commonjs": "^6.0.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "tape": "^4.6.3"
+  }
+}
