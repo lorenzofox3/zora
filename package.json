@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "tap test harness for nodejs and browsers",
   "keywords": [
     "tap",
