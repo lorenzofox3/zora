@@ -2566,11 +2566,19 @@ function tap () {
   return function * () {
     let index = 1;
     let lastId = 0;
+    let success = 0;
+    let failure = 0;
+
     const starTime = Date.now();
     console.log('TAP version 13');
     try {
       while (true) {
         const assertion = yield;
+        if (assertion.pass === true) {
+          success++;
+        } else {
+          failure++;
+        }
         assertion.index = index;
         if (assertion.id !== lastId) {
           console.log(`# ${assertion.description} - ${assertion.executionTime}ms`);
@@ -2598,7 +2606,12 @@ function tap () {
       if (index > 1) {
         console.log(`
 1..${index - 1}
-# duration ${execution}ms`);
+# duration ${execution}ms
+# success ${success}
+# failure ${failure}`);
+      }
+      if (failure && process && process.exit) {
+        process.exit(1);
       }
     }
   };
@@ -2614,7 +2627,6 @@ const Plan = {
   run(sink = tap()){
     const sinkIterator = sink();
     sinkIterator.next();
-
     return index$28(function * () {
       let id = 1;
       try {

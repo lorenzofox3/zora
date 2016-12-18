@@ -19,7 +19,8 @@
     "build": "npm run clean && node ./scripts/build.js",
     "build:test": "rollup -c ./test/rollup.config.js",
     "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js",
-    "print": "node ./cli.js ./test/sample.js > ./test/dist/output.txt"
+    "print": "node ./cli.js ./test/sample.js > ./test/dist/output.txt",
+    "bench:zora": "node ./cli.js ./benchmark/zora/index.js"
   },
   "author": {
     "name": "Laurent Renard",

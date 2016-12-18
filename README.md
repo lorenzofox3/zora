@@ -26,6 +26,10 @@ plan.test('my async test',function *(assert){
 Each test run in a separate coroutine using [co](https://github.com/tj/co). It will likely be **faster** than other sequential test runners like [tape](https://github.com/substack/tape) for example.
 It therefore enforces you to write your tests in isolation which is often a good practice.
 
+### fast
+Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to [a benchmark I have set up](https://github.com/lorenzofox3/zora-benchmark)
+The test is pretty simple: a test suite split into 20 files with 20 tests with an assertion in a nodejs environment. Anyway you can simply fork the repo and sort it out yourself.
+
 ### tap producer
 By default zora produces a tap report through the console, so you can pipe in with any [tap reporter](https://github.com/sindresorhus/awesome-tap#reporters).
 
