@@ -101,7 +101,7 @@ Zora itself does not depend on native nodejs modules (such file system, processe
 You can simply drop the dist file in the browser (I'll had into CDN if people want it) and write your script below (or load it).
 You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112)
 
-```Markup
+```Html
 <!-- some content -->
 <body>
 <script src="path/to/zora.js"></script>
