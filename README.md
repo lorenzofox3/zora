@@ -30,7 +30,7 @@ It therefore enforces you to write your tests in isolation which is often a good
 Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to [a benchmark I have set up](https://github.com/lorenzofox3/zora-benchmark)
 The test is pretty simple: a test suite split into 20 files with 20 tests with an assertion in a nodejs environment. Anyway you can simply fork the repo and sort it out yourself.
 
-### tap producer
+### tap (Test Anything Protocol) producer
 By default zora produces a tap report through the console, so you can pipe in with any [tap reporter](https://github.com/sindresorhus/awesome-tap#reporters).
 
 ### browser friendly
@@ -95,7 +95,35 @@ masterPlan
 ## In the browser
 Zora itself does not depend on native nodejs modules (such file system, processes, etc) so the code you will get is regular es2016 code. The only thing to do is probably to bundle your test script with your favourite module bundler (you might want to transpile your code as well for older browsers).
 
-### Example with rollup
+### drop in file
+You can simply drop the dist file in the browser (I'll had into CDN if people want it) and write your script below (or load it).
+You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112)
+
+```Markup
+<!-- some content -->
+<body>
+<script src="path/to/zora.js"></script>
+<!-- your test code -->
+<script>
+    Zora()
+      .test('some test', function*(assert) {
+        assert.ok(true, 'hey there');
+      })
+      .test('some failing test', function*(assert) {
+        assert.fail('it failed');
+      })
+      .run();
+</script>
+</body>
+<!-- some content -->
+``` 
+
+### Use tools that load files for you in a browser (ex karma)
+Same than above but you can ask a runner to handle for you the browsers processes, the bundling/transpilation if any, etc
+
+TODO
+
+### As part of CI (example with rollup)
 I will use [rollup](http://rollupjs.org/) for this example, but you should not have any problem with [webpack](https://webpack.github.io/) or [browserify](http://browserify.org/). The idea is simply to create a test file your testing browsers will be able to run.
 
 assuming you have your entry point as follow :
@@ -159,6 +187,9 @@ so all together, in your package.json you can have something like that
 // ...
 }
 ```
+## Use output data not as a tap output
+
+// TODO add a different sink generator example
 
 ## CLI
 Assuming your test file exports a test plan (in a commonjs way) you can run 
