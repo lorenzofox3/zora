@@ -1,4 +1,8 @@
-'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.Zora = factory());
+}(this, (function () { 'use strict';
 
 /**
  * slice() reference.
@@ -561,4 +565,6 @@ function plan () {
   });
 }
 
-module.exports = plan;
+return plan;
+
+})));

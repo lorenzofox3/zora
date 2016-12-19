@@ -13,7 +13,8 @@ rollup.rollup({
     format: 'es',
     dest: './dist/zora.es.js'
   })], bundle.write({
-    format: 'cjs',
-    dest: './dist/zora.js'
+    format: 'umd',
+    dest: './dist/zora.js',
+    moduleName: 'Zora'
   }));
 });
