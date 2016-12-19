@@ -455,6 +455,10 @@ function tapOut ({pass, message, index}) {
   console.log([status, index, message].join(' '));
 }
 
+function canExit () {
+  return typeof process !== 'undefined' && typeof process.exit === 'function';
+}
+
 function tap () {
   return function * () {
     let index = 1;
@@ -490,7 +494,7 @@ function tap () {
     } catch (e) {
       console.log('Bail out! unhandled exception');
       console.log(e);
-      if (process && process.exit) {
+      if (canExit()) {
         process.exit(1);
       }
     }
@@ -503,7 +507,7 @@ function tap () {
 # success ${success}
 # failure ${failure}`);
       }
-      if (failure && process && process.exit) {
+      if (failure && canExit()) {
         process.exit(1);
       }
     }
