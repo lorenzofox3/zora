@@ -3,6 +3,9 @@ A less than 200 lines of code javascript test harness for **nodejs** and the **b
 
 [![CircleCI](https://circleci.com/gh/lorenzofox3/zora.svg?style=svg)](https://circleci.com/gh/lorenzofox3/zora)
 
+## installation
+``npm install --save-dev zora``
+
 ## features
 ### Zero config
 It is just Javascript, write your program, bundle it (if needed) for the environment you want to test in and execute the script ! No whatever.conf.js
@@ -20,7 +23,6 @@ plan.test('my async test',function *(assert){
 });
 
 ```
-
 
 ### parallelism 
 Each test run in a separate coroutine using [co](https://github.com/tj/co). It will likely be **faster** than other sequential test runners like [tape](https://github.com/substack/tape) for example.
