@@ -3,6 +3,27 @@ A less than 200 lines of code javascript test harness for **nodejs** and the **b
 
 [![CircleCI](https://circleci.com/gh/lorenzofox3/zora.svg?style=svg)](https://circleci.com/gh/lorenzofox3/zora)
 
+## Table of Contents 
+
+  - [installation](#installation)
+  - [features](#features)
+    - [Zero config](#zero-config)
+    - [No global](#no-global)
+    - [Async testing made easy](#async-testing-made-easy)
+    - [parallelism](#parallelism)
+    - [fast](#fast)
+    - [tap (Test Anything Protocol) producer](#tap-test-anything-protocol-producer)
+    - [browser friendly](#browser-friendly)
+  - [Usage](#usage)
+    - [simple case one file](#simple-case-one-file)
+    - [multiple files setup (recommended)](#multiple-files-setup-recommended)
+  - [In the browser](#in-the-browser)
+    - [drop in file](#drop-in-file)
+    - [Use tools that load files for you in a browser (ex karma)](#use-tools-that-load-files-for-you-in-a-browser-ex-karma)
+    - [As part of CI (example with rollup)](#as-part-of-ci-example-with-rollup)
+  - [Use output data not as a tap output](#use-output-data-not-as-a-tap-output)
+  - [CLI](#cli)
+
 ## installation
 ``npm install --save-dev zora``
 
