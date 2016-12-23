@@ -441,11 +441,12 @@ const Test = {
   }
 };
 
-function test ({description, coroutine}) {
+function test ({description, coroutine, only = false}) {
   return Object.create(Test, {
     description: {value: description},
     coroutine: {value: coroutine},
     assertions: {value: []},
+    only: {value: only},
     length: {
       get(){
         return this.assertions.length
@@ -519,22 +520,21 @@ function tap () {
 }
 
 const Plan = {
-  test(description, coroutine){
-    const items = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
-    this.tests.push(...items.map(t=>test(t)));
+  test(description, coroutine, opts = {}){
+    const testItems = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
+    this.tests.push(...testItems.map(t=>test(Object.assign(t, opts))));
     return this;
   },
 
   only(description, coroutine){
-    const items = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
-    this.onlys.push(...items.map(t=>test(t)));
-    return this;
+    return this.test(description, coroutine, {only: true});
   },
 
   run(sink = tap()){
     const sinkIterator = sink();
     sinkIterator.next();
-    const runnable = this.onlys.length ? this.onlys : this.tests;
+    const hasOnly = this.tests.some(t=>t.only);
+    const runnable = hasOnly ? this.tests.filter(t=>t.only) : this.tests;
     return index(function * () {
       let id = 1;
       try {
@@ -569,8 +569,7 @@ function plan () {
       get(){
         return this.tests.length
       }
-    },
-    onlys: {value: []}
+    }
   });
 }
 
