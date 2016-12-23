@@ -1,6 +1,31 @@
 import tape from 'tape';
 import plan from '../lib/plan';
 
+function assert (expArray, t) {
+  return function * () {
+    let index = 0;
+    try {
+      while (true) {
+        const r = yield;
+        const {actual, description, expected, message, operator, pass, id, executionTime} =r;
+        const exp = expArray[index];
+        t.equal(actual, exp.actual);
+        t.equal(description, exp.description);
+        t.equal(expected, exp.expected);
+        t.equal(message, exp.message);
+        t.equal(operator, exp.operator);
+        t.equal(pass, exp.pass);
+        t.equal(id, exp.id);
+        t.ok(executionTime !== undefined);
+        index++;
+      }
+    } finally {
+      t.equal(index, expArray.length);
+      t.end();
+    }
+  }
+}
+
 function testFunc () {
 
   tape('add a test', t=> {
@@ -35,9 +60,44 @@ function testFunc () {
     t.end();
   });
 
-  tape('plan running tests', t=> {
-    t.plan(16);
+  tape('only: only run the tests with only statement', t => {
+    const p = plan();
+    p.test('should not run', function * (t) {
+      t.fail();
+    });
 
+    p.only('should run this one', function * (t) {
+      t.ok(true);
+    });
+
+    p.only('should run this one too', function * (t) {
+      t.ok(true);
+    });
+
+    p.run(assert([
+      {
+        actual: true,
+        description: 'should run this one',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      },
+      {
+        actual: true,
+        description: 'should run this one too',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
+      }
+
+    ], t));
+  });
+
+  tape('plan running tests', t=> {
     const p = plan();
 
     p.test('test 1', function * (assert) {
@@ -48,33 +108,25 @@ function testFunc () {
       assert.ok(true);
     });
 
-    p.run(function * () {
-      let time = 1;
-      while (true) {
-        const assertion = yield;
-        const {actual, description, expected, message, operator, pass, id, executionTime}=assertion;
-        if (time === 1) {
-          t.equal(actual, true);
-          t.equal(description, 'test 1');
-          t.equal(expected, 'truthy');
-          t.equal(message, 'should be truthy');
-          t.equal(operator, 'ok');
-          t.equal(pass, true);
-          t.equal(id, 1);
-          t.ok(executionTime !== undefined);
-        } else {
-          t.equal(actual, true);
-          t.equal(description, 'test 2');
-          t.equal(expected, 'truthy');
-          t.equal(message, 'should be truthy');
-          t.equal(operator, 'ok');
-          t.equal(pass, true);
-          t.equal(id, 2);
-          t.ok(executionTime !== undefined);
-        }
-        time++;
+    p.run(assert([
+      {
+        actual: true,
+        description: 'test 1',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      }, {
+        actual: true,
+        description: 'test 2',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
       }
-    })
+    ], t));
   });
 }
 

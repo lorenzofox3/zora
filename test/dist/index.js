@@ -2628,13 +2628,20 @@ const Plan = {
     return this;
   },
 
+  only(description, coroutine){
+    const items = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
+    this.onlys.push(...items.map(t=>test$3(t)));
+    return this;
+  },
+
   run(sink = tap()){
     const sinkIterator = sink();
     sinkIterator.next();
+    const runnable = this.onlys.length ? this.onlys : this.tests;
     return index$28(function * () {
       let id = 1;
       try {
-        const results = this.tests.map(t=>t.run());
+        const results = runnable.map(t=>t.run());
         for (let r of results) {
           const {assertions, executionTime} = yield r;
           for (let assert of assertions) {
@@ -2660,12 +2667,39 @@ const Plan = {
 
 function plan$1 () {
   return Object.create(Plan, {
-    tests: {value: []}, length: {
+    tests: {value: []},
+    length: {
       get(){
         return this.tests.length
       }
-    }
+    },
+    onlys: {value: []}
   });
+}
+
+function assert$1 (expArray, t) {
+  return function * () {
+    let index$$1 = 0;
+    try {
+      while (true) {
+        const r = yield;
+        const {actual, description, expected, message, operator, pass, id, executionTime} =r;
+        const exp = expArray[index$$1];
+        t.equal(actual, exp.actual);
+        t.equal(description, exp.description);
+        t.equal(expected, exp.expected);
+        t.equal(message, exp.message);
+        t.equal(operator, exp.operator);
+        t.equal(pass, exp.pass);
+        t.equal(id, exp.id);
+        t.ok(executionTime !== undefined);
+        index$$1++;
+      }
+    } finally {
+      t.equal(index$$1, expArray.length);
+      t.end();
+    }
+  }
 }
 
 function testFunc$3 () {
@@ -2702,9 +2736,44 @@ function testFunc$3 () {
     t.end();
   });
 
-  index('plan running tests', t=> {
-    t.plan(16);
+  index('only: only run the tests with only statement', t => {
+    const p = plan$1();
+    p.test('should not run', function * (t) {
+      t.fail();
+    });
 
+    p.only('should run this one', function * (t) {
+      t.ok(true);
+    });
+
+    p.only('should run this one too', function * (t) {
+      t.ok(true);
+    });
+
+    p.run(assert$1([
+      {
+        actual: true,
+        description: 'should run this one',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      },
+      {
+        actual: true,
+        description: 'should run this one too',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
+      }
+
+    ], t));
+  });
+
+  index('plan running tests', t=> {
     const p = plan$1();
 
     p.test('test 1', function * (assert) {
@@ -2715,33 +2784,25 @@ function testFunc$3 () {
       assert.ok(true);
     });
 
-    p.run(function * () {
-      let time = 1;
-      while (true) {
-        const assertion = yield;
-        const {actual, description, expected, message, operator, pass, id, executionTime}=assertion;
-        if (time === 1) {
-          t.equal(actual, true);
-          t.equal(description, 'test 1');
-          t.equal(expected, 'truthy');
-          t.equal(message, 'should be truthy');
-          t.equal(operator, 'ok');
-          t.equal(pass, true);
-          t.equal(id, 1);
-          t.ok(executionTime !== undefined);
-        } else {
-          t.equal(actual, true);
-          t.equal(description, 'test 2');
-          t.equal(expected, 'truthy');
-          t.equal(message, 'should be truthy');
-          t.equal(operator, 'ok');
-          t.equal(pass, true);
-          t.equal(id, 2);
-          t.ok(executionTime !== undefined);
-        }
-        time++;
+    p.run(assert$1([
+      {
+        actual: true,
+        description: 'test 1',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      }, {
+        actual: true,
+        description: 'test 2',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
       }
-    });
+    ], t));
   });
 }
 
