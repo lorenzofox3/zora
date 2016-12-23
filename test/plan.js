@@ -97,6 +97,53 @@ function testFunc () {
     ], t));
   });
 
+  tape('only: only run the tests with only statement with composition', t => {
+    const p1 = plan();
+    const p2 = plan();
+    const masterPlan = plan();
+
+    p1.test('should not run this test', function * (t) {
+      t.fail();
+    });
+
+    p2.test('should not run', function * (t) {
+      t.fail();
+    });
+
+    p2.only('should run this one', function * (t) {
+      t.ok(true);
+    });
+
+    p2.only('should run this one too', function * (t) {
+      t.ok(true);
+    });
+
+    masterPlan
+      .test(p1)
+      .test(p2);
+
+    masterPlan.run(assert([
+      {
+        actual: true,
+        description: 'should run this one',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      },
+      {
+        actual: true,
+        description: 'should run this one too',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
+      }
+    ], t));
+  });
+
   tape('plan running tests', t=> {
     const p = plan();
 

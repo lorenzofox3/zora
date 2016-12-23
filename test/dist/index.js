@@ -821,7 +821,7 @@ var polyfill = function getPolyfill() {
 var define$1 = index$12;
 var getPolyfill$2 = polyfill;
 
-var shim$2 = function shimStringTrim() {
+var shim$1 = function shimStringTrim() {
 	var polyfill$$1 = getPolyfill$2();
 	define$1(String.prototype, { trim: polyfill$$1 }, { trim: function () { return String.prototype.trim !== polyfill$$1; } });
 	return polyfill$$1;
@@ -832,14 +832,14 @@ var define = index$12;
 
 var implementation$3 = implementation$4;
 var getPolyfill$1 = polyfill;
-var shim$1 = shim$2;
+var shim = shim$1;
 
 var boundTrim = bind$3.call(Function.call, getPolyfill$1());
 
 define(boundTrim, {
 	getPolyfill: getPolyfill$1,
 	implementation: implementation$3,
-	shim: shim$1
+	shim: shim
 });
 
 var index$10 = boundTrim;
@@ -918,14 +918,14 @@ var bind$1 = index$8;
 var forEach$1 = index$20;
 var isEnumerable = bind$1.call(Function.call, Object.prototype.propertyIsEnumerable);
 
-var test$1 = Test$1;
+var test = Test;
 
 var nextTick = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick;
 var safeSetTimeout = setTimeout;
 
-inherits$1(Test$1, EventEmitter);
+inherits$1(Test, EventEmitter);
 
 var getTestArgs = function (name_, opts_, cb_) {
     var name = '(anonymous)';
@@ -948,9 +948,9 @@ var getTestArgs = function (name_, opts_, cb_) {
     return { name: name, opts: opts, cb: cb };
 };
 
-function Test$1 (name_, opts_, cb_) {
-    if (! (this instanceof Test$1)) {
-        return new Test$1(name_, opts_, cb_);
+function Test (name_, opts_, cb_) {
+    if (! (this instanceof Test)) {
+        return new Test(name_, opts_, cb_);
     }
 
     var args = getTestArgs(name_, opts_, cb_);
@@ -979,7 +979,7 @@ function Test$1 (name_, opts_, cb_) {
     }
 }
 
-Test$1.prototype.run = function () {
+Test.prototype.run = function () {
     if (this._skip) {
         this.comment('SKIP ' + this.name);
     }
@@ -994,9 +994,9 @@ Test$1.prototype.run = function () {
     this.emit('run');
 };
 
-Test$1.prototype.test = function (name, opts, cb) {
+Test.prototype.test = function (name, opts, cb) {
     var self = this;
-    var t = new Test$1(name, opts, cb);
+    var t = new Test(name, opts, cb);
     this._progeny.push(t);
     this.pendingCount++;
     this.emit('test', t);
@@ -1017,19 +1017,19 @@ Test$1.prototype.test = function (name, opts, cb) {
     });
 };
 
-Test$1.prototype.comment = function (msg) {
+Test.prototype.comment = function (msg) {
     var that = this;
     forEach$1(trim$1(msg).split('\n'), function (aMsg) {
         that.emit('result', trim$1(aMsg).replace(/^#\s*/, ''));
     });
 };
 
-Test$1.prototype.plan = function (n) {
+Test.prototype.plan = function (n) {
     this._plan = n;
     this.emit('plan', n);
 };
 
-Test$1.prototype.timeoutAfter = function(ms) {
+Test.prototype.timeoutAfter = function(ms) {
     if (!ms) throw new Error('timeoutAfter requires a timespan');
     var self = this;
     var timeout = safeSetTimeout(function() {
@@ -1041,7 +1041,7 @@ Test$1.prototype.timeoutAfter = function(ms) {
     });
 };
 
-Test$1.prototype.end = function (err) { 
+Test.prototype.end = function (err) { 
     var self = this;
     if (arguments.length >= 1 && !!err) {
         this.ifError(err);
@@ -1054,7 +1054,7 @@ Test$1.prototype.end = function (err) {
     this._end();
 };
 
-Test$1.prototype._end = function (err) {
+Test.prototype._end = function (err) {
     var self = this;
     if (this._progeny.length) {
         var t = this._progeny.shift();
@@ -1075,7 +1075,7 @@ Test$1.prototype._end = function (err) {
     this.ended = true;
 };
 
-Test$1.prototype._exit = function () {
+Test.prototype._exit = function () {
     if (this._plan !== undefined &&
         !this._planError && this.assertCount !== this._plan) {
         this._planError = true;
@@ -1092,7 +1092,7 @@ Test$1.prototype._exit = function () {
     }
 };
 
-Test$1.prototype._pendingAsserts = function () {
+Test.prototype._pendingAsserts = function () {
     if (this._plan === undefined) {
         return 1;
     }
@@ -1101,7 +1101,7 @@ Test$1.prototype._pendingAsserts = function () {
     }
 };
 
-Test$1.prototype._assert = function assert (ok, opts) {
+Test.prototype._assert = function assert (ok, opts) {
     var self = this;
     var extra = opts.extra || {};
     
@@ -1186,7 +1186,7 @@ Test$1.prototype._assert = function assert (ok, opts) {
     }
 };
 
-Test$1.prototype.fail = function (msg, extra) {
+Test.prototype.fail = function (msg, extra) {
     this._assert(false, {
         message : msg,
         operator : 'fail',
@@ -1194,7 +1194,7 @@ Test$1.prototype.fail = function (msg, extra) {
     });
 };
 
-Test$1.prototype.pass = function (msg, extra) {
+Test.prototype.pass = function (msg, extra) {
     this._assert(true, {
         message : msg,
         operator : 'pass',
@@ -1202,7 +1202,7 @@ Test$1.prototype.pass = function (msg, extra) {
     });
 };
 
-Test$1.prototype.skip = function (msg, extra) {
+Test.prototype.skip = function (msg, extra) {
     this._assert(true, {
         message : msg,
         operator : 'skip',
@@ -1211,9 +1211,9 @@ Test$1.prototype.skip = function (msg, extra) {
     });
 };
 
-Test$1.prototype.ok
-= Test$1.prototype['true']
-= Test$1.prototype.assert
+Test.prototype.ok
+= Test.prototype['true']
+= Test.prototype.assert
 = function (value, msg, extra) {
     this._assert(value, {
         message : defined(msg, 'should be truthy'),
@@ -1224,9 +1224,9 @@ Test$1.prototype.ok
     });
 };
 
-Test$1.prototype.notOk
-= Test$1.prototype['false']
-= Test$1.prototype.notok
+Test.prototype.notOk
+= Test.prototype['false']
+= Test.prototype.notok
 = function (value, msg, extra) {
     this._assert(!value, {
         message : defined(msg, 'should be falsy'),
@@ -1237,10 +1237,10 @@ Test$1.prototype.notOk
     });
 };
 
-Test$1.prototype.error
-= Test$1.prototype.ifError
-= Test$1.prototype.ifErr
-= Test$1.prototype.iferror
+Test.prototype.error
+= Test.prototype.ifError
+= Test.prototype.ifErr
+= Test.prototype.iferror
 = function (err, msg, extra) {
     this._assert(!err, {
         message : defined(msg, String(err)),
@@ -1250,12 +1250,12 @@ Test$1.prototype.error
     });
 };
 
-Test$1.prototype.equal
-= Test$1.prototype.equals
-= Test$1.prototype.isEqual
-= Test$1.prototype.is
-= Test$1.prototype.strictEqual
-= Test$1.prototype.strictEquals
+Test.prototype.equal
+= Test.prototype.equals
+= Test.prototype.isEqual
+= Test.prototype.is
+= Test.prototype.strictEqual
+= Test.prototype.strictEquals
 = function (a, b, msg, extra) {
     this._assert(a === b, {
         message : defined(msg, 'should be equal'),
@@ -1266,15 +1266,15 @@ Test$1.prototype.equal
     });
 };
 
-Test$1.prototype.notEqual
-= Test$1.prototype.notEquals
-= Test$1.prototype.notStrictEqual
-= Test$1.prototype.notStrictEquals
-= Test$1.prototype.isNotEqual
-= Test$1.prototype.isNot
-= Test$1.prototype.not
-= Test$1.prototype.doesNotEqual
-= Test$1.prototype.isInequal
+Test.prototype.notEqual
+= Test.prototype.notEquals
+= Test.prototype.notStrictEqual
+= Test.prototype.notStrictEquals
+= Test.prototype.isNotEqual
+= Test.prototype.isNot
+= Test.prototype.not
+= Test.prototype.doesNotEqual
+= Test.prototype.isInequal
 = function (a, b, msg, extra) {
     this._assert(a !== b, {
         message : defined(msg, 'should not be equal'),
@@ -1285,10 +1285,10 @@ Test$1.prototype.notEqual
     });
 };
 
-Test$1.prototype.deepEqual
-= Test$1.prototype.deepEquals
-= Test$1.prototype.isEquivalent
-= Test$1.prototype.same
+Test.prototype.deepEqual
+= Test.prototype.deepEquals
+= Test.prototype.isEquivalent
+= Test.prototype.same
 = function (a, b, msg, extra) {
     this._assert(deepEqual(a, b, { strict: true }), {
         message : defined(msg, 'should be equivalent'),
@@ -1299,9 +1299,9 @@ Test$1.prototype.deepEqual
     });
 };
 
-Test$1.prototype.deepLooseEqual
-= Test$1.prototype.looseEqual
-= Test$1.prototype.looseEquals
+Test.prototype.deepLooseEqual
+= Test.prototype.looseEqual
+= Test.prototype.looseEquals
 = function (a, b, msg, extra) {
     this._assert(deepEqual(a, b), {
         message : defined(msg, 'should be equivalent'),
@@ -1312,14 +1312,14 @@ Test$1.prototype.deepLooseEqual
     });
 };
 
-Test$1.prototype.notDeepEqual
-= Test$1.prototype.notEquivalent
-= Test$1.prototype.notDeeply
-= Test$1.prototype.notSame
-= Test$1.prototype.isNotDeepEqual
-= Test$1.prototype.isNotDeeply
-= Test$1.prototype.isNotEquivalent
-= Test$1.prototype.isInequivalent
+Test.prototype.notDeepEqual
+= Test.prototype.notEquivalent
+= Test.prototype.notDeeply
+= Test.prototype.notSame
+= Test.prototype.isNotDeepEqual
+= Test.prototype.isNotDeeply
+= Test.prototype.isNotEquivalent
+= Test.prototype.isInequivalent
 = function (a, b, msg, extra) {
     this._assert(!deepEqual(a, b, { strict: true }), {
         message : defined(msg, 'should not be equivalent'),
@@ -1330,9 +1330,9 @@ Test$1.prototype.notDeepEqual
     });
 };
 
-Test$1.prototype.notDeepLooseEqual
-= Test$1.prototype.notLooseEqual
-= Test$1.prototype.notLooseEquals
+Test.prototype.notDeepLooseEqual
+= Test.prototype.notLooseEqual
+= Test.prototype.notLooseEquals
 = function (a, b, msg, extra) {
     this._assert(!deepEqual(a, b), {
         message : defined(msg, 'should be equivalent'),
@@ -1343,7 +1343,7 @@ Test$1.prototype.notDeepLooseEqual
     });
 };
 
-Test$1.prototype['throws'] = function (fn, expected, msg, extra) {
+Test.prototype['throws'] = function (fn, expected, msg, extra) {
     if (typeof expected === 'string') {
         msg = expected;
         expected = undefined;
@@ -1384,7 +1384,7 @@ Test$1.prototype['throws'] = function (fn, expected, msg, extra) {
     });
 };
 
-Test$1.prototype.doesNotThrow = function (fn, expected, msg, extra) {
+Test.prototype.doesNotThrow = function (fn, expected, msg, extra) {
     if (typeof expected === 'string') {
         msg = expected;
         expected = undefined;
@@ -1406,10 +1406,10 @@ Test$1.prototype.doesNotThrow = function (fn, expected, msg, extra) {
     });
 };
 
-Test$1.skip = function (name_, _opts, _cb) {
+Test.skip = function (name_, _opts, _cb) {
     var args = getTestArgs.apply(null, arguments);
     args.opts.skip = true;
-    return Test$1(args.name, args.opts, args.cb);
+    return Test(args.name, args.opts, args.cb);
 };
 
 // vim: set softtabstop=4 shiftwidth=4:
@@ -1842,7 +1842,7 @@ function invalidYaml (str) {
 var index = createCommonjsModule(function (module, exports) {
 var defined = index$1;
 var createDefaultStream = default_stream;
-var Test = test$1;
+var Test = test;
 var createResult = results;
 var through = index$3;
 
@@ -1946,47 +1946,47 @@ function createHarness (conf_) {
         results$$1.once('done', function () { results$$1.close(); });
     }
     
-    var test = function (name, conf, cb) {
+    var test$$1 = function (name, conf, cb) {
         var t = new Test(name, conf, cb);
-        test._tests.push(t);
+        test$$1._tests.push(t);
         
         (function inspectCode (st) {
             st.on('test', function sub (st_) {
                 inspectCode(st_);
             });
             st.on('result', function (r) {
-                if (!r.ok && typeof r !== 'string') test._exitCode = 1;
+                if (!r.ok && typeof r !== 'string') test$$1._exitCode = 1;
             });
         })(t);
         
         results$$1.push(t);
         return t;
     };
-    test._results = results$$1;
+    test$$1._results = results$$1;
     
-    test._tests = [];
+    test$$1._tests = [];
     
-    test.createStream = function (opts) {
+    test$$1.createStream = function (opts) {
         return results$$1.createStream(opts);
     };
 
-    test.onFinish = function (cb) {
+    test$$1.onFinish = function (cb) {
         results$$1.on('done', cb);
     };
     
     var only = false;
-    test.only = function () {
+    test$$1.only = function () {
         if (only) throw new Error('there can only be one only test');
         only = true;
-        var t = test.apply(null, arguments);
+        var t = test$$1.apply(null, arguments);
         results$$1.only(t);
         return t;
     };
-    test._exitCode = 0;
+    test$$1._exitCode = 0;
     
-    test.close = function () { results$$1.close(); };
+    test$$1.close = function () { results$$1.close(); };
     
-    return test;
+    return test$$1;
 }
 });
 
@@ -2275,7 +2275,7 @@ function isObject(val) {
   return Object == val.constructor;
 }
 
-const Test$2 = {
+const Test$1 = {
   run: function () {
     const assert = assertion(this);
     const now = Date.now();
@@ -2291,11 +2291,12 @@ const Test$2 = {
   }
 };
 
-function test$3 ({description, coroutine}) {
-  return Object.create(Test$2, {
+function test$2 ({description, coroutine, only = false}) {
+  return Object.create(Test$1, {
     description: {value: description},
     coroutine: {value: coroutine},
     assertions: {value: []},
+    only: {value: only},
     length: {
       get(){
         return this.assertions.length
@@ -2316,7 +2317,7 @@ function testFunc$1 () {
   }
 
   index('ok operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.ok('true');
     t.equal(operator, 'ok', 'should have the operator ok');
@@ -2327,7 +2328,7 @@ function testFunc$1 () {
   });
 
   index('ok operator: change message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass, expected, actual} = a.ok(0, 'not default!');
     t.equal(operator, 'ok', 'should have the operator ok');
@@ -2340,7 +2341,7 @@ function testFunc$1 () {
   });
 
   index('deepEqual operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.deepEqual({foo: {bar: 'bar'}}, {foo: {bar: 'bar'}});
     t.equal(operator, 'deepEqual', 'should have the operator deepEqual');
@@ -2351,7 +2352,7 @@ function testFunc$1 () {
   });
 
   index('deepEqual operator: change message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass, expected, actual} = a.deepEqual({foo: 'bar'}, {blah: 'bar'}, 'woot woot');
     t.equal(operator, 'deepEqual', 'should have the operator deepEqual');
@@ -2364,7 +2365,7 @@ function testFunc$1 () {
   });
 
   index('equal operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.equal('foo', 'foo');
     t.equal(operator, 'equal', 'should have the operator equal');
@@ -2375,7 +2376,7 @@ function testFunc$1 () {
   });
 
   index('equal operator: change default message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.equal({foo: 'foo'}, {foo: 'foo'}, 'woot ip');
     t.equal(operator, 'equal', 'should have the operator equal');
@@ -2386,7 +2387,7 @@ function testFunc$1 () {
   });
 
   index('notOk operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.notOk(false);
     t.equal(operator, 'notOk', 'should have the operator notOk');
@@ -2397,7 +2398,7 @@ function testFunc$1 () {
   });
 
   index('notOk operator: change message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass, expected, actual} = a.notOk(1, 'not default!');
     t.equal(operator, 'notOk', 'should have the operator notOk');
@@ -2410,7 +2411,7 @@ function testFunc$1 () {
   });
 
   index('notDeepEqual operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.notDeepEqual({foo: {bar: 'blah'}}, {foo: {bar: 'bar'}});
     t.equal(operator, 'notDeepEqual', 'should have the operator notDeepEqual');
@@ -2421,7 +2422,7 @@ function testFunc$1 () {
   });
 
   index('notDeepEqual operator: change message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass, expected, actual} = a.notDeepEqual({foo: {bar: 'bar'}}, {foo: {bar: 'bar'}}, 'woot woot');
     t.equal(operator, 'notDeepEqual', 'should have the operator notDeepEqual');
@@ -2434,7 +2435,7 @@ function testFunc$1 () {
   });
 
   index('notEqual operator', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.notEqual({foo: 'bar'}, {foo: 'bar'});
     t.equal(operator, 'notEqual', 'should have the operator notEqual');
@@ -2445,7 +2446,7 @@ function testFunc$1 () {
   });
 
   index('notEqual operator: change default message', t=> {
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.notEqual('foo', 'foo', 'blah');
     t.equal(operator, 'notEqual', 'should have the operator notEqual');
@@ -2456,7 +2457,7 @@ function testFunc$1 () {
   });
 
   index('fail',t=>{
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.fail();
     t.equal(operator, 'fail', 'should have the operator fail');
@@ -2467,7 +2468,7 @@ function testFunc$1 () {
   });
 
   index('fail: change default message',t=>{
-    const tp = test$3({});
+    const tp = test$2({});
     const a = assertion(tp);
     const {operator, message, pass} = a.fail('should not get here');
     t.equal(operator, 'fail', 'should have the operator fail');
@@ -2481,7 +2482,7 @@ function testFunc$1 () {
 
 function testFunc$2 () {
   index('test: add assertion', t=> {
-    const tp = test$3({
+    const tp = test$2({
       description: 'a description'
     });
 
@@ -2492,7 +2493,7 @@ function testFunc$2 () {
   });
 
   index('test: add assertion using n arrity', t=> {
-    const tp = test$3({
+    const tp = test$2({
       description: 'blah'
     });
 
@@ -2503,7 +2504,7 @@ function testFunc$2 () {
   });
 
   index('test: run and resolve with assertions', t=> {
-    const tp = test$3({
+    const tp = test$2({
       description: 'desc',
       coroutine: function * (assert) {
         assert.ok(true);
@@ -2526,7 +2527,7 @@ function testFunc$2 () {
   });
 
   index('test: run and resolve with assertions asyn flow', t=> {
-    const tp = test$3({
+    const tp = test$2({
       description: 'desc',
       coroutine: function * (assert) {
         const presult = new Promise(function (resolve) {
@@ -2622,22 +2623,21 @@ function tap () {
 }
 
 const Plan = {
-  test(description, coroutine){
-    const items = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
-    this.tests.push(...items.map(t=>test$3(t)));
+  test(description, coroutine, opts = {}){
+    const testItems = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
+    this.tests.push(...testItems.map(t=>test$2(Object.assign(t, opts))));
     return this;
   },
 
   only(description, coroutine){
-    const items = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
-    this.onlys.push(...items.map(t=>test$3(t)));
-    return this;
+    return this.test(description, coroutine, {only: true});
   },
 
   run(sink = tap()){
     const sinkIterator = sink();
     sinkIterator.next();
-    const runnable = this.onlys.length ? this.onlys : this.tests;
+    const hasOnly = this.tests.some(t=>t.only);
+    const runnable = hasOnly ? this.tests.filter(t=>t.only) : this.tests;
     return index$28(function * () {
       let id = 1;
       try {
@@ -2672,8 +2672,7 @@ function plan$1 () {
       get(){
         return this.tests.length
       }
-    },
-    onlys: {value: []}
+    }
   });
 }
 
@@ -2770,6 +2769,53 @@ function testFunc$3 () {
         id: 2
       }
 
+    ], t));
+  });
+
+  index('only: only run the tests with only statement with composition', t => {
+    const p1 = plan$1();
+    const p2 = plan$1();
+    const masterPlan = plan$1();
+
+    p1.test('should not run this test', function * (t) {
+      t.fail();
+    });
+
+    p2.test('should not run', function * (t) {
+      t.fail();
+    });
+
+    p2.only('should run this one', function * (t) {
+      t.ok(true);
+    });
+
+    p2.only('should run this one too', function * (t) {
+      t.ok(true);
+    });
+
+    masterPlan
+      .test(p1)
+      .test(p2);
+
+    masterPlan.run(assert$1([
+      {
+        actual: true,
+        description: 'should run this one',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 1
+      },
+      {
+        actual: true,
+        description: 'should run this one too',
+        expected: 'truthy',
+        message: 'should be truthy',
+        operator: 'ok',
+        pass: true,
+        id: 2
+      }
     ], t));
   });
 
