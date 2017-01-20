@@ -226,6 +226,8 @@ The assertion api you can use within your test coroutines is pretty simple and h
 * notEqual
 * deepEqual
 * notDeepEqual
+* throws
+* doesNotThrow
 * fail
 
 You can use any other assertion library as well but a failing assertion will likely throw an exception which won't be properly tape reported

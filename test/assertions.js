@@ -175,6 +175,72 @@ function testFunc () {
     t.end();
   });
 
+  plan('throws operator', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(function () { throw new Error(); });
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: change default message', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(function () { throw new Error(); }, 'unexepected lack of error');
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'unexepected lack of error', 'should have the custom message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: failure', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(function () {});
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, false, 'should not have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.doesNotThrow(function () {});
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'should not throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator: change default message', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.doesNotThrow(function () {}, 'unexepected error');
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'unexepected error', 'should have the custom message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator: failure', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.doesNotThrow(function () { throw Error(); });
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'should not throw', 'should have the default message');
+    t.equal(pass, false, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
 }
 
 export default testFunc;
