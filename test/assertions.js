@@ -175,6 +175,148 @@ function testFunc () {
     t.end();
   });
 
+  plan('throws operator', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(()=> { throw new Error(); });
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: change default message', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(()=> { throw new Error(); }, 'unexepected lack of error');
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'unexepected lack of error', 'should have the custom message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: failure', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.throws(()=> {});
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, false, 'should not have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: expected (RegExp)', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const error = new Error('Totally expected error');
+    const regexp = /^totally/i;
+    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, regexp);
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(expected, '/^totally/i');
+    t.equal(actual, error);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: expected (RegExp, failed)', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const error = new Error('Not the expected error');
+    const regexp = /^totally/i;
+    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, regexp);
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, false, 'should have passed');
+    t.equal(expected, '/^totally/i');
+    t.equal(actual, error);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: expected (constructor)', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    function CustomError() {}
+    const error = new CustomError();
+    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, CustomError);
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(expected, CustomError);
+    t.equal(actual, CustomError);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('throws operator: expected (constructor, failed)', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    function CustomError() {}
+    const error = new Error('Plain error');
+    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, CustomError);
+    t.equal(operator, 'throws', 'should have the operator throws');
+    t.equal(message, 'should throw', 'should have the default message');
+    t.equal(pass, false, 'should have passed');
+    t.equal(expected, CustomError);
+    t.equal(actual, Error);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass, expected, actual} = a.doesNotThrow(()=> {});
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'should not throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(expected, 'no thrown error');
+    t.equal(actual, undefined);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator: change default message', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.doesNotThrow(function () {}, 'unexepected error');
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'unexepected error', 'should have the custom message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator: failure', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    const {operator, message, pass} = a.doesNotThrow(()=> { throw Error(); });
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'should not throw', 'should have the default message');
+    t.equal(pass, false, 'should have passed');
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
+  plan('doesNotThrow operator: expected (ignored)', t=> {
+    const tp = test({});
+    const a = assert(tp);
+    function CustomError() {}
+    const {operator, message, pass, expected, actual} = a.doesNotThrow(()=> {}, CustomError);
+    t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
+    t.equal(message, 'should not throw', 'should have the default message');
+    t.equal(pass, true, 'should have passed');
+    t.equal(expected, 'no thrown error');
+    t.equal(actual, undefined);
+    t.equal(tp.length, 1, 'should have added the assertion');
+    t.end();
+  });
+
 }
 
 export default testFunc;
