@@ -1990,74 +1990,70 @@ function createHarness (conf_) {
 }
 });
 
+function insertAssertionHook (fn) {
+  return function  (...args) {
+    const assertResult = fn(...args);
+    this.test.addAssertion(assertResult);
+    return assertResult;
+  }
+}
+
 const assertions$1 = {
-  ok(val, message = 'should be truthy') {
-    const assertionResult = {
+  ok: insertAssertionHook(function (val, message = 'should be truthy') {
+    return {
       pass: Boolean(val),
       expected: 'truthy',
       actual: val,
       operator: 'ok',
       message
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  deepEqual(actual, expected, message = 'should be equivalent') {
-    const assertionResult = {
+  }),
+  deepEqual:insertAssertionHook(function (actual, expected, message = 'should be equivalent') {
+    return {
       pass: index$5(actual, expected),
       actual,
       expected,
       message,
       operator: 'deepEqual'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  equal(actual, expected, message = 'should be equal') {
-    const assertionResult = {
+  }),
+  equal:insertAssertionHook(function(actual, expected, message = 'should be equal') {
+    return {
       pass: actual === expected,
       actual,
       expected,
       message,
       operator: 'equal'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  notOk(val, message = 'should not be truthy') {
-    const assertionResult = {
+  }),
+  notOk:insertAssertionHook(function(val, message = 'should not be truthy') {
+    return {
       pass: !Boolean(val),
       expected: 'falsy',
       actual: val,
       operator: 'notOk',
       message
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  notDeepEqual(actual, expected, message = 'should not be equivalent') {
-    const assertionResult = {
+  }),
+  notDeepEqual:insertAssertionHook(function(actual, expected, message = 'should not be equivalent') {
+    return {
       pass: !index$5(actual, expected),
       actual,
       expected,
       message,
       operator: 'notDeepEqual'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  notEqual(actual, expected, message = 'should not be equal') {
-    const assertionResult = {
+  }),
+  notEqual:insertAssertionHook(function(actual, expected, message = 'should not be equal') {
+    return {
       pass: actual !== expected,
       actual,
       expected,
       message,
       operator: 'notEqual'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  throws(func, expected, message) {
+  }),
+  throws:insertAssertionHook(function(func, expected, message) {
     let caught, pass, actual;
     if (typeof expected === 'string') {
       [expected, message] = [message, expected];
@@ -2076,17 +2072,15 @@ const assertions$1 = {
       pass = actual instanceof expected;
       actual = actual.constructor;
     }
-    const assertionResult = {
+    return {
       pass,
       expected,
       actual,
       operator: 'throws',
       message: message || 'should throw'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  doesNotThrow(func, expected, message) {
+  }),
+  doesNotThrow:insertAssertionHook(function(func, expected, message) {
     let caught;
     if (typeof expected === 'string') {
       [expected, message] = [message, expected];
@@ -2096,27 +2090,23 @@ const assertions$1 = {
     } catch (error) {
       caught = {error};
     }
-    const assertionResult = {
+    return {
       pass: caught === undefined,
       expected: 'no thrown error',
       actual: caught && caught.error,
       operator: 'doesNotThrow',
       message: message || 'should not throw'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
-  fail(reason = 'fail called') {
-    const assertionResult = {
+  }),
+  fail:insertAssertionHook(function(reason = 'fail called') {
+    return {
       pass: false,
       actual: 'fail called',
       expected: 'fail not called',
       message: reason,
       operator: 'fail'
     };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  }
+  })
 };
 
 function assertion (test) {
