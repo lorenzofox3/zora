@@ -2024,26 +2024,6 @@ const assertions$1 = {
     this.test.addAssertion(assertionResult);
     return assertionResult;
   },
-  doesNotThrow(func, expected, message = 'should not throw') {
-    let caught;
-    if (typeof expected === 'string') {
-      [ expected, message ] = [ message, expected ];
-    }
-    try {
-      func();
-    } catch (error) {
-      caught = { error };
-    }
-    const assertionResult = {
-      pass: caught === undefined,
-      expected: 'no thrown error',
-      actual: caught && caught.error,
-      operator: 'doesNotThrow',
-      message: message || 'should not throw'
-    };
-    this.test.addAssertion(assertionResult);
-    return assertionResult;
-  },
   notOk(val, message = 'should not be truthy') {
     const assertionResult = {
       pass: !Boolean(val),
@@ -2080,12 +2060,12 @@ const assertions$1 = {
   throws(func, expected, message) {
     let caught, pass, actual;
     if (typeof expected === 'string') {
-      [ expected, message ] = [ message, expected ];
+      [expected, message] = [message, expected];
     }
     try {
       func();
     } catch (error) {
-      caught = { error };
+      caught = {error};
     }
     pass = caught !== undefined;
     actual = caught && caught.error;
@@ -2106,6 +2086,26 @@ const assertions$1 = {
     this.test.addAssertion(assertionResult);
     return assertionResult;
   },
+  doesNotThrow(func, expected, message) {
+    let caught;
+    if (typeof expected === 'string') {
+      [expected, message] = [message, expected];
+    }
+    try {
+      func();
+    } catch (error) {
+      caught = {error};
+    }
+    const assertionResult = {
+      pass: caught === undefined,
+      expected: 'no thrown error',
+      actual: caught && caught.error,
+      operator: 'doesNotThrow',
+      message: message || 'should not throw'
+    };
+    this.test.addAssertion(assertionResult);
+    return assertionResult;
+  },
   fail(reason = 'fail called') {
     const assertionResult = {
       pass: false,
@@ -2119,8 +2119,8 @@ const assertions$1 = {
   }
 };
 
-function assertion(test) {
-  return Object.create(assertions$1, { test: { value: test } });
+function assertion (test) {
+  return Object.create(assertions$1, {test: {value: test}});
 }
 
 /**
