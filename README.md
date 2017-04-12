@@ -218,7 +218,8 @@ so all together, in your package.json you can have something like that
 Assuming your test file exports a test plan (in a commonjs way) you can run 
 ``zora ./tests/myTest.js``
 
-##Assertions API
+## Assertions API
+
 The assertion api you can use within your test coroutines is pretty simple and highly inspired from [tape](https://github.com/substack/tape)
 * ok
 * notOk
