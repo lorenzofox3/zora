@@ -7,7 +7,7 @@ function assert (expArray, t) {
     try {
       while (true) {
         const r = yield;
-        const {actual, description, expected, message, operator, pass, id, executionTime} =r;
+        const {actual, description, expected, message, operator, pass, id, executionTime} = r;
         const exp = expArray[index];
         t.equal(actual, exp.actual);
         t.equal(description, exp.description);
@@ -19,7 +19,10 @@ function assert (expArray, t) {
         t.ok(executionTime !== undefined);
         index++;
       }
-    } finally {
+    } catch (e){
+      console.log(e);
+    }
+    finally {
       t.equal(index, expArray.length);
       t.end();
     }
@@ -28,31 +31,30 @@ function assert (expArray, t) {
 
 function testFunc () {
 
-  tape('add a test', t=> {
-    const coroutine = function * () {
-    };
+  tape('add a test', t => {
     const description = 'desc';
     const p = plan();
+    const spec = () => {
+    };
 
-    p.test(description, coroutine);
+    p.test(description, spec);
 
     t.equal(p.length, 1);
-    t.equal(p.tests[0].coroutine, coroutine);
     t.equal(p.tests[0].description, 'desc');
 
     t.end();
   });
 
-  tape('compose plans', t=> {
-    const coroutine = function * () {
+  tape('compose plans', t => {
+    const spec = () => {
     };
     const description = 'desc';
     const p = plan();
 
-    p.test(description, coroutine);
+    p.test(description, spec);
     const sp = plan();
 
-    sp.test(description, coroutine);
+    sp.test(description, spec);
     sp.test(p);
 
     t.equal(sp.length, 2);
@@ -62,15 +64,16 @@ function testFunc () {
 
   tape('only: only run the tests with only statement', t => {
     const p = plan();
-    p.test('should not run', function * (t) {
+
+    p.test('should not run', (t) => {
       t.fail();
     });
 
-    p.only('should run this one', function * (t) {
+    p.only('should run this one', (t) => {
       t.ok(true);
     });
 
-    p.only('should run this one too', function * (t) {
+    p.only('should run this one too', (t) => {
       t.ok(true);
     });
 
@@ -102,19 +105,19 @@ function testFunc () {
     const p2 = plan();
     const masterPlan = plan();
 
-    p1.test('should not run this test', function * (t) {
+    p1.test('should not run this test', (t) => {
       t.fail();
     });
 
-    p2.test('should not run', function * (t) {
+    p2.test('should not run', (t) => {
       t.fail();
     });
 
-    p2.only('should run this one', function * (t) {
+    p2.only('should run this one', (t) => {
       t.ok(true);
     });
 
-    p2.only('should run this one too', function * (t) {
+    p2.only('should run this one too', (t) => {
       t.ok(true);
     });
 
@@ -144,14 +147,14 @@ function testFunc () {
     ], t));
   });
 
-  tape('plan running tests', t=> {
+  tape('plan running tests', t => {
     const p = plan();
 
-    p.test('test 1', function * (assert) {
+    p.test('test 1', (assert) => {
       assert.ok(true);
     });
 
-    p.test('test 2', function * (assert) {
+    p.test('test 2', (assert) => {
       assert.ok(true);
     });
 

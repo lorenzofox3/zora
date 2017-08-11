@@ -12,32 +12,27 @@
     "harness"
   ],
   "main": "./dist/zora.js",
-  "jsnext:main": "./dist/zora.es.js",
+  "jsnext:main": "./lib/plan.js",
+  "module": "./lib/plan.js",
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:test": "rm -rf ./test/dist",
-    "build": "npm run clean && node ./scripts/build.js",
+    "build": "npm run clean && rollup -c rollup.config.js",
     "build:test": "rollup -c ./test/rollup.config.js",
-    "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js",
-    "print": "node ./cli.js ./test/sample.js > ./test/dist/output.txt"
+    "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js"
   },
   "author": {
     "name": "Laurent Renard",
     "email": "laurent34azerty@gmail.com"
   },
   "license": "MIT",
-  "bin": {
-    "zora": "./cli.js"
-  },
   "dependencies": {
-    "co": "^4.6.0",
-    "deep-equal": "^1.0.1",
-    "meow": "^3.7.0"
+    "deep-equal": "^1.0.1"
   },
   "devDependencies": {
-    "rollup": "^0.37.0",
-    "rollup-plugin-commonjs": "^6.0.0",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "tape": "^4.6.3"
+    "rollup": "^0.45.2",
+    "rollup-plugin-commonjs": "^8.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "tape": "^4.8.0"
   }
 }

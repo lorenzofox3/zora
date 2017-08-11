@@ -35,18 +35,18 @@ It is just Javascript, write your program, bundle it (if needed) for the environ
 There is no global, just a function providing a two methods api.
 
 ### Async testing made easy
-Your tests will run coroutines handled by [co](https://github.com/tj/co). So you can write your asynchronous test in a synchronous manner, no need for a callback or to plan ahead.
+Use the Javascript native [AsyncFunction](http://devdocs.io/javascript/statements/async_function) to write your asynchronous code as it was synchronous. No need for a callback or to plan ahead.
 ```Javascript
 
-plan.test('my async test',function *(assert){
-    const resolvedResult = yield db.findUser('foo');
+plan.test('my async test',async function (assert){
+    const resolvedResult = await db.findUser('foo');
     assert.deepEqual(resolvedResult, {name:'foo'}, 'should have fetched mister foo');
 });
 
 ```
 
 ### parallelism 
-Each test run in a separate coroutine using [co](https://github.com/tj/co). It will likely be **faster** than other sequential test runners like [tape](https://github.com/substack/tape) for example.
+Each test run in parallel. It will likely be **faster** than other sequential test runners like [tape](https://github.com/substack/tape) for example.
 It therefore enforces you to write your tests in isolation which is often a good practice.
 
 ### fast
@@ -70,10 +70,10 @@ import zora from 'zora';
 const plan = zora();
 
 plan
-    .test('a test',function * (assertion){
+    .test('a test',(assertion) => {
        assertion.equal('foo','foo');
     })
-    .test('another test', function *(assertion){
+    .test('another test',(assertion) => {
         assertion.ok(true)
     })
     .run(); // you run it
@@ -91,10 +91,10 @@ import zora from 'zora';
 const plan = zora();
 
 plan
-    .test('a test',function * (assertion){
+    .test('a test',(assertion) => {
        assertion.equal('foo','foo');
     })
-    .test('another test', function *(assertion){
+    .test('another test', (assertion) => {
         assertion.ok(true)
     })
     
@@ -213,10 +213,6 @@ so all together, in your package.json you can have something like that
 ## Use output data not as a tap output
 
 // TODO add a different sink generator example
-
-## CLI
-Assuming your test file exports a test plan (in a commonjs way) you can run 
-``zora ./tests/myTest.js``
 
 ##Assertions API
 The assertion api you can use within your test coroutines is pretty simple and highly inspired from [tape](https://github.com/substack/tape)

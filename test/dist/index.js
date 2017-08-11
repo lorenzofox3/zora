@@ -19,8 +19,6 @@ var index$1 = function () {
 };
 
 var index$3 = createCommonjsModule(function (module, exports) {
-var Stream = stream;
-
 // through
 //
 // a stream that does nothing but re-emit the input.
@@ -36,7 +34,7 @@ function through (write, end, opts) {
   end = end || function () { this.queue(null); };
 
   var ended = false, destroyed = false, buffer = [], _ended = false;
-  var stream$$1 = new Stream();
+  var stream$$1 = new stream();
   stream$$1.readable = stream$$1.writable = true;
   stream$$1.paused = false;
 
@@ -128,12 +126,9 @@ function through (write, end, opts) {
 }
 });
 
-var through = index$3;
-var fs$1 = fs;
-
 var default_stream = function () {
     var line = '';
-    var stream$$1 = through(write, flush);
+    var stream$$1 = index$3(write, flush);
     return stream$$1;
     
     function write (buf) {
@@ -147,11 +142,10 @@ var default_stream = function () {
     }
     
     function flush () {
-        if (fs$1.writeSync && /^win/.test(process.platform)) {
-            try { fs$1.writeSync(1, line + '\n'); }
+        if (fs.writeSync && /^win/.test(process.platform)) {
+            try { fs.writeSync(1, line + '\n'); }
             catch (e) { stream$$1.emit('error', e); }
-        }
-        else {
+        } else {
             try { console.log(line); }
             catch (e) { stream$$1.emit('error', e); }
         }
@@ -159,7 +153,7 @@ var default_stream = function () {
     }
 };
 
-var keys$1 = createCommonjsModule(function (module, exports) {
+var keys = createCommonjsModule(function (module, exports) {
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -196,8 +190,8 @@ function unsupported(object){
 
 var index$5 = createCommonjsModule(function (module) {
 var pSlice = Array.prototype.slice;
-var objectKeys = keys$1;
-var isArguments = is_arguments;
+
+
 
 var deepEqual = module.exports = function (actual, expected, opts) {
   if (!opts) opts = {};
@@ -245,8 +239,8 @@ function objEquiv(a, b, opts) {
   if (a.prototype !== b.prototype) return false;
   //~~~I've managed to break Object.keys through screwy arguments passing.
   //   Converting to array solves the problem.
-  if (isArguments(a)) {
-    if (!isArguments(b)) {
+  if (is_arguments(a)) {
+    if (!is_arguments(b)) {
       return false;
     }
     a = pSlice.call(a);
@@ -264,8 +258,8 @@ function objEquiv(a, b, opts) {
     return true;
   }
   try {
-    var ka = objectKeys(a),
-        kb = objectKeys(b);
+    var ka = keys(a),
+        kb = keys(b);
   } catch (e) {//happens when one is a string literal and the other isn't
     return false;
   }
@@ -317,7 +311,7 @@ if (typeof Object.create === 'function') {
 }
 });
 
-var inherits$2 = createCommonjsModule(function (module) {
+var inherits = createCommonjsModule(function (module) {
 try {
   var util$$1 = util;
   if (typeof util$$1.inherits !== 'function') throw '';
@@ -332,7 +326,7 @@ var slice = Array.prototype.slice;
 var toStr = Object.prototype.toString;
 var funcType = '[object Function]';
 
-var implementation$1 = function bind(that) {
+var implementation = function bind(that) {
     var target = this;
     if (typeof target !== 'function' || toStr.call(target) !== funcType) {
         throw new TypeError(ERROR_MESSAGE + target);
@@ -376,17 +370,13 @@ var implementation$1 = function bind(that) {
     return bound;
 };
 
-var implementation = implementation$1;
-
 var index$8 = Function.prototype.bind || implementation;
 
-var bind$2 = index$8;
-
-var index$6 = bind$2.call(Function.call, Object.prototype.hasOwnProperty);
+var index$6 = index$8.call(Function.call, Object.prototype.hasOwnProperty);
 
 var toStr$3 = Object.prototype.toString;
 
-var isArguments = function isArguments(value) {
+var isArguments$1 = function isArguments(value) {
 	var str = toStr$3.call(value);
 	var isArgs = str === '[object Arguments]';
 	if (!isArgs) {
@@ -401,10 +391,10 @@ var isArguments = function isArguments(value) {
 };
 
 // modified from https://github.com/es-shims/es5-shim
-var has$1 = Object.prototype.hasOwnProperty;
+var has = Object.prototype.hasOwnProperty;
 var toStr$2 = Object.prototype.toString;
 var slice$1 = Array.prototype.slice;
-var isArgs = isArguments;
+
 var isEnumerable$1 = Object.prototype.propertyIsEnumerable;
 var hasDontEnumBug = !isEnumerable$1.call({ toString: null }, 'toString');
 var hasProtoEnumBug = isEnumerable$1.call(function () {}, 'prototype');
@@ -448,7 +438,7 @@ var hasAutomationEqualityBug = (function () {
 	if (typeof window === 'undefined') { return false; }
 	for (var k in window) {
 		try {
-			if (!excludedKeys['$' + k] && has$1.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+			if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
 				try {
 					equalsConstructorPrototype(window[k]);
 				} catch (e) {
@@ -476,28 +466,28 @@ var equalsConstructorPrototypeIfNotBuggy = function (o) {
 var keysShim = function keys(object) {
 	var isObject = object !== null && typeof object === 'object';
 	var isFunction = toStr$2.call(object) === '[object Function]';
-	var isArguments$$1 = isArgs(object);
+	var isArguments = isArguments$1(object);
 	var isString = isObject && toStr$2.call(object) === '[object String]';
 	var theKeys = [];
 
-	if (!isObject && !isFunction && !isArguments$$1) {
+	if (!isObject && !isFunction && !isArguments) {
 		throw new TypeError('Object.keys called on a non-object');
 	}
 
 	var skipProto = hasProtoEnumBug && isFunction;
-	if (isString && object.length > 0 && !has$1.call(object, 0)) {
+	if (isString && object.length > 0 && !has.call(object, 0)) {
 		for (var i = 0; i < object.length; ++i) {
 			theKeys.push(String(i));
 		}
 	}
 
-	if (isArguments$$1 && object.length > 0) {
+	if (isArguments && object.length > 0) {
 		for (var j = 0; j < object.length; ++j) {
 			theKeys.push(String(j));
 		}
 	} else {
 		for (var name in object) {
-			if (!(skipProto && name === 'prototype') && has$1.call(object, name)) {
+			if (!(skipProto && name === 'prototype') && has.call(object, name)) {
 				theKeys.push(String(name));
 			}
 		}
@@ -507,7 +497,7 @@ var keysShim = function keys(object) {
 		var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
 
 		for (var k = 0; k < dontEnums.length; ++k) {
-			if (!(skipConstructor && dontEnums[k] === 'constructor') && has$1.call(object, dontEnums[k])) {
+			if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
 				theKeys.push(dontEnums[k]);
 			}
 		}
@@ -524,7 +514,7 @@ keysShim.shim = function shimObjectKeys() {
 		if (!keysWorksWithArguments) {
 			var originalKeys = Object.keys;
 			Object.keys = function keys(object) {
-				if (isArgs(object)) {
+				if (isArguments$1(object)) {
 					return originalKeys(slice$1.call(object));
 				} else {
 					return originalKeys(object);
@@ -560,8 +550,6 @@ var index$16 = function forEach (obj, fn, ctx) {
     }
 };
 
-var keys$3 = index$14;
-var foreach = index$16;
 var hasSymbols = typeof Symbol === 'function' && typeof Symbol() === 'symbol';
 
 var toStr$1 = Object.prototype.toString;
@@ -602,11 +590,11 @@ var defineProperty = function (object, name, value, predicate) {
 
 var defineProperties = function (object, map) {
 	var predicates = arguments.length > 2 ? arguments[2] : {};
-	var props = keys$3(map);
+	var props = index$14(map);
 	if (hasSymbols) {
 		props = props.concat(Object.getOwnPropertySymbols(map));
 	}
-	foreach(props, function (name) {
+	index$16(props, function (name) {
 		defineProperty(object, name, map[name], predicates[name]);
 	});
 };
@@ -619,15 +607,15 @@ var _isNaN = Number.isNaN || function isNaN(a) {
 	return a !== a;
 };
 
-var $isNaN$1 = Number.isNaN || function (a) { return a !== a; };
+var $isNaN = Number.isNaN || function (a) { return a !== a; };
 
-var _isFinite = Number.isFinite || function (x) { return typeof x === 'number' && !$isNaN$1(x) && x !== Infinity && x !== -Infinity; };
+var _isFinite = Number.isFinite || function (x) { return typeof x === 'number' && !$isNaN(x) && x !== Infinity && x !== -Infinity; };
 
-var sign$1 = function sign$1(number) {
+var sign = function sign(number) {
 	return number >= 0 ? 1 : -1;
 };
 
-var mod$1 = function mod$1(number, modulo) {
+var mod = function mod(number, modulo) {
 	var remain = number % modulo;
 	return Math.floor(remain >= 0 ? remain : remain + modulo);
 };
@@ -670,15 +658,15 @@ var index$18 = function isCallable(value) {
 	return strClass === fnClass || strClass === genClass;
 };
 
-var isPrimitive$1 = function isPrimitive$1(value) {
+var isPrimitive = function isPrimitive(value) {
 	return value === null || (typeof value !== 'function' && typeof value !== 'object');
 };
 
 var toStr$5 = Object.prototype.toString;
 
-var isPrimitive = isPrimitive$1;
 
-var isCallable$1 = index$18;
+
+
 
 // https://es5.github.io/#x8.12
 var ES5internalSlots = {
@@ -689,7 +677,7 @@ var ES5internalSlots = {
 			var methods = actualHint === String ? ['toString', 'valueOf'] : ['valueOf', 'toString'];
 			var value, i;
 			for (i = 0; i < methods.length; ++i) {
-				if (isCallable$1(O[methods[i]])) {
+				if (index$18(O[methods[i]])) {
 					value = O[methods[i]]();
 					if (isPrimitive(value)) {
 						return value;
@@ -710,18 +698,9 @@ var es5$2 = function ToPrimitive(input, PreferredType) {
 	return ES5internalSlots['[[DefaultValue]]'](input, PreferredType);
 };
 
-var $isNaN = _isNaN;
-var $isFinite = _isFinite;
-
-var sign = sign$1;
-var mod = mod$1;
-
-var IsCallable = index$18;
-var toPrimitive = es5$2;
-
 // https://es5.github.io/#x9
 var ES5 = {
-	ToPrimitive: toPrimitive,
+	ToPrimitive: es5$2,
 
 	ToBoolean: function ToBoolean(value) {
 		return Boolean(value);
@@ -731,8 +710,8 @@ var ES5 = {
 	},
 	ToInteger: function ToInteger(value) {
 		var number = this.ToNumber(value);
-		if ($isNaN(number)) { return 0; }
-		if (number === 0 || !$isFinite(number)) { return number; }
+		if (_isNaN(number)) { return 0; }
+		if (number === 0 || !_isFinite(number)) { return number; }
 		return sign(number) * Math.floor(Math.abs(number));
 	},
 	ToInt32: function ToInt32(x) {
@@ -743,7 +722,7 @@ var ES5 = {
 	},
 	ToUint16: function ToUint16(value) {
 		var number = this.ToNumber(value);
-		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
+		if (_isNaN(number) || number === 0 || !_isFinite(number)) { return 0; }
 		var posInt = sign(number) * Math.floor(Math.abs(number));
 		return mod(posInt, 0x10000);
 	},
@@ -761,13 +740,13 @@ var ES5 = {
 		}
 		return value;
 	},
-	IsCallable: IsCallable,
+	IsCallable: index$18,
 	SameValue: function SameValue(x, y) {
 		if (x === y) { // 0 === -0, but they are not identical.
 			if (x === 0) { return 1 / x === 1 / y; }
 			return true;
 		}
-		return $isNaN(x) && $isNaN(y);
+		return _isNaN(x) && _isNaN(y);
 	},
 
 	// http://www.ecma-international.org/ecma-262/5.1/#sec-8
@@ -795,19 +774,15 @@ var ES5 = {
 
 var es5 = ES5;
 
-var bind$4 = index$8;
-var ES = es5;
-var replace = bind$4.call(Function.call, String.prototype.replace);
+var replace = index$8.call(Function.call, String.prototype.replace);
 
 var leftWhitespace = /^[\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF]+/;
 var rightWhitespace = /[\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF]+$/;
 
-var implementation$4 = function trim() {
-	var S = ES.ToString(ES.CheckObjectCoercible(this));
+var implementation$3 = function trim() {
+	var S = es5.ToString(es5.CheckObjectCoercible(this));
 	return replace(replace(S, leftWhitespace, ''), rightWhitespace, '');
 };
-
-var implementation$6 = implementation$4;
 
 var zeroWidthSpace = '\u200b';
 
@@ -815,40 +790,30 @@ var polyfill = function getPolyfill() {
 	if (String.prototype.trim && zeroWidthSpace.trim() === zeroWidthSpace) {
 		return String.prototype.trim;
 	}
-	return implementation$6;
+	return implementation$3;
 };
 
-var define$1 = index$12;
-var getPolyfill$2 = polyfill;
-
-var shim$1 = function shimStringTrim() {
-	var polyfill$$1 = getPolyfill$2();
-	define$1(String.prototype, { trim: polyfill$$1 }, { trim: function () { return String.prototype.trim !== polyfill$$1; } });
+var shim = function shimStringTrim() {
+	var polyfill$$1 = polyfill();
+	index$12(String.prototype, { trim: polyfill$$1 }, { trim: function () { return String.prototype.trim !== polyfill$$1; } });
 	return polyfill$$1;
 };
 
-var bind$3 = index$8;
-var define = index$12;
+var boundTrim = index$8.call(Function.call, polyfill());
 
-var implementation$3 = implementation$4;
-var getPolyfill$1 = polyfill;
-var shim = shim$1;
-
-var boundTrim = bind$3.call(Function.call, getPolyfill$1());
-
-define(boundTrim, {
-	getPolyfill: getPolyfill$1,
+index$12(boundTrim, {
+	getPolyfill: polyfill,
 	implementation: implementation$3,
 	shim: shim
 });
 
 var index$10 = boundTrim;
 
-var index$22 = isFunction$2;
+var index$22 = isFunction$1;
 
 var toString$2 = Object.prototype.toString;
 
-function isFunction$2 (fn) {
+function isFunction$1 (fn) {
   var string = toString$2.call(fn);
   return string === '[object Function]' ||
     (typeof fn === 'function' && string !== '[object RegExp]') ||
@@ -860,15 +825,13 @@ function isFunction$2 (fn) {
       fn === window.prompt))
 }
 
-var isFunction$1 = index$22;
-
-var index$20 = forEach$2;
+var index$20 = forEach;
 
 var toString$1 = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function forEach$2(list, iterator, context) {
-    if (!isFunction$1(iterator)) {
+function forEach(list, iterator, context) {
+    if (!index$22(iterator)) {
         throw new TypeError('iterator must be a function')
     }
 
@@ -907,16 +870,12 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-var deepEqual = index$5;
-var defined = index$1;
-var path$1 = path;
-var inherits$1 = inherits$2;
 var EventEmitter = events.EventEmitter;
-var has = index$6;
-var trim$1 = index$10;
-var bind$1 = index$8;
-var forEach$1 = index$20;
-var isEnumerable = bind$1.call(Function.call, Object.prototype.propertyIsEnumerable);
+
+
+
+
+var isEnumerable = index$8.call(Function.call, Object.prototype.propertyIsEnumerable);
 
 var test = Test;
 
@@ -925,7 +884,7 @@ var nextTick = typeof setImmediate !== 'undefined'
     : process.nextTick;
 var safeSetTimeout = setTimeout;
 
-inherits$1(Test, EventEmitter);
+inherits(Test, EventEmitter);
 
 var getTestArgs = function (name_, opts_, cb_) {
     var name = '(anonymous)';
@@ -937,11 +896,9 @@ var getTestArgs = function (name_, opts_, cb_) {
         var t = typeof arg;
         if (t === 'string') {
             name = arg;
-        }
-        else if (t === 'object') {
+        } else if (t === 'object') {
             opts = arg || opts;
-        }
-        else if (t === 'function') {
+        } else if (t === 'function') {
             cb = arg;
         }
     }
@@ -968,13 +925,13 @@ function Test (name_, opts_, cb_) {
     this._ok = true;
 
     for (var prop in this) {
-        this[prop] = (function bind$1(self, val) {
+        this[prop] = (function bind$$1(self, val) {
             if (typeof val === 'function') {
                 return function bound() {
                     return val.apply(self, arguments);
                 };
             }
-            else return val;
+            return val;
         })(this, this[prop]);
     }
 }
@@ -1019,8 +976,8 @@ Test.prototype.test = function (name, opts, cb) {
 
 Test.prototype.comment = function (msg) {
     var that = this;
-    forEach$1(trim$1(msg).split('\n'), function (aMsg) {
-        that.emit('result', trim$1(aMsg).replace(/^#\s*/, ''));
+    index$20(index$10(msg).split('\n'), function (aMsg) {
+        that.emit('result', index$10(aMsg).replace(/^#\s*/, ''));
     });
 };
 
@@ -1084,8 +1041,7 @@ Test.prototype._exit = function () {
             actual : this.assertCount,
             exiting : true
         });
-    }
-    else if (!this.ended) {
+    } else if (!this.ended) {
         this.fail('test exited without ending', {
             exiting: true
         });
@@ -1096,9 +1052,7 @@ Test.prototype._pendingAsserts = function () {
     if (this._plan === undefined) {
         return 1;
     }
-    else {
-        return this._plan - (this._progeny.length + this.assertCount);
-    }
+    return this._plan - (this._progeny.length + this.assertCount);
 };
 
 Test.prototype._assert = function assert (ok, opts) {
@@ -1108,27 +1062,27 @@ Test.prototype._assert = function assert (ok, opts) {
     var res = {
         id : self.assertCount ++,
         ok : Boolean(ok),
-        skip : defined(extra.skip, opts.skip),
-        name : defined(extra.message, opts.message, '(unnamed assert)'),
-        operator : defined(extra.operator, opts.operator),
+        skip : index$1(extra.skip, opts.skip),
+        name : index$1(extra.message, opts.message, '(unnamed assert)'),
+        operator : index$1(extra.operator, opts.operator),
         objectPrintDepth : self._objectPrintDepth
     };
-    if (has(opts, 'actual') || has(extra, 'actual')) {
-        res.actual = defined(extra.actual, opts.actual);
+    if (index$6(opts, 'actual') || index$6(extra, 'actual')) {
+        res.actual = index$1(extra.actual, opts.actual);
     }
-    if (has(opts, 'expected') || has(extra, 'expected')) {
-        res.expected = defined(extra.expected, opts.expected);
+    if (index$6(opts, 'expected') || index$6(extra, 'expected')) {
+        res.expected = index$1(extra.expected, opts.expected);
     }
     this._ok = Boolean(this._ok && ok);
     
     if (!ok) {
-        res.error = defined(extra.error, opts.error, new Error(res.name));
+        res.error = index$1(extra.error, opts.error, new Error(res.name));
     }
     
     if (!ok) {
         var e = new Error('exception');
         var err = (e.stack || '').split('\n');
-        var dir = path$1.dirname(__dirname) + path$1.sep;
+        var dir = path.dirname(__dirname) + path.sep;
         
         for (var i = 0; i < err.length; i++) {
             var m = /^[^\s]*\s*\bat\s+(.+)/.exec(err[i]);
@@ -1216,7 +1170,7 @@ Test.prototype.ok
 = Test.prototype.assert
 = function (value, msg, extra) {
     this._assert(value, {
-        message : defined(msg, 'should be truthy'),
+        message : index$1(msg, 'should be truthy'),
         operator : 'ok',
         expected : true,
         actual : value,
@@ -1229,7 +1183,7 @@ Test.prototype.notOk
 = Test.prototype.notok
 = function (value, msg, extra) {
     this._assert(!value, {
-        message : defined(msg, 'should be falsy'),
+        message : index$1(msg, 'should be falsy'),
         operator : 'notOk',
         expected : false,
         actual : value,
@@ -1243,7 +1197,7 @@ Test.prototype.error
 = Test.prototype.iferror
 = function (err, msg, extra) {
     this._assert(!err, {
-        message : defined(msg, String(err)),
+        message : index$1(msg, String(err)),
         operator : 'error',
         actual : err,
         extra : extra
@@ -1258,7 +1212,7 @@ Test.prototype.equal
 = Test.prototype.strictEquals
 = function (a, b, msg, extra) {
     this._assert(a === b, {
-        message : defined(msg, 'should be equal'),
+        message : index$1(msg, 'should be equal'),
         operator : 'equal',
         actual : a,
         expected : b,
@@ -1277,7 +1231,7 @@ Test.prototype.notEqual
 = Test.prototype.isInequal
 = function (a, b, msg, extra) {
     this._assert(a !== b, {
-        message : defined(msg, 'should not be equal'),
+        message : index$1(msg, 'should not be equal'),
         operator : 'notEqual',
         actual : a,
         notExpected : b,
@@ -1290,8 +1244,8 @@ Test.prototype.deepEqual
 = Test.prototype.isEquivalent
 = Test.prototype.same
 = function (a, b, msg, extra) {
-    this._assert(deepEqual(a, b, { strict: true }), {
-        message : defined(msg, 'should be equivalent'),
+    this._assert(index$5(a, b, { strict: true }), {
+        message : index$1(msg, 'should be equivalent'),
         operator : 'deepEqual',
         actual : a,
         expected : b,
@@ -1303,8 +1257,8 @@ Test.prototype.deepLooseEqual
 = Test.prototype.looseEqual
 = Test.prototype.looseEquals
 = function (a, b, msg, extra) {
-    this._assert(deepEqual(a, b), {
-        message : defined(msg, 'should be equivalent'),
+    this._assert(index$5(a, b), {
+        message : index$1(msg, 'should be equivalent'),
         operator : 'deepLooseEqual',
         actual : a,
         expected : b,
@@ -1321,8 +1275,8 @@ Test.prototype.notDeepEqual
 = Test.prototype.isNotEquivalent
 = Test.prototype.isInequivalent
 = function (a, b, msg, extra) {
-    this._assert(!deepEqual(a, b, { strict: true }), {
-        message : defined(msg, 'should not be equivalent'),
+    this._assert(!index$5(a, b, { strict: true }), {
+        message : index$1(msg, 'should not be equivalent'),
         operator : 'notDeepEqual',
         actual : a,
         notExpected : b,
@@ -1334,8 +1288,8 @@ Test.prototype.notDeepLooseEqual
 = Test.prototype.notLooseEqual
 = Test.prototype.notLooseEquals
 = function (a, b, msg, extra) {
-    this._assert(!deepEqual(a, b), {
-        message : defined(msg, 'should be equivalent'),
+    this._assert(!index$5(a, b), {
+        message : index$1(msg, 'should be equivalent'),
         operator : 'notDeepLooseEqual',
         actual : a,
         expected : b,
@@ -1355,7 +1309,7 @@ Test.prototype['throws'] = function (fn, expected, msg, extra) {
         fn();
     } catch (err) {
         caught = { error : err };
-        if ((err != null) && (!isEnumerable(err, 'message') || !has(err, 'message'))) {
+        if ((err != null) && (!isEnumerable(err, 'message') || !index$6(err, 'message'))) {
             var message = err.message;
             delete err.message;
             err.message = message;
@@ -1375,7 +1329,7 @@ Test.prototype['throws'] = function (fn, expected, msg, extra) {
     }
 
     this._assert(typeof fn === 'function' && passed, {
-        message : defined(msg, 'should throw'),
+        message : index$1(msg, 'should throw'),
         operator : 'throws',
         actual : caught && caught.error,
         expected : expected,
@@ -1397,7 +1351,7 @@ Test.prototype.doesNotThrow = function (fn, expected, msg, extra) {
         caught = { error : err };
     }
     this._assert(!caught, {
-        message : defined(msg, 'should not throw'),
+        message : index$1(msg, 'should not throw'),
         operator : 'throws',
         actual : caught && caught.error,
         expected : expected,
@@ -1414,13 +1368,12 @@ Test.skip = function (name_, _opts, _cb) {
 
 // vim: set softtabstop=4 shiftwidth=4:
 
-var through$2 = index$3;
 var nextTick$2 = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick;
 
 var index$24 = function (write, end) {
-    var tr = through$2(write, end);
+    var tr = index$3(write, end);
     tr.pause();
     var resume = tr.resume;
     var pause = tr.pause;
@@ -1452,21 +1405,41 @@ var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOw
 var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === 'function' ? setSizeDescriptor.get : null;
 var setForEach = hasSet && Set.prototype.forEach;
 var booleanValueOf = Boolean.prototype.valueOf;
+var objectToString = Object.prototype.toString;
 
 var index$26 = function inspect_ (obj, opts, depth, seen) {
+    if (typeof obj === 'undefined') {
+        return 'undefined';
+    }
+    if (obj === null) {
+        return 'null';
+    }
+    if (typeof obj === 'boolean') {
+        return obj ? 'true' : 'false';
+    }
+    if (typeof obj === 'string') {
+        return inspectString(obj);
+    }
+    if (typeof obj === 'number') {
+      if (obj === 0) {
+        return Infinity / obj > 0 ? '0' : '-0';
+      }
+      return String(obj);
+    }
+
     if (!opts) opts = {};
-    
-    var maxDepth = opts.depth === undefined ? 5 : opts.depth;
-    if (depth === undefined) depth = 0;
-    if (depth >= maxDepth && maxDepth > 0 && obj && typeof obj === 'object') {
+
+    var maxDepth = typeof opts.depth === 'undefined' ? 5 : opts.depth;
+    if (typeof depth === 'undefined') depth = 0;
+    if (depth >= maxDepth && maxDepth > 0 && typeof obj === 'object') {
         return '[Object]';
     }
-    
-    if (seen === undefined) seen = [];
+
+    if (typeof seen === 'undefined') seen = [];
     else if (indexOf(seen, obj) >= 0) {
         return '[Circular]';
     }
-    
+
     function inspect (value, from) {
         if (from) {
             seen = seen.slice();
@@ -1474,22 +1447,16 @@ var index$26 = function inspect_ (obj, opts, depth, seen) {
         }
         return inspect_(value, opts, depth + 1, seen);
     }
-    
-    if (typeof obj === 'string') {
-        return inspectString(obj);
-    }
-    else if (typeof obj === 'function') {
+
+    if (typeof obj === 'function') {
         var name = nameOf(obj);
         return '[Function' + (name ? ': ' + name : '') + ']';
     }
-    else if (obj === null) {
-        return 'null';
-    }
-    else if (isSymbol(obj)) {
+    if (isSymbol(obj)) {
         var symString = Symbol.prototype.toString.call(obj);
-        return typeof obj === 'object' ? 'Object(' + symString + ')' : symString;
+        return typeof obj === 'object' ? markBoxed(symString) : symString;
     }
-    else if (isElement(obj)) {
+    if (isElement(obj)) {
         var s = '<' + String(obj.nodeName).toLowerCase();
         var attrs = obj.attributes || [];
         for (var i = 0; i < attrs.length; i++) {
@@ -1500,75 +1467,47 @@ var index$26 = function inspect_ (obj, opts, depth, seen) {
         s += '</' + String(obj.nodeName).toLowerCase() + '>';
         return s;
     }
-    else if (isArray(obj)) {
+    if (isArray(obj)) {
         if (obj.length === 0) return '[]';
-        var xs = Array(obj.length);
-        for (var i = 0; i < obj.length; i++) {
-            xs[i] = has$3(obj, i) ? inspect(obj[i], obj) : '';
-        }
-        return '[ ' + xs.join(', ') + ' ]';
+        return '[ ' + arrObjKeys(obj, inspect).join(', ') + ' ]';
     }
-    else if (isError(obj)) {
-        var parts = [];
-        for (var key in obj) {
-            if (!has$3(obj, key)) continue;
-            
-            if (/[^\w$]/.test(key)) {
-                parts.push(inspect(key) + ': ' + inspect(obj[key]));
-            }
-            else {
-                parts.push(key + ': ' + inspect(obj[key]));
-            }
-        }
-        if (parts.length === 0) return '[' + obj + ']';
-        return '{ [' + obj + '] ' + parts.join(', ') + ' }';
+    if (isError(obj)) {
+        var parts = arrObjKeys(obj, inspect);
+        if (parts.length === 0) return '[' + String(obj) + ']';
+        return '{ [' + String(obj) + '] ' + parts.join(', ') + ' }';
     }
-    else if (typeof obj === 'object' && typeof obj.inspect === 'function') {
+    if (typeof obj === 'object' && typeof obj.inspect === 'function') {
         return obj.inspect();
     }
-    else if (isMap(obj)) {
+    if (isMap(obj)) {
         var parts = [];
         mapForEach.call(obj, function (value, key) {
             parts.push(inspect(key, obj) + ' => ' + inspect(value, obj));
         });
-        return 'Map (' + mapSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return collectionOf('Map', mapSize.call(obj), parts);
     }
-    else if (isSet(obj)) {
+    if (isSet(obj)) {
         var parts = [];
         setForEach.call(obj, function (value ) {
             parts.push(inspect(value, obj));
         });
-        return 'Set (' + setSize.call(obj) + ') {' + parts.join(', ') + '}';
+        return collectionOf('Set', setSize.call(obj), parts);
     }
-    else if (typeof obj !== 'object') {
-        return String(obj);
+    if (isNumber(obj)) {
+        return markBoxed(Number(obj));
     }
-    else if (isNumber(obj)) {
-        return 'Object(' + Number(obj) + ')';
+    if (isBoolean(obj)) {
+        return markBoxed(booleanValueOf.call(obj));
     }
-    else if (isBoolean(obj)) {
-        return 'Object(' + booleanValueOf.call(obj) + ')';
+    if (isString(obj)) {
+        return markBoxed(inspect(String(obj)));
     }
-    else if (isString(obj)) {
-        return 'Object(' + inspect(String(obj)) + ')';
-    }
-    else if (!isDate(obj) && !isRegExp(obj)) {
-        var xs = [], keys = [];
-        for (var key in obj) {
-            if (has$3(obj, key)) keys.push(key);
-        }
-        keys.sort();
-        for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            if (/[^\w$]/.test(key)) {
-                xs.push(inspect(key) + ': ' + inspect(obj[key], obj));
-            }
-            else xs.push(key + ': ' + inspect(obj[key], obj));
-        }
+    if (!isDate(obj) && !isRegExp(obj)) {
+        var xs = arrObjKeys(obj, inspect);
         if (xs.length === 0) return '{}';
         return '{ ' + xs.join(', ') + ' }';
     }
-    else return String(obj);
+    return String(obj);
 };
 
 function quote (s) {
@@ -1585,17 +1524,17 @@ function isNumber (obj) { return toStr$6(obj) === '[object Number]' }
 function isBoolean (obj) { return toStr$6(obj) === '[object Boolean]' }
 
 var hasOwn$1 = Object.prototype.hasOwnProperty || function (key) { return key in this; };
-function has$3 (obj, key) {
+function has$2 (obj, key) {
     return hasOwn$1.call(obj, key);
 }
 
 function toStr$6 (obj) {
-    return Object.prototype.toString.call(obj);
+    return objectToString.call(obj);
 }
 
 function nameOf (f) {
     if (f.name) return f.name;
-    var m = f.toString().match(/^function\s*([\w$]+)/);
+    var m = String(f).match(/^function\s*([\w$]+)/);
     if (m) return m[1];
 }
 
@@ -1613,7 +1552,12 @@ function isMap (x) {
     }
     try {
         mapSize.call(x);
-        return true;
+        try {
+            setSize.call(x);
+        } catch (s) {
+            return true;
+        }
+        return x instanceof Map; // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -1624,7 +1568,12 @@ function isSet (x) {
     }
     try {
         setSize.call(x);
-        return true;
+        try {
+            mapSize.call(x);
+        } catch (m) {
+            return true;
+        }
+        return x instanceof Set; // core-js workaround, pre-v2.5.0
     } catch (e) {}
     return false;
 }
@@ -1642,37 +1591,66 @@ function isElement (x) {
 function inspectString (str) {
     var s = str.replace(/(['\\])/g, '\\$1').replace(/[\x00-\x1f]/g, lowbyte);
     return "'" + s + "'";
-    
-    function lowbyte (c) {
-        var n = c.charCodeAt(0);
-        var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];
-        if (x) return '\\' + x;
-        return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
+}
+
+function lowbyte (c) {
+    var n = c.charCodeAt(0);
+    var x = { 8: 'b', 9: 't', 10: 'n', 12: 'f', 13: 'r' }[n];
+    if (x) return '\\' + x;
+    return '\\x' + (n < 0x10 ? '0' : '') + n.toString(16);
+}
+
+function markBoxed (str) {
+    return 'Object(' + str + ')';
+}
+
+function collectionOf (type, size, entries) {
+    return type + ' (' + size + ') {' + entries.join(', ') + '}';
+}
+
+function arrObjKeys (obj, inspect) {
+    var isArr = isArray(obj);
+    var xs = [];
+    if (isArr) {
+        xs.length = obj.length;
+        for (var i = 0; i < obj.length; i++) {
+            xs[i] = has$2(obj, i) ? inspect(obj[i], obj) : '';
+        }
     }
+    for (var key in obj) {
+        if (!has$2(obj, key)) continue;
+        if (isArr && String(Number(key)) === key && key < obj.length) continue;
+        if (/[^\w$]/.test(key)) {
+            xs.push(inspect(key, obj) + ': ' + inspect(obj[key], obj));
+        } else {
+            xs.push(key + ': ' + inspect(obj[key], obj));
+        }
+    }
+    return xs;
 }
 
 var EventEmitter$1 = events.EventEmitter;
-var inherits$4 = inherits$2;
-var through$1 = index$3;
-var resumer = index$24;
-var inspect = index$26;
-var bind$5 = index$8;
-var has$2 = index$6;
-var regexpTest = bind$5.call(Function.call, RegExp.prototype.test);
+
+
+
+
+
+
+var regexpTest = index$8.call(Function.call, RegExp.prototype.test);
 var yamlIndicators = /\:|\-|\?/;
 var nextTick$1 = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick;
 
 var results = Results;
-inherits$4(Results, EventEmitter$1);
+inherits(Results, EventEmitter$1);
 
 function Results () {
     if (!(this instanceof Results)) return new Results;
     this.count = 0;
     this.fail = 0;
     this.pass = 0;
-    this._stream = through$1();
+    this._stream = index$3();
     this.tests = [];
     this._only = null;
 }
@@ -1682,7 +1660,7 @@ Results.prototype.createStream = function (opts) {
     var self = this;
     var output, testId = 0;
     if (opts.objectMode) {
-        output = through$1();
+        output = index$3();
         self.on('_push', function ontest (t, extra) {
             if (!extra) extra = {};
             var id = testId++;
@@ -1692,7 +1670,7 @@ Results.prototype.createStream = function (opts) {
                     name: t.name,
                     id: id
                 };
-                if (has$2(extra, 'parent')) {
+                if (index$6(extra, 'parent')) {
                     row.parent = extra.parent;
                 }
                 output.queue(row);
@@ -1710,9 +1688,8 @@ Results.prototype.createStream = function (opts) {
             });
         });
         self.on('done', function () { output.queue(null); });
-    }
-    else {
-        output = resumer();
+    } else {
+        output = index$24();
         output.queue('TAP version 13\n');
         self._stream.pipe(output);
     }
@@ -1793,15 +1770,14 @@ function encodeResult (res, count) {
     output += outer + '---\n';
     output += inner + 'operator: ' + res.operator + '\n';
     
-    if (has$2(res, 'expected') || has$2(res, 'actual')) {
-        var ex = inspect(res.expected, {depth: res.objectPrintDepth});
-        var ac = inspect(res.actual, {depth: res.objectPrintDepth});
+    if (index$6(res, 'expected') || index$6(res, 'actual')) {
+        var ex = index$26(res.expected, {depth: res.objectPrintDepth});
+        var ac = index$26(res.actual, {depth: res.objectPrintDepth});
         
         if (Math.max(ex.length, ac.length) > 65 || invalidYaml(ex) || invalidYaml(ac)) {
             output += inner + 'expected: |-\n' + inner + '  ' + ex + '\n';
             output += inner + 'actual: |-\n' + inner + '  ' + ac + '\n';
-        }
-        else {
+        } else {
             output += inner + 'expected: ' + ex + '\n';
             output += inner + 'actual:   ' + ac + '\n';
         }
@@ -1809,8 +1785,12 @@ function encodeResult (res, count) {
     if (res.at) {
         output += inner + 'at: ' + res.at + '\n';
     }
-    if (res.operator === 'error' && res.actual && res.actual.stack) {
-        var lines = String(res.actual.stack).split('\n');
+
+    var actualStack = res.actual && res.actual.stack;
+    var errorStack = res.error && res.error.stack;
+    var stack = index$1(actualStack, errorStack);
+    if (stack) {
+        var lines = String(stack).split('\n');
         output += inner + 'stack: |-\n';
         for (var i = 0; i < lines.length; i++) {
             output += inner + '  ' + lines[i] + '\n';
@@ -1840,12 +1820,6 @@ function invalidYaml (str) {
 }
 
 var index = createCommonjsModule(function (module, exports) {
-var defined = index$1;
-var createDefaultStream = default_stream;
-var Test = test;
-var createResult = results;
-var through = index$3;
-
 var canEmitExit = typeof process !== 'undefined' && process
     && typeof process.on === 'function' && process.browser !== true;
 var canExit = typeof process !== 'undefined' && process
@@ -1868,7 +1842,7 @@ exports = module.exports = (function () {
     lazyLoad.createStream = function (opts) {
         if (!opts) opts = {};
         if (!harness) {
-            var output = through();
+            var output = index$3();
             getHarness({ stream: output, objectMode: opts.objectMode });
             return output;
         }
@@ -1894,11 +1868,11 @@ exports = module.exports = (function () {
 function createExitHarness (conf) {
     if (!conf) conf = {};
     var harness = createHarness({
-        autoclose: defined(conf.autoclose, false)
+        autoclose: index$1(conf.autoclose, false)
     });
     
     var stream$$1 = harness.createStream({ objectMode: conf.objectMode });
-    var es = stream$$1.pipe(conf.stream || createDefaultStream());
+    var es = stream$$1.pipe(conf.stream || default_stream());
     if (canEmitExit) {
         es.on('error', function (err) { harness._exitCode = 1; });
     }
@@ -1933,21 +1907,21 @@ function createExitHarness (conf) {
 }
 
 exports.createHarness = createHarness;
-exports.Test = Test;
+exports.Test = test;
 exports.test = exports; // tap compat
-exports.test.skip = Test.skip;
+exports.test.skip = test.skip;
 
 var exitInterval;
 
 function createHarness (conf_) {
     if (!conf_) conf_ = {};
-    var results$$1 = createResult();
+    var results$$1 = results();
     if (conf_.autoclose !== false) {
         results$$1.once('done', function () { results$$1.close(); });
     }
     
     var test$$1 = function (name, conf, cb) {
-        var t = new Test(name, conf, cb);
+        var t = new test(name, conf, cb);
         test$$1._tests.push(t);
         
         (function inspectCode (st) {
@@ -1990,740 +1964,485 @@ function createHarness (conf_) {
 }
 });
 
-function insertAssertionHook (fn) {
-  return function  (...args) {
+var assert = (collect) => {
+  const insertAssertionHook = (fn) => (...args) => {
     const assertResult = fn(...args);
-    this.test.addAssertion(assertResult);
+    collect(assertResult);
     return assertResult;
-  }
-}
+  };
 
-const assertions$1 = {
-  ok: insertAssertionHook(function (val, message = 'should be truthy') {
-    return {
+  return {
+    ok: insertAssertionHook((val, message = 'should be truthy') => ({
       pass: Boolean(val),
       expected: 'truthy',
       actual: val,
       operator: 'ok',
       message
-    };
-  }),
-  deepEqual:insertAssertionHook(function (actual, expected, message = 'should be equivalent') {
-    return {
+    })),
+    deepEqual: insertAssertionHook((actual, expected, message = 'should be equivalent') => ({
       pass: index$5(actual, expected),
       actual,
       expected,
       message,
       operator: 'deepEqual'
-    };
-  }),
-  equal:insertAssertionHook(function(actual, expected, message = 'should be equal') {
-    return {
+    })),
+    equal: insertAssertionHook((actual, expected, message = 'should be equal') => ({
       pass: actual === expected,
       actual,
       expected,
       message,
       operator: 'equal'
-    };
-  }),
-  notOk:insertAssertionHook(function(val, message = 'should not be truthy') {
-    return {
+    })),
+    notOk: insertAssertionHook((val, message = 'should not be truthy') => ({
       pass: !Boolean(val),
       expected: 'falsy',
       actual: val,
       operator: 'notOk',
       message
-    };
-  }),
-  notDeepEqual:insertAssertionHook(function(actual, expected, message = 'should not be equivalent') {
-    return {
+    })),
+    notDeepEqual: insertAssertionHook((actual, expected, message = 'should not be equivalent') => ({
       pass: !index$5(actual, expected),
       actual,
       expected,
       message,
       operator: 'notDeepEqual'
-    };
-  }),
-  notEqual:insertAssertionHook(function(actual, expected, message = 'should not be equal') {
-    return {
+    })),
+    notEqual: insertAssertionHook((actual, expected, message = 'should not be equal') => ({
       pass: actual !== expected,
       actual,
       expected,
       message,
       operator: 'notEqual'
-    };
-  }),
-  throws:insertAssertionHook(function(func, expected, message) {
-    let caught, pass, actual;
-    if (typeof expected === 'string') {
-      [expected, message] = [message, expected];
-    }
-    try {
-      func();
-    } catch (error) {
-      caught = {error};
-    }
-    pass = caught !== undefined;
-    actual = caught && caught.error;
-    if (expected instanceof RegExp) {
-      pass = expected.test(actual) || expected.test(actual && actual.message);
-      expected = String(expected);
-    } else if (typeof expected === 'function' && caught) {
-      pass = actual instanceof expected;
-      actual = actual.constructor;
-    }
-    return {
-      pass,
-      expected,
-      actual,
-      operator: 'throws',
-      message: message || 'should throw'
-    };
-  }),
-  doesNotThrow:insertAssertionHook(function(func, expected, message) {
-    let caught;
-    if (typeof expected === 'string') {
-      [expected, message] = [message, expected];
-    }
-    try {
-      func();
-    } catch (error) {
-      caught = {error};
-    }
-    return {
-      pass: caught === undefined,
-      expected: 'no thrown error',
-      actual: caught && caught.error,
-      operator: 'doesNotThrow',
-      message: message || 'should not throw'
-    };
-  }),
-  fail:insertAssertionHook(function(reason = 'fail called') {
-    return {
+    })),
+    throws: insertAssertionHook((func, expected, message) => {
+      let caught, pass, actual;
+      if (typeof expected === 'string') {
+        [expected, message] = [message, expected];
+      }
+      try {
+        func();
+      } catch (error) {
+        caught = {error};
+      }
+      pass = caught !== undefined;
+      actual = caught && caught.error;
+      if (expected instanceof RegExp) {
+        pass = expected.test(actual) || expected.test(actual && actual.message);
+        expected = String(expected);
+      } else if (typeof expected === 'function' && caught) {
+        pass = actual instanceof expected;
+        actual = actual.constructor;
+      }
+      return {
+        pass,
+        expected,
+        actual,
+        operator: 'throws',
+        message: message || 'should throw'
+      };
+    }),
+    doesNotThrow: insertAssertionHook((func, expected, message) => {
+      let caught;
+      if (typeof expected === 'string') {
+        [expected, message] = [message, expected];
+      }
+      try {
+        func();
+      } catch (error) {
+        caught = {error};
+      }
+      return {
+        pass: caught === undefined,
+        expected: 'no thrown error',
+        actual: caught && caught.error,
+        operator: 'doesNotThrow',
+        message: message || 'should not throw'
+      };
+    }),
+    fail: insertAssertionHook((reason = 'fail called') => ({
       pass: false,
       actual: 'fail called',
       expected: 'fail not called',
       message: reason,
       operator: 'fail'
-    };
-  })
+    }))
+  };
 };
 
-function assertion (test) {
-  return Object.create(assertions$1, {test: {value: test}});
-}
+var test$2 = ({description, spec, only = false} = {}) => {
+  const assertions = [];
+  const collect = (...args) => assertions.push(...args.map(a => Object.assign({description}, a)));
 
-/**
- * slice() reference.
- */
-
-var slice$2 = Array.prototype.slice;
-
-/**
- * Expose `co`.
- */
-
-var index$28 = co['default'] = co.co = co;
-
-/**
- * Wrap the given generator `fn` into a
- * function that returns a promise.
- * This is a separate function so that
- * every `co()` call doesn't create a new,
- * unnecessary closure.
- *
- * @param {GeneratorFunction} fn
- * @return {Function}
- * @api public
- */
-
-co.wrap = function (fn) {
-  createPromise.__generatorFunction__ = fn;
-  return createPromise;
-  function createPromise() {
-    return co.call(this, fn.apply(this, arguments));
-  }
-};
-
-/**
- * Execute the generator function or a generator
- * and return a promise.
- *
- * @param {Function} fn
- * @return {Promise}
- * @api public
- */
-
-function co(gen) {
-  var ctx = this;
-  var args = slice$2.call(arguments, 1);
-
-  // we wrap everything in a promise to avoid promise chaining,
-  // which leads to memory leak errors.
-  // see https://github.com/tj/co/issues/180
-  return new Promise(function(resolve, reject) {
-    if (typeof gen === 'function') gen = gen.apply(ctx, args);
-    if (!gen || typeof gen.next !== 'function') return resolve(gen);
-
-    onFulfilled();
-
-    /**
-     * @param {Mixed} res
-     * @return {Promise}
-     * @api private
-     */
-
-    function onFulfilled(res) {
-      var ret;
-      try {
-        ret = gen.next(res);
-      } catch (e) {
-        return reject(e);
-      }
-      next(ret);
+  const instance = {
+    run(){
+      const now = Date.now();
+      return Promise.resolve(spec(assert(collect)))
+        .then(() => ({assertions, executionTime: Date.now() - now}));
     }
+  };
 
-    /**
-     * @param {Error} err
-     * @return {Promise}
-     * @api private
-     */
-
-    function onRejected(err) {
-      var ret;
-      try {
-        ret = gen.throw(err);
-      } catch (e) {
-        return reject(e);
-      }
-      next(ret);
-    }
-
-    /**
-     * Get the next value in the generator,
-     * return a promise.
-     *
-     * @param {Object} ret
-     * @return {Promise}
-     * @api private
-     */
-
-    function next(ret) {
-      if (ret.done) return resolve(ret.value);
-      var value = toPromise.call(ctx, ret.value);
-      if (value && isPromise(value)) return value.then(onFulfilled, onRejected);
-      return onRejected(new TypeError('You may only yield a function, promise, generator, array, or object, '
-        + 'but the following object was passed: "' + String(ret.value) + '"'));
-    }
-  });
-}
-
-/**
- * Convert a `yield`ed value into a promise.
- *
- * @param {Mixed} obj
- * @return {Promise}
- * @api private
- */
-
-function toPromise(obj) {
-  if (!obj) return obj;
-  if (isPromise(obj)) return obj;
-  if (isGeneratorFunction(obj) || isGenerator(obj)) return co.call(this, obj);
-  if ('function' == typeof obj) return thunkToPromise.call(this, obj);
-  if (Array.isArray(obj)) return arrayToPromise.call(this, obj);
-  if (isObject(obj)) return objectToPromise.call(this, obj);
-  return obj;
-}
-
-/**
- * Convert a thunk to a promise.
- *
- * @param {Function}
- * @return {Promise}
- * @api private
- */
-
-function thunkToPromise(fn) {
-  var ctx = this;
-  return new Promise(function (resolve, reject) {
-    fn.call(ctx, function (err, res) {
-      if (err) return reject(err);
-      if (arguments.length > 2) res = slice$2.call(arguments, 1);
-      resolve(res);
-    });
-  });
-}
-
-/**
- * Convert an array of "yieldables" to a promise.
- * Uses `Promise.all()` internally.
- *
- * @param {Array} obj
- * @return {Promise}
- * @api private
- */
-
-function arrayToPromise(obj) {
-  return Promise.all(obj.map(toPromise, this));
-}
-
-/**
- * Convert an object of "yieldables" to a promise.
- * Uses `Promise.all()` internally.
- *
- * @param {Object} obj
- * @return {Promise}
- * @api private
- */
-
-function objectToPromise(obj){
-  var results = new obj.constructor();
-  var keys = Object.keys(obj);
-  var promises = [];
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    var promise = toPromise.call(this, obj[key]);
-    if (promise && isPromise(promise)) defer(promise, key);
-    else results[key] = obj[key];
-  }
-  return Promise.all(promises).then(function () {
-    return results;
-  });
-
-  function defer(promise, key) {
-    // predefine the key in the result
-    results[key] = undefined;
-    promises.push(promise.then(function (res) {
-      results[key] = res;
-    }));
-  }
-}
-
-/**
- * Check if `obj` is a promise.
- *
- * @param {Object} obj
- * @return {Boolean}
- * @api private
- */
-
-function isPromise(obj) {
-  return 'function' == typeof obj.then;
-}
-
-/**
- * Check if `obj` is a generator.
- *
- * @param {Mixed} obj
- * @return {Boolean}
- * @api private
- */
-
-function isGenerator(obj) {
-  return 'function' == typeof obj.next && 'function' == typeof obj.throw;
-}
-
-/**
- * Check if `obj` is a generator function.
- *
- * @param {Mixed} obj
- * @return {Boolean}
- * @api private
- */
-function isGeneratorFunction(obj) {
-  var constructor = obj.constructor;
-  if (!constructor) return false;
-  if ('GeneratorFunction' === constructor.name || 'GeneratorFunction' === constructor.displayName) return true;
-  return isGenerator(constructor.prototype);
-}
-
-/**
- * Check for plain object.
- *
- * @param {Mixed} val
- * @return {Boolean}
- * @api private
- */
-
-function isObject(val) {
-  return Object == val.constructor;
-}
-
-const Test$1 = {
-  run: function () {
-    const assert = assertion(this);
-    const now = Date.now();
-    return index$28(this.coroutine(assert))
-      .then(() => {
-        return {assertions: this.assertions, executionTime: Date.now() - now};
-      });
-  },
-  addAssertion(){
-    const newAssertions = [...arguments].map(a => Object.assign({description: this.description}, a));
-    this.assertions.push(...newAssertions);
-    return this;
-  }
-};
-
-function test$2 ({description, coroutine, only = false}) {
-  return Object.create(Test$1, {
-    description: {value: description},
-    coroutine: {value: coroutine},
-    assertions: {value: []},
+  Object.defineProperties(instance, {
     only: {value: only},
+    assertions: {value: assertions},
     length: {
       get(){
-        return this.assertions.length
+        return assertions.length
       }
-    }
+    },
+    description: {value: description}
   });
-}
+
+  return instance;
+};
 
 function testFunc$1 () {
 
-  function fakeTest () {
-    return {
-      addAssertion(item){
-        this.assertions.push(item);
-      },
-      assertions: []
+  const fakeTest = () => {
+    const collect = () => {
+      collect.calls++;
     };
-  }
+    collect.calls = 0;
+    return collect;
+  };
 
-  index('ok operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('ok operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.ok('true');
     t.equal(operator, 'ok', 'should have the operator ok');
     t.equal(message, 'should be truthy', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('ok operator: change message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('ok operator: change message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass, expected, actual} = a.ok(0, 'not default!');
     t.equal(operator, 'ok', 'should have the operator ok');
     t.equal(message, 'not default!', 'should not have the default message');
     t.equal(pass, false, 'should not have passed');
     t.equal(expected, 'truthy');
     t.equal(actual, 0, 'should have provided the acual value');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('deepEqual operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('deepEqual operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.deepEqual({foo: {bar: 'bar'}}, {foo: {bar: 'bar'}});
     t.equal(operator, 'deepEqual', 'should have the operator deepEqual');
     t.equal(message, 'should be equivalent', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('deepEqual operator: change message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('deepEqual operator: change message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass, expected, actual} = a.deepEqual({foo: 'bar'}, {blah: 'bar'}, 'woot woot');
     t.equal(operator, 'deepEqual', 'should have the operator deepEqual');
     t.equal(message, 'woot woot', 'should not have the default message');
     t.equal(pass, false, 'should not have passed');
     t.deepEqual(actual, {foo: 'bar'});
     t.deepEqual(expected, {blah: 'bar'});
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('equal operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('equal operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.equal('foo', 'foo');
     t.equal(operator, 'equal', 'should have the operator equal');
     t.equal(message, 'should be equal', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('equal operator: change default message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('equal operator: change default message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.equal({foo: 'foo'}, {foo: 'foo'}, 'woot ip');
     t.equal(operator, 'equal', 'should have the operator equal');
     t.equal(message, 'woot ip', 'should have the custom message');
     t.equal(pass, false, 'should not have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notOk operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notOk operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.notOk(false);
     t.equal(operator, 'notOk', 'should have the operator notOk');
     t.equal(message, 'should not be truthy', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notOk operator: change message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notOk operator: change message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass, expected, actual} = a.notOk(1, 'not default!');
     t.equal(operator, 'notOk', 'should have the operator notOk');
     t.equal(message, 'not default!', 'should not have the default message');
     t.equal(pass, false, 'should not have passed');
     t.equal(expected, 'falsy');
     t.equal(actual, 1, 'should have provided the acual value');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notDeepEqual operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notDeepEqual operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.notDeepEqual({foo: {bar: 'blah'}}, {foo: {bar: 'bar'}});
     t.equal(operator, 'notDeepEqual', 'should have the operator notDeepEqual');
     t.equal(message, 'should not be equivalent', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notDeepEqual operator: change message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notDeepEqual operator: change message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass, expected, actual} = a.notDeepEqual({foo: {bar: 'bar'}}, {foo: {bar: 'bar'}}, 'woot woot');
     t.equal(operator, 'notDeepEqual', 'should have the operator notDeepEqual');
     t.equal(message, 'woot woot', 'should not have the default message');
     t.equal(pass, false, 'should not have passed');
     t.deepEqual(actual, {foo: {bar: 'bar'}});
     t.deepEqual(expected, {foo: {bar: 'bar'}});
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notEqual operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notEqual operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.notEqual({foo: 'bar'}, {foo: 'bar'});
     t.equal(operator, 'notEqual', 'should have the operator notEqual');
     t.equal(message, 'should not be equal', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('notEqual operator: change default message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('notEqual operator: change default message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.notEqual('foo', 'foo', 'blah');
     t.equal(operator, 'notEqual', 'should have the operator notEqual');
     t.equal(message, 'blah', 'should have the default message');
     t.equal(pass, false, 'should not have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('fail',t=>{
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('fail', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.fail();
     t.equal(operator, 'fail', 'should have the operator fail');
     t.equal(message, 'fail called', 'should have the default message');
     t.equal(pass, false, 'should not have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('fail: change default message',t=>{
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('fail: change default message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const {operator, message, pass} = a.fail('should not get here');
     t.equal(operator, 'fail', 'should have the operator fail');
     t.equal(message, 'should not get here', 'should have the default message');
     t.equal(pass, false, 'should not have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass} = a.throws(()=> { throw new Error(); });
+  index('throws operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass} = a.throws(() => {
+      throw new Error();
+    });
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: change default message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass} = a.throws(()=> { throw new Error(); }, 'unexepected lack of error');
+  index('throws operator: change default message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass} = a.throws(() => {
+      throw new Error();
+    }, 'unexepected lack of error');
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'unexepected lack of error', 'should have the custom message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: failure', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass} = a.throws(()=> {});
+  index('throws operator: failure', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass} = a.throws(() => {
+    });
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, false, 'should not have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: expected (RegExp)', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('throws operator: expected (RegExp)', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const error = new Error('Totally expected error');
     const regexp = /^totally/i;
-    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, regexp);
+    const {operator, message, pass, expected, actual} = a.throws(() => {
+      throw error;
+    }, regexp);
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, true, 'should have passed');
     t.equal(expected, '/^totally/i');
     t.equal(actual, error);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: expected (RegExp, failed)', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
+  index('throws operator: expected (RegExp, failed)', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
     const error = new Error('Not the expected error');
     const regexp = /^totally/i;
-    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, regexp);
+    const {operator, message, pass, expected, actual} = a.throws(() => {
+      throw error;
+    }, regexp);
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, false, 'should have passed');
     t.equal(expected, '/^totally/i');
     t.equal(actual, error);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: expected (constructor)', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    function CustomError() {}
+  index('throws operator: expected (constructor)', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+
+    function CustomError () {
+    }
+
     const error = new CustomError();
-    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, CustomError);
+    const {operator, message, pass, expected, actual} = a.throws(() => {
+      throw error;
+    }, CustomError);
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, true, 'should have passed');
     t.equal(expected, CustomError);
     t.equal(actual, CustomError);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('throws operator: expected (constructor, failed)', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    function CustomError() {}
+  index('throws operator: expected (constructor, failed)', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+
+    function CustomError () {
+    }
+
     const error = new Error('Plain error');
-    const {operator, message, pass, expected, actual} = a.throws(()=> { throw error; }, CustomError);
+    const {operator, message, pass, expected, actual} = a.throws(() => {
+      throw error;
+    }, CustomError);
     t.equal(operator, 'throws', 'should have the operator throws');
     t.equal(message, 'should throw', 'should have the default message');
     t.equal(pass, false, 'should have passed');
     t.equal(expected, CustomError);
     t.equal(actual, Error);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('doesNotThrow operator', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass, expected, actual} = a.doesNotThrow(()=> {});
+  index('doesNotThrow operator', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass, expected, actual} = a.doesNotThrow(() => {
+    });
     t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
     t.equal(message, 'should not throw', 'should have the default message');
     t.equal(pass, true, 'should have passed');
     t.equal(expected, 'no thrown error');
     t.equal(actual, undefined);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('doesNotThrow operator: change default message', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass} = a.doesNotThrow(function () {}, 'unexepected error');
+  index('doesNotThrow operator: change default message', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass} = a.doesNotThrow(function () {
+    }, 'unexepected error');
     t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
     t.equal(message, 'unexepected error', 'should have the custom message');
     t.equal(pass, true, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('doesNotThrow operator: failure', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    const {operator, message, pass} = a.doesNotThrow(()=> { throw Error(); });
+  index('doesNotThrow operator: failure', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+    const {operator, message, pass} = a.doesNotThrow(() => {
+      throw Error();
+    });
     t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
     t.equal(message, 'should not throw', 'should have the default message');
     t.equal(pass, false, 'should have passed');
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
 
-  index('doesNotThrow operator: expected (ignored)', t=> {
-    const tp = test$2({});
-    const a = assertion(tp);
-    function CustomError() {}
-    const {operator, message, pass, expected, actual} = a.doesNotThrow(()=> {}, CustomError);
+  index('doesNotThrow operator: expected (ignored)', t => {
+    const collect = fakeTest();
+    const a = assert(collect);
+
+    function CustomError () {
+    }
+
+    const {operator, message, pass, expected, actual} = a.doesNotThrow(() => {
+    }, CustomError);
     t.equal(operator, 'doesNotThrow', 'should have the operator doesNotThrow');
     t.equal(message, 'should not throw', 'should have the default message');
     t.equal(pass, true, 'should have passed');
     t.equal(expected, 'no thrown error');
     t.equal(actual, undefined);
-    t.equal(tp.length, 1, 'should have added the assertion');
+    t.equal(collect.calls, 1, 'should have added the assertion');
     t.end();
   });
-
 }
 
 function testFunc$2 () {
-  index('test: add assertion', t=> {
-    const tp = test$2({
-      description: 'a description'
-    });
 
-    t.equal(tp.length, 0);
-    tp.addAssertion({foo: 'bar'});
-    t.deepEqual(tp.assertions, [{description: 'a description', foo: 'bar'}]);
-    t.end();
-  });
-
-  index('test: add assertion using n arrity', t=> {
-    const tp = test$2({
-      description: 'blah'
-    });
-
-    t.equal(tp.length, 0);
-    tp.addAssertion({foo: 'bar'}, {foo: 'bis'});
-    t.deepEqual(tp.assertions, [{description: 'blah', foo: 'bar'}, {description: 'blah', foo: 'bis'}]);
-    t.end();
-  });
-
-  index('test: run and resolve with assertions', t=> {
+  index('test: run and resolve with assertions', t => {
     const tp = test$2({
       description: 'desc',
-      coroutine: function * (assert) {
+      spec: function (assert) {
         assert.ok(true);
       }
     });
@@ -2743,17 +2462,17 @@ function testFunc$2 () {
       });
   });
 
-  index('test: run and resolve with assertions asyn flow', t=> {
+  index('test: run and resolve with assertions async flow', t => {
     const tp = test$2({
       description: 'desc',
-      coroutine: function * (assert) {
+      spec: async function (assert) {
         const presult = new Promise(function (resolve) {
           setTimeout(function () {
             resolve(true);
           }, 100);
         });
 
-        const r = yield presult;
+        const r = await presult;
 
         assert.ok(r);
       }
@@ -2775,92 +2494,94 @@ function testFunc$2 () {
   });
 }
 
-function tapOut ({pass, message, index}) {
+const tapOut = ({pass, message, index}) => {
   const status = pass === true ? 'ok' : 'not ok';
   console.log([status, index, message].join(' '));
-}
+};
 
-function canExit () {
+const canExit = () => {
   return typeof process !== 'undefined' && typeof process.exit === 'function';
-}
+};
 
-function tap () {
-  return function * () {
-    let index = 1;
-    let lastId = 0;
-    let success = 0;
-    let failure = 0;
+var tap = () => function * () {
+  let index = 1;
+  let lastId = 0;
+  let success = 0;
+  let failure = 0;
 
-    const starTime = Date.now();
-    console.log('TAP version 13');
-    try {
-      while (true) {
-        const assertion = yield;
-        if (assertion.pass === true) {
-          success++;
-        } else {
-          failure++;
-        }
-        assertion.index = index;
-        if (assertion.id !== lastId) {
-          console.log(`# ${assertion.description} - ${assertion.executionTime}ms`);
-          lastId = assertion.id;
-        }
-        tapOut(assertion);
-        if (assertion.pass !== true) {
-          console.log(`  ---
+  const starTime = Date.now();
+  console.log('TAP version 13');
+  try {
+    while (true) {
+      const assertion = yield;
+      if (assertion.pass === true) {
+        success++;
+      } else {
+        failure++;
+      }
+      assertion.index = index;
+      if (assertion.id !== lastId) {
+        console.log(`# ${assertion.description} - ${assertion.executionTime}ms`);
+        lastId = assertion.id;
+      }
+      tapOut(assertion);
+      if (assertion.pass !== true) {
+        console.log(`  ---
   operator: ${assertion.operator}
   expected: ${JSON.stringify(assertion.expected)}
   actual: ${JSON.stringify(assertion.actual)}
   ...`);
-        }
-        index++;
       }
-    } catch (e) {
-      console.log('Bail out! unhandled exception');
-      console.log(e);
-      if (canExit()) {
-        process.exit(1);
-      }
+      index++;
     }
-    finally {
-      const execution = Date.now() - starTime;
-      if (index > 1) {
-        console.log(`
+  } catch (e) {
+    console.log('Bail out! unhandled exception');
+    console.log(e);
+    if (canExit()) {
+      process.exit(1);
+    }
+  }
+  finally {
+    const execution = Date.now() - starTime;
+    if (index > 1) {
+      console.log(`
 1..${index - 1}
 # duration ${execution}ms
 # success ${success}
 # failure ${failure}`);
-      }
-      if (failure && canExit()) {
-        process.exit(1);
-      }
     }
-  };
-}
+    if (failure && canExit()) {
+      process.exit(1);
+    }
+  }
+};
 
-const Plan = {
-  test(description, coroutine, opts = {}){
-    const testItems = (!coroutine && description.tests) ? [...description] : [{description, coroutine}];
-    this.tests.push(...testItems.map(t=>test$2(Object.assign(t, opts))));
-    return this;
-  },
-
-  only(description, coroutine){
-    return this.test(description, coroutine, {only: true});
-  },
-
-  run(sink = tap()){
-    const sinkIterator = sink();
-    sinkIterator.next();
-    const hasOnly = this.tests.some(t=>t.only);
-    const runnable = hasOnly ? this.tests.filter(t=>t.only) : this.tests;
-    return index$28(function * () {
+var plan$1 = () => {
+  const tests = [];
+  const instance = {
+    test(description, spec, opts = {}){
+      if (!spec && description.test) {
+        //this is a plan
+        tests.push(...description);
+      } else {
+        const testItems = (description, spec) => (!spec && description.test) ? [...description] : [{description, spec}];
+        tests.push(...testItems(description, spec).map(t => test$2(Object.assign(t, opts))));
+      }
+      return instance;
+    },
+    only(description, spec, opts = {}){
+      return instance.test(description, spec, Object.assign(opts, {only: true}));
+    },
+    async run(sink = tap()){
+      const sinkIterator = sink();
+      const hasOnly = tests.some(t => t.only);
+      const runnable = hasOnly ? tests.filter(t => t.only) : tests;
       let id = 1;
+      sinkIterator.next();
       try {
-        const results = runnable.map(t=>t.run());
+        const results = runnable.map(t => t.run());
         for (let r of results) {
-          const {assertions, executionTime} = yield r;
+          const {assertions, executionTime} = await r;
           for (let assert of assertions) {
             sinkIterator.next(Object.assign(assert, {id, executionTime}));
           }
@@ -2872,26 +2593,23 @@ const Plan = {
       } finally {
         sinkIterator.return();
       }
-    }.bind(this))
-  },
-
-  * [Symbol.iterator](){
-    for (let t of this.tests) {
-      yield t;
+    },
+    [Symbol.iterator](){
+      return tests[Symbol.iterator]();
     }
-  }
-};
+  };
 
-function plan$1 () {
-  return Object.create(Plan, {
-    tests: {value: []},
+  Object.defineProperties(instance, {
+    tests: {value: tests},
     length: {
       get(){
-        return this.tests.length
+        return tests.length
       }
     }
   });
-}
+
+  return instance;
+};
 
 function assert$1 (expArray, t) {
   return function * () {
@@ -2899,7 +2617,7 @@ function assert$1 (expArray, t) {
     try {
       while (true) {
         const r = yield;
-        const {actual, description, expected, message, operator, pass, id, executionTime} =r;
+        const {actual, description, expected, message, operator, pass, id, executionTime} = r;
         const exp = expArray[index$$1];
         t.equal(actual, exp.actual);
         t.equal(description, exp.description);
@@ -2911,7 +2629,10 @@ function assert$1 (expArray, t) {
         t.ok(executionTime !== undefined);
         index$$1++;
       }
-    } finally {
+    } catch (e){
+      console.log(e);
+    }
+    finally {
       t.equal(index$$1, expArray.length);
       t.end();
     }
@@ -2920,31 +2641,30 @@ function assert$1 (expArray, t) {
 
 function testFunc$3 () {
 
-  index('add a test', t=> {
-    const coroutine = function * () {
-    };
+  index('add a test', t => {
     const description = 'desc';
     const p = plan$1();
+    const spec = () => {
+    };
 
-    p.test(description, coroutine);
+    p.test(description, spec);
 
     t.equal(p.length, 1);
-    t.equal(p.tests[0].coroutine, coroutine);
     t.equal(p.tests[0].description, 'desc');
 
     t.end();
   });
 
-  index('compose plans', t=> {
-    const coroutine = function * () {
+  index('compose plans', t => {
+    const spec = () => {
     };
     const description = 'desc';
     const p = plan$1();
 
-    p.test(description, coroutine);
+    p.test(description, spec);
     const sp = plan$1();
 
-    sp.test(description, coroutine);
+    sp.test(description, spec);
     sp.test(p);
 
     t.equal(sp.length, 2);
@@ -2954,15 +2674,16 @@ function testFunc$3 () {
 
   index('only: only run the tests with only statement', t => {
     const p = plan$1();
-    p.test('should not run', function * (t) {
+
+    p.test('should not run', (t) => {
       t.fail();
     });
 
-    p.only('should run this one', function * (t) {
+    p.only('should run this one', (t) => {
       t.ok(true);
     });
 
-    p.only('should run this one too', function * (t) {
+    p.only('should run this one too', (t) => {
       t.ok(true);
     });
 
@@ -2994,19 +2715,19 @@ function testFunc$3 () {
     const p2 = plan$1();
     const masterPlan = plan$1();
 
-    p1.test('should not run this test', function * (t) {
+    p1.test('should not run this test', (t) => {
       t.fail();
     });
 
-    p2.test('should not run', function * (t) {
+    p2.test('should not run', (t) => {
       t.fail();
     });
 
-    p2.only('should run this one', function * (t) {
+    p2.only('should run this one', (t) => {
       t.ok(true);
     });
 
-    p2.only('should run this one too', function * (t) {
+    p2.only('should run this one too', (t) => {
       t.ok(true);
     });
 
@@ -3036,14 +2757,14 @@ function testFunc$3 () {
     ], t));
   });
 
-  index('plan running tests', t=> {
+  index('plan running tests', t => {
     const p = plan$1();
 
-    p.test('test 1', function * (assert) {
+    p.test('test 1', (assert) => {
       assert.ok(true);
     });
 
-    p.test('test 2', function * (assert) {
+    p.test('test 2', (assert) => {
       assert.ok(true);
     });
 
@@ -3072,3 +2793,4 @@ function testFunc$3 () {
 testFunc$1();
 testFunc$2();
 testFunc$3();
+//# sourceMappingURL=index.js.map
