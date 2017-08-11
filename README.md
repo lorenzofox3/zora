@@ -118,6 +118,8 @@ masterPlan
 ## In the browser
 Zora itself does not depend on native nodejs modules (such file system, processes, etc) so the code you will get is regular es2016 code. The only thing to do is probably to bundle your test script with your favourite module bundler (you might want to transpile your code as well for older browsers).
 
+You can find some recipes [here](https://github.com/lorenzofox3/zora-recipes)
+
 ### drop in file
 You can simply drop the dist file in the browser (I'll add into CDN if people want it) and write your script below (or load it).
 You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112)
@@ -214,7 +216,8 @@ so all together, in your package.json you can have something like that
 
 // TODO add a different sink generator example
 
-##Assertions API
+## Assertions API
+
 The assertion api you can use within your test coroutines is pretty simple and highly inspired from [tape](https://github.com/substack/tape)
 * ok
 * notOk
