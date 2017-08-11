@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "tap test harness for nodejs and browsers",
   "keywords": [
     "tap",
@@ -12,8 +12,8 @@
     "harness"
   ],
   "main": "./dist/zora.js",
-  "module":"./dist/zora.es.js",
-  "jsnext:main":"./dist/zora.es.js",
+  "module": "./dist/zora.es.js",
+  "jsnext:main": "./dist/zora.es.js",
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:test": "rm -rf ./test/dist",
