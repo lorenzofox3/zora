@@ -2069,32 +2069,6 @@ var assert = (collect) => {
   };
 };
 
-var test$2 = ({description, spec, only = false} = {}) => {
-  const assertions = [];
-  const collect = (...args) => assertions.push(...args.map(a => Object.assign({description}, a)));
-
-  const instance = {
-    run(){
-      const now = Date.now();
-      return Promise.resolve(spec(assert(collect)))
-        .then(() => ({assertions, executionTime: Date.now() - now}));
-    }
-  };
-
-  Object.defineProperties(instance, {
-    only: {value: only},
-    assertions: {value: assertions},
-    length: {
-      get(){
-        return assertions.length
-      }
-    },
-    description: {value: description}
-  });
-
-  return instance;
-};
-
 function testFunc$1 () {
 
   const fakeTest = () => {
@@ -2437,10 +2411,36 @@ function testFunc$1 () {
   });
 }
 
+var test$3 = ({description, spec, only = false} = {}) => {
+  const assertions = [];
+  const collect = (...args) => assertions.push(...args.map(a => Object.assign({description}, a)));
+
+  const instance = {
+    run(){
+      const now = Date.now();
+      return Promise.resolve(spec(assert(collect)))
+        .then(() => ({assertions, executionTime: Date.now() - now}));
+    }
+  };
+
+  Object.defineProperties(instance, {
+    only: {value: only},
+    assertions: {value: assertions},
+    length: {
+      get(){
+        return assertions.length
+      }
+    },
+    description: {value: description}
+  });
+
+  return instance;
+};
+
 function testFunc$2 () {
 
   index('test: run and resolve with assertions', t => {
-    const tp = test$2({
+    const tp = test$3({
       description: 'desc',
       spec: function (assert) {
         assert.ok(true);
@@ -2463,7 +2463,7 @@ function testFunc$2 () {
   });
 
   index('test: run and resolve with assertions async flow', t => {
-    const tp = test$2({
+    const tp = test$3({
       description: 'desc',
       spec: async function (assert) {
         const presult = new Promise(function (resolve) {
@@ -2565,7 +2565,7 @@ var plan$1 = () => {
         tests.push(...description);
       } else {
         const testItems = (description, spec) => (!spec && description.test) ? [...description] : [{description, spec}];
-        tests.push(...testItems(description, spec).map(t => test$2(Object.assign(t, opts))));
+        tests.push(...testItems(description, spec).map(t => test$3(Object.assign(t, opts))));
       }
       return instance;
     },
