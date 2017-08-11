@@ -12,12 +12,12 @@
     "harness"
   ],
   "main": "./dist/zora.js",
-  "jsnext:main": "./lib/plan.js",
-  "module": "./lib/plan.js",
+  "module":"./dist/zora.es.js",
+  "jsnext:main":"./dist/zora.es.js",
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:test": "rm -rf ./test/dist",
-    "build": "npm run clean && rollup -c rollup.config.js",
+    "build": "npm run clean && node ./scripts/build.js",
     "build:test": "rollup -c ./test/rollup.config.js",
     "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js"
   },
