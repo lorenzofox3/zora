@@ -172,10 +172,10 @@ where for example ./test/test1.js is
 import zora from 'zora';
 
 const plan = zora()
-    .test('mytest',function * (assertions){
+    .test('mytest',(assertions) => {
        assertions.ok(true);
     })
-    .test('mytest',function * (assertions){
+    .test('mytest',(assertions) => {
        assertions.ok(true);
     });
     
