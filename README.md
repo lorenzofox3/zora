@@ -131,10 +131,10 @@ You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/z
 <!-- your test code -->
 <script>
     Zora()
-      .test('some test', function*(assert) {
+      .test('some test', (assert) => {
         assert.ok(true, 'hey there');
       })
-      .test('some failing test', function*(assert) {
+      .test('some failing test', (assert) => {
         assert.fail('it failed');
       })
       .run();
