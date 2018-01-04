@@ -9,7 +9,8 @@
     "browsers",
     "testing",
     "tests",
-    "harness"
+    "harness",
+    "tap-producer"
   ],
   "main": "./dist/zora.js",
   "module": "./dist/zora.es.js",
@@ -17,9 +18,11 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:test": "rm -rf ./test/dist",
-    "build": "npm run clean && node ./scripts/build.js",
-    "build:test": "rollup -c ./test/rollup.config.js",
-    "test": "npm run clean:test && npm run build:test && node ./test/dist/index.js"
+    "build:test": "rollup -c ./rollup/test.js",
+    "build:es": "rollup -c ./rollup/es.js",
+    "build:umd": "rollup -c ./rollup/umd.js",
+    "build": "npm run clean && npm run build:es && npm run build:umd",
+    "test": "xo ./lib/*.js && npm run clean:test && npm run build:test && node ./test/dist/index.js"
   },
   "author": {
     "name": "Laurent Renard",
@@ -30,9 +33,10 @@
     "deep-equal": "^1.0.1"
   },
   "devDependencies": {
-    "rollup": "^0.45.2",
-    "rollup-plugin-commonjs": "^8.1.0",
+    "rollup": "^0.53.3",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "tape": "^4.8.0"
+    "tape": "^4.8.0",
+    "xo": "^0.18.2"
   }
 }

@@ -207,7 +207,7 @@ so all together, in your package.json you can have something like that
 {
 // ...
   "scripts": {
-    "test": "rollup -c ./test/rollup.config.js && cat ./test/dist/index.js | tape-run"
+    "test": "rollup -c ./test/test.js && cat ./test/dist/index.js | tape-run"
   }
 // ...
 }

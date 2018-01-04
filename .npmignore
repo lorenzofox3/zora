@@ -4,5 +4,5 @@ test
 circle.yml
 .gitignore
 yarn.lock
-scripts
 lib
+rollup

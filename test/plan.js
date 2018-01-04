@@ -1,183 +1,178 @@
 import tape from 'tape';
 import plan from '../lib/plan';
 
-function assert (expArray, t) {
-  return function * () {
-    let index = 0;
-    try {
-      while (true) {
-        const r = yield;
-        const {actual, description, expected, message, operator, pass, id, executionTime} = r;
-        const exp = expArray[index];
-        t.equal(actual, exp.actual);
-        t.equal(description, exp.description);
-        t.equal(expected, exp.expected);
-        t.equal(message, exp.message);
-        t.equal(operator, exp.operator);
-        t.equal(pass, exp.pass);
-        t.equal(id, exp.id);
-        t.ok(executionTime !== undefined);
-        index++;
-      }
-    } catch (e){
-      console.log(e);
-    }
-    finally {
-      t.equal(index, expArray.length);
-      t.end();
-    }
-  }
+function assert(expArray, t) {
+	return function * () {
+		let index = 0;
+		try {
+			while (true) {
+				const test = yield;
+				const {items} = test;
+				t.ok(test.executionTime !== undefined, 'execution time');
+				for (let a of items) {
+					const exp = expArray[index];
+					t.equal(a.actual, exp.actual, 'actual');
+					t.equal(a.expected, exp.expected, 'expected');
+					t.equal(a.message, exp.message, 'message');
+					t.equal(a.operator, exp.operator, 'operator');
+					t.equal(a.pass, exp.pass, 'pass');
+					index++;
+				}
+			}
+		} catch (e) {
+			console.log(e);
+		}
+		finally {
+			t.equal(index, expArray.length);
+			t.end();
+		}
+	}
 }
 
-function testFunc () {
+function testFunc() {
 
-  tape('add a test', t => {
-    const description = 'desc';
-    const p = plan();
-    const spec = () => {
-    };
+	tape('add a test', t => {
+		const description = 'desc';
+		const p = plan();
+		const spec = () => {
+		};
 
-    p.test(description, spec);
+		p.test(description, spec);
 
-    t.equal(p.length, 1);
-    t.equal(p.tests[0].description, 'desc');
+		t.equal(p.length, 1);
+		t.equal(p.items[0].description, 'desc');
 
-    t.end();
-  });
+		t.end();
+	});
 
-  tape('compose plans', t => {
-    const spec = () => {
-    };
-    const description = 'desc';
-    const p = plan();
+	tape('compose plans', t => {
+		const spec = () => {
+		};
+		const description = 'desc';
+		const p = plan();
 
-    p.test(description, spec);
-    const sp = plan();
+		p.test(description, spec);
+		const sp = plan();
 
-    sp.test(description, spec);
-    sp.test(p);
+		sp.test(description, spec);
+		sp.test(p);
 
-    t.equal(sp.length, 2);
+		t.equal(sp.length, 2);
 
-    t.end();
-  });
+		t.end();
+	});
 
-  tape('only: only run the tests with only statement', t => {
-    const p = plan();
+	tape('only: only run the tests with only statement', t => {
+		const p = plan();
 
-    p.test('should not run', (t) => {
-      t.fail();
-    });
+		p.test('should not run', (t) => {
+			t.fail();
+		});
 
-    p.only('should run this one', (t) => {
-      t.ok(true);
-    });
+		p.only('should run this one', (t) => {
+			t.ok(true);
+		});
 
-    p.only('should run this one too', (t) => {
-      t.ok(true);
-    });
+		p.only('should run this one too', (t) => {
+			t.ok(true);
+		});
 
-    p.run(assert([
-      {
-        actual: true,
-        description: 'should run this one',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 1
-      },
-      {
-        actual: true,
-        description: 'should run this one too',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 2
-      }
+		p.run(assert([
+			{
+				actual: true,
+				description: 'should run this one',
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true,
+				id: 2
+			},
+			{
+				actual: true,
+				description: 'should run this one too',
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true,
+				id: 3
+			}
+		], t));
+	});
 
-    ], t));
-  });
+	tape.skip('only: only run the tests with only statement with composition', t => {
+		const p1 = plan();
+		const p2 = plan();
+		const masterPlan = plan();
 
-  tape('only: only run the tests with only statement with composition', t => {
-    const p1 = plan();
-    const p2 = plan();
-    const masterPlan = plan();
+		p1.test('should not run this test', (t) => {
+			t.fail();
+		});
 
-    p1.test('should not run this test', (t) => {
-      t.fail();
-    });
+		p2.test('should not run', (t) => {
+			t.fail();
+		});
 
-    p2.test('should not run', (t) => {
-      t.fail();
-    });
+		p2.only('should run this one', (t) => {
+			t.ok(true);
+		});
 
-    p2.only('should run this one', (t) => {
-      t.ok(true);
-    });
+		p2.only('should run this one too', (t) => {
+			t.ok(true);
+		});
 
-    p2.only('should run this one too', (t) => {
-      t.ok(true);
-    });
+		masterPlan
+			.test(p1)
+			.test(p2);
 
-    masterPlan
-      .test(p1)
-      .test(p2);
+		masterPlan.run(assert([
+			{
+				actual: true,
+				description: 'should run this one',
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true,
+				id: 3
+			},
+			{
+				actual: true,
+				description: 'should run this one too',
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true,
+				id: 4
+			}
+		], t));
+	});
 
-    masterPlan.run(assert([
-      {
-        actual: true,
-        description: 'should run this one',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 1
-      },
-      {
-        actual: true,
-        description: 'should run this one too',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 2
-      }
-    ], t));
-  });
+	tape('plan running tests', t => {
+		const p = plan();
 
-  tape('plan running tests', t => {
-    const p = plan();
+		p.test('test 1', (assert) => {
+			assert.ok(true);
+		});
 
-    p.test('test 1', (assert) => {
-      assert.ok(true);
-    });
+		p.test('test 2', (assert) => {
+			assert.ok(true);
+		});
 
-    p.test('test 2', (assert) => {
-      assert.ok(true);
-    });
-
-    p.run(assert([
-      {
-        actual: true,
-        description: 'test 1',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 1
-      }, {
-        actual: true,
-        description: 'test 2',
-        expected: 'truthy',
-        message: 'should be truthy',
-        operator: 'ok',
-        pass: true,
-        id: 2
-      }
-    ], t));
-  });
+		p.run(assert([
+			{
+				actual: true,
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true
+			}, {
+				actual: true,
+				expected: 'truthy',
+				message: 'should be truthy',
+				operator: 'ok',
+				pass: true,
+			}
+		], t));
+	});
 }
 
 export default testFunc;

@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.Zora = factory());
+	(global.zora = factory());
 }(this, (function () { 'use strict';
 
 function createCommonjsModule(fn, module) {
@@ -19,6 +19,8 @@ function shim (obj) {
   return keys;
 }
 });
+
+var keys_1 = keys.shim;
 
 var is_arguments = createCommonjsModule(function (module, exports) {
 var supportsArgumentsClass = (function(){
@@ -43,7 +45,10 @@ function unsupported(object){
 }
 });
 
-var index = createCommonjsModule(function (module) {
+var is_arguments_1 = is_arguments.supported;
+var is_arguments_2 = is_arguments.unsupported;
+
+var deepEqual_1 = createCommonjsModule(function (module) {
 var pSlice = Array.prototype.slice;
 
 
@@ -140,254 +145,271 @@ function objEquiv(a, b, opts) {
 }
 });
 
-var assert = (collect) => {
-  const insertAssertionHook = (fn) => (...args) => {
-    const assertResult = fn(...args);
-    collect(assertResult);
-    return assertResult;
-  };
-
-  return {
-    ok: insertAssertionHook((val, message = 'should be truthy') => ({
-      pass: Boolean(val),
-      expected: 'truthy',
-      actual: val,
-      operator: 'ok',
-      message
-    })),
-    deepEqual: insertAssertionHook((actual, expected, message = 'should be equivalent') => ({
-      pass: index(actual, expected),
-      actual,
-      expected,
-      message,
-      operator: 'deepEqual'
-    })),
-    equal: insertAssertionHook((actual, expected, message = 'should be equal') => ({
-      pass: actual === expected,
-      actual,
-      expected,
-      message,
-      operator: 'equal'
-    })),
-    notOk: insertAssertionHook((val, message = 'should not be truthy') => ({
-      pass: !Boolean(val),
-      expected: 'falsy',
-      actual: val,
-      operator: 'notOk',
-      message
-    })),
-    notDeepEqual: insertAssertionHook((actual, expected, message = 'should not be equivalent') => ({
-      pass: !index(actual, expected),
-      actual,
-      expected,
-      message,
-      operator: 'notDeepEqual'
-    })),
-    notEqual: insertAssertionHook((actual, expected, message = 'should not be equal') => ({
-      pass: actual !== expected,
-      actual,
-      expected,
-      message,
-      operator: 'notEqual'
-    })),
-    throws: insertAssertionHook((func, expected, message) => {
-      let caught, pass, actual;
-      if (typeof expected === 'string') {
-        [expected, message] = [message, expected];
-      }
-      try {
-        func();
-      } catch (error) {
-        caught = {error};
-      }
-      pass = caught !== undefined;
-      actual = caught && caught.error;
-      if (expected instanceof RegExp) {
-        pass = expected.test(actual) || expected.test(actual && actual.message);
-        expected = String(expected);
-      } else if (typeof expected === 'function' && caught) {
-        pass = actual instanceof expected;
-        actual = actual.constructor;
-      }
-      return {
-        pass,
-        expected,
-        actual,
-        operator: 'throws',
-        message: message || 'should throw'
-      };
-    }),
-    doesNotThrow: insertAssertionHook((func, expected, message) => {
-      let caught;
-      if (typeof expected === 'string') {
-        [expected, message] = [message, expected];
-      }
-      try {
-        func();
-      } catch (error) {
-        caught = {error};
-      }
-      return {
-        pass: caught === undefined,
-        expected: 'no thrown error',
-        actual: caught && caught.error,
-        operator: 'doesNotThrow',
-        message: message || 'should not throw'
-      };
-    }),
-    fail: insertAssertionHook((reason = 'fail called') => ({
-      pass: false,
-      actual: 'fail called',
-      expected: 'fail not called',
-      message: reason,
-      operator: 'fail'
-    }))
-  };
+const assertMethodHook = fn => function (...args) {
+	const assertResult = fn(...args);
+	this.collect(assertResult);
+	return assertResult;
 };
 
-var test = ({description, spec, only = false} = {}) => {
-  const assertions = [];
-  const collect = (...args) => assertions.push(...args.map(a => Object.assign({description}, a)));
-
-  const instance = {
-    run(){
-      const now = Date.now();
-      return Promise.resolve(spec(assert(collect)))
-        .then(() => ({assertions, executionTime: Date.now() - now}));
-    }
-  };
-
-  Object.defineProperties(instance, {
-    only: {value: only},
-    assertions: {value: assertions},
-    length: {
-      get(){
-        return assertions.length
-      }
-    },
-    description: {value: description}
-  });
-
-  return instance;
+const Assertion = {
+	ok: assertMethodHook((val, message = 'should be truthy') => ({
+		pass: Boolean(val),
+		actual: val,
+		expected: 'truthy',
+		message,
+		operator: 'ok'
+	})),
+	deepEqual: assertMethodHook((actual, expected, message = 'should be equivalent') => ({
+		pass: deepEqual_1(actual, expected),
+		actual,
+		expected,
+		message,
+		operator: 'deepEqual'
+	})),
+	equal: assertMethodHook((actual, expected, message = 'should be equal') => ({
+		pass: actual === expected,
+		actual,
+		expected,
+		message,
+		operator: 'equal'
+	})),
+	notOk: assertMethodHook((val, message = 'should not be truthy') => ({
+		pass: !val,
+		expected: 'falsy',
+		actual: val,
+		message,
+		operator: 'notOk'
+	})),
+	notDeepEqual: assertMethodHook((actual, expected, message = 'should not be equivalent') => ({
+		pass: !deepEqual_1(actual, expected),
+		actual,
+		expected,
+		message,
+		operator: 'notDeepEqual'
+	})),
+	notEqual: assertMethodHook((actual, expected, message = 'should not be equal') => ({
+		pass: actual !== expected,
+		actual,
+		expected,
+		message,
+		operator: 'notEqual'
+	})),
+	throws: assertMethodHook((func, expected, message) => {
+		let caught;
+		let pass;
+		let actual;
+		if (typeof expected === 'string') {
+			[expected, message] = [message, expected];
+		}
+		try {
+			func();
+		} catch (err) {
+			caught = {error: err};
+		}
+		pass = caught !== undefined;
+		actual = caught && caught.error;
+		if (expected instanceof RegExp) {
+			pass = expected.test(actual) || expected.test(actual && actual.message);
+			expected = String(expected);
+		} else if (typeof expected === 'function' && caught) {
+			pass = actual instanceof expected;
+			actual = actual.constructor;
+		}
+		return {
+			pass,
+			expected,
+			actual,
+			operator: 'throws',
+			message: message || 'should throw'
+		};
+	}),
+	doesNotThrow: assertMethodHook((func, expected, message) => {
+		let caught;
+		if (typeof expected === 'string') {
+			[expected, message] = [message, expected];
+		}
+		try {
+			func();
+		} catch (err) {
+			caught = {error: err};
+		}
+		return {
+			pass: caught === undefined,
+			expected: 'no thrown error',
+			actual: caught && caught.error,
+			operator: 'doesNotThrow',
+			message: message || 'should not throw'
+		};
+	}),
+	fail: assertMethodHook((message = 'fail called') => ({
+		pass: false,
+		actual: 'fail called',
+		expected: 'fail not called',
+		message,
+		operator: 'fail'
+	}))
 };
 
-const tapOut = ({pass, message, index}) => {
-  const status = pass === true ? 'ok' : 'not ok';
-  console.log([status, index, message].join(' '));
+var assert = collect => Object.create(Assertion, {collect: {value: collect}});
+
+const noop = () => {};
+
+const skip = description => test('SKIPPED - ' + description, noop);
+
+const Test = {
+	async run() {
+		const collect = assertion => this.items.push(assertion);
+		const start = Date.now();
+		await Promise.resolve(this.spec(assert(collect)));
+		const executionTime = Date.now() - start;
+		return {
+			items: this.items,
+			description: this.description,
+			executionTime
+		};
+	},
+	skip() {
+		return skip(this.description);
+	}
 };
 
-const canExit = () => {
-  return typeof process !== 'undefined' && typeof process.exit === 'function';
+function test(description, spec, {only = false} = {}) {
+	return Object.create(Test, {
+		items: {value: []},
+		only: {value: only},
+		spec: {value: spec},
+		description: {value: description}
+	});
+}
+
+const stringify = JSON.stringify;
+const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
+const printTestCase = (assertion, id) => {
+	const pass = assertion.pass;
+	const status = pass === true ? 'ok' : 'not ok';
+	console.log(`${status} ${id} ${assertion.message}`);
+	if (pass !== true) {
+		console.log(`	---
+	operator: ${assertion.operator}					
+	expected: ${stringify(assertion.expected)}					
+	actual: ${stringify(assertion.actual)}					
+	...`);
+	}
+};
+const printSummary = ({count, pass, fail, skipped, executionTime}) => {
+	console.log(`
+1..${count}
+# duration ${executionTime}ms
+# tests ${count} (${skipped} skipped)
+# pass  ${pass}
+# fail  ${fail}
+		`);
 };
 
 var tap = () => function * () {
-  let index = 1;
-  let lastId = 0;
-  let success = 0;
-  let failure = 0;
+	const startTime = Date.now();
+	let pass = 0;
+	let fail = 0;
+	let id = 0;
+	let skipped = 0;
+	let executionError;
+	console.log('TAP version 13');
+	try {
+		/* eslint-disable no-constant-condition */
+		while (true) {
+			const test = yield;
+			printTestHeader(test);
 
-  const starTime = Date.now();
-  console.log('TAP version 13');
-  try {
-    while (true) {
-      const assertion = yield;
-      if (assertion.pass === true) {
-        success++;
-      } else {
-        failure++;
-      }
-      assertion.index = index;
-      if (assertion.id !== lastId) {
-        console.log(`# ${assertion.description} - ${assertion.executionTime}ms`);
-        lastId = assertion.id;
-      }
-      tapOut(assertion);
-      if (assertion.pass !== true) {
-        console.log(`  ---
-  operator: ${assertion.operator}
-  expected: ${JSON.stringify(assertion.expected)}
-  actual: ${JSON.stringify(assertion.actual)}
-  ...`);
-      }
-      index++;
-    }
-  } catch (e) {
-    console.log('Bail out! unhandled exception');
-    console.log(e);
-    if (canExit()) {
-      process.exit(1);
-    }
-  }
-  finally {
-    const execution = Date.now() - starTime;
-    if (index > 1) {
-      console.log(`
-1..${index - 1}
-# duration ${execution}ms
-# success ${success}
-# failure ${failure}`);
-    }
-    if (failure && canExit()) {
-      process.exit(1);
-    }
-  }
+			if (test.items.length === 0) {
+				skipped++;
+			}
+
+			for (const assertion of test.items) {
+				id++;
+				if (assertion.pass === true) {
+					pass++;
+				} else {
+					fail++;
+				}
+				printTestCase(assertion, id);
+			}
+		}
+		/* eslint-enable no-constant-condition */
+	} catch (err) {
+		console.log('Bail out! unhandled exception');
+		executionError = err;
+	} finally {
+		const executionTime = Date.now() - startTime;
+		printSummary({count: id, executionTime, skipped, pass, fail});
+	}
+
+	if (executionError) {
+		throw executionError; // Environments see unhandled error (exit a process with a valid code)
+	}
+
+	if (fail > 0) {
+		throw new Error('Some tests have failed. See report above'); // Environments see the process has failed (exit a process with a valid code)
+	}
 };
 
-var plan = () => {
-  const tests = [];
-  const instance = {
-    test(description, spec, opts = {}){
-      if (!spec && description.test) {
-        //this is a plan
-        tests.push(...description);
-      } else {
-        const testItems = (description, spec) => (!spec && description.test) ? [...description] : [{description, spec}];
-        tests.push(...testItems(description, spec).map(t => test(Object.assign(t, opts))));
-      }
-      return instance;
-    },
-    only(description, spec, opts = {}){
-      return instance.test(description, spec, Object.assign(opts, {only: true}));
-    },
-    async run(sink = tap()){
-      const sinkIterator = sink();
-      const hasOnly = tests.some(t => t.only);
-      const runnable = hasOnly ? tests.filter(t => t.only) : tests;
-      let id = 1;
-      sinkIterator.next();
-      try {
-        const results = runnable.map(t => t.run());
-        for (let r of results) {
-          const {assertions, executionTime} = await r;
-          for (let assert of assertions) {
-            sinkIterator.next(Object.assign(assert, {id, executionTime}));
-          }
-          id++;
-        }
-      }
-      catch (e) {
-        sinkIterator.throw(e);
-      } finally {
-        sinkIterator.return();
-      }
-    },
-    [Symbol.iterator](){
-      return tests[Symbol.iterator]();
-    }
-  };
-
-  Object.defineProperties(instance, {
-    tests: {value: tests},
-    length: {
-      get(){
-        return tests.length
-      }
-    }
-  });
-
-  return instance;
+const PlanProto = {
+	[Symbol.iterator]() {
+		return this.items[Symbol.iterator]();
+	},
+	test(description, spec, opts) {
+		if (!spec && description.test) {
+			// If it is a plan
+			this.items.push(...description);
+		} else {
+			this.items.push(test(description, spec, opts));
+		}
+		return this;
+	},
+	only(description, spec) {
+		return this.test(description, spec, {only: true});
+	},
+	skip(description, spec) {
+		if (!spec && description.test) {
+			// If it is a plan we skip the whole plan
+			for (const t of description) {
+				this.items.push(t.skip());
+			}
+		} else {
+			this.items.push(skip(description));
+		}
+		return this;
+	},
+	async run(sink = tap()) {
+		const sinkIterator = sink();
+		sinkIterator.next();
+		try {
+			const hasOnly = this.items.some(t => t.only);
+			const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
+			const runningTests = tests.map(t => t.run());
+			/* eslint-disable no-await-in-loop */
+			for (const r of runningTests) {
+				const executedTest = await r;
+				sinkIterator.next(executedTest);
+			}
+			/* eslint-enable no-await-in-loop */
+		} catch (err) {
+			sinkIterator.throw(err);
+		} finally {
+			sinkIterator.return();
+		}
+	}
 };
 
-return plan;
+function factory() {
+	return Object.create(PlanProto, {
+		items: {value: []}, length: {
+			get() {
+				return this.items.length;
+			}
+		}
+	});
+}
+
+return factory;
 
 })));
