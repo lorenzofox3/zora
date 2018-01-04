@@ -306,7 +306,7 @@ const printSummary = ({count, pass, fail, skipped, executionTime}) => {
 		`);
 };
 
-var tap = () => function * () {
+var tap = ({displaySkipped = true} = {}) => function * () {
 	const startTime = Date.now();
 	let pass = 0;
 	let fail = 0;
@@ -318,10 +318,13 @@ var tap = () => function * () {
 		/* eslint-disable no-constant-condition */
 		while (true) {
 			const test = yield;
-			printTestHeader(test);
 
 			if (test.items.length === 0) {
 				skipped++;
+			}
+
+			if (test.items.length > 0 || displaySkipped === true) {
+				printTestHeader(test);
 			}
 
 			for (const assertion of test.items) {
