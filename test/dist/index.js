@@ -2661,12 +2661,13 @@ const printTestCase = (assertion, id) => {
 	const status = pass === true ? 'ok' : 'not ok';
 	console.log(`${status} ${id} ${assertion.message}`);
 	if (pass !== true) {
-		console.log(`  ---    
+		console.log(`  ---
     operator: ${assertion.operator}
     expected: ${stringify(assertion.expected)}
     actual: ${stringify(assertion.actual)}
     at: ${(assertion.at).replace(/^at/i, '').trim()}
-  ...`);
+  ...
+`);
 	}
 };
 const printSummary = ({count, pass, fail, skipped, executionTime}) => {

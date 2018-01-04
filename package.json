@@ -21,6 +21,7 @@
     "build:test": "rollup -c ./rollup/test.js",
     "build:es": "rollup -c ./rollup/es.js",
     "build:umd": "rollup -c ./rollup/umd.js",
+    "sample": "node ./test/sample.js | faucet",
     "build": "npm run clean && npm run build:es && npm run build:umd",
     "test": "xo ./lib/*.js && npm run clean:test && npm run build:test && node ./test/dist/index.js"
   },
