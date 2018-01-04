@@ -29,7 +29,7 @@ function testFunc() {
 		t.equal(operator, 'ok', 'should have the operator ok');
 		t.equal(message, 'not default!', 'should not have the default message');
 		t.equal(pass, false, 'should not have passed');
-		t.equal(expected, 'truthy');
+		t.equal(expected, true);
 		t.equal(actual, 0, 'should have provided the acual value');
 		t.equal(collect.calls, 1, 'should have added the assertion');
 		t.end();
@@ -99,7 +99,7 @@ function testFunc() {
 		t.equal(operator, 'notOk', 'should have the operator notOk');
 		t.equal(message, 'not default!', 'should not have the default message');
 		t.equal(pass, false, 'should not have passed');
-		t.equal(expected, 'falsy');
+		t.equal(expected, false);
 		t.equal(actual, 1, 'should have provided the acual value');
 		t.equal(collect.calls, 1, 'should have added the assertion');
 		t.end();

@@ -12,7 +12,7 @@ function testFunc() {
 			.then(function ({items, executionTime}) {
 				t.deepEqual(items, [{
 					actual: true,
-					expected: 'truthy',
+					expected: true,
 					message: 'should be truthy',
 					operator: 'ok',
 					pass: true
@@ -39,7 +39,7 @@ function testFunc() {
 			.then(function ({items, executionTime}) {
 				t.deepEqual(items, [{
 					actual: true,
-					expected: 'truthy',
+					expected: true,
 					message: 'should be truthy',
 					operator: 'ok',
 					pass: true

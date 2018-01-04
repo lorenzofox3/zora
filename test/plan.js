@@ -81,7 +81,7 @@ function testFunc() {
 			{
 				actual: true,
 				description: 'should run this one',
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true,
@@ -90,7 +90,7 @@ function testFunc() {
 			{
 				actual: true,
 				description: 'should run this one too',
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true,
@@ -128,7 +128,7 @@ function testFunc() {
 			{
 				actual: true,
 				description: 'should run this one',
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true,
@@ -137,7 +137,7 @@ function testFunc() {
 			{
 				actual: true,
 				description: 'should run this one too',
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true,
@@ -160,13 +160,13 @@ function testFunc() {
 		p.run(assert([
 			{
 				actual: true,
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true
 			}, {
 				actual: true,
-				expected: 'truthy',
+				expected: true,
 				message: 'should be truthy',
 				operator: 'ok',
 				pass: true,

@@ -159,7 +159,7 @@ const Assertion = {
 	ok: assertMethodHook((val, message = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
-		expected: 'truthy',
+		expected: true,
 		message,
 		operator: 'ok'
 	})),
@@ -179,7 +179,7 @@ const Assertion = {
 	})),
 	notOk: assertMethodHook((val, message = 'should not be truthy') => ({
 		pass: !val,
-		expected: 'falsy',
+		expected: false,
 		actual: val,
 		message,
 		operator: 'notOk'
