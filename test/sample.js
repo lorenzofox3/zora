@@ -15,7 +15,17 @@ plan
 		const p = new Promise(function (resolve) {
 			setTimeout(function () {
 				resolve('foo')
-			}, 3000)
+			}, 3100)
+		});
+
+		const val = await p;
+		assert.equal(val, 'foo', 'should have passed an async test');
+	})
+	.test('async test', async (assert) => {
+		const p = new Promise(function (resolve) {
+			setTimeout(function () {
+				resolve('foo')
+			}, 3100)
 		});
 
 		const val = await p;
@@ -24,16 +34,12 @@ plan
 
 plan.run();
 
-
-// tape('assertions', (assert) => {
-// 	assert.equal('foo', 'foo');
-// 	assert.equal('foo', 'bar');
-// 	assert.deepEqual({foo: 'bar'}, {foo: 'bar'});
-// 	assert.deepEqual({foo: 'bar'}, 'foo');
-// 	assert.ok(true);
-// 	assert.ok(false);
-// 	assert.fail('wanted to fail');
-// })
-
-
-
+tape('assertions', (assert) => {
+	assert.equal('foo', 'foo');
+	assert.equal('foo', 'bar');
+	assert.deepEqual({foo: 'bar'}, {foo: 'bar'});
+	assert.deepEqual({foo: 'bar'}, 'foo');
+	assert.ok(true);
+	assert.ok(false);
+	assert.fail('wanted to fail');
+})

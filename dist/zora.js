@@ -145,8 +145,18 @@ function objEquiv(a, b, opts) {
 }
 });
 
+const getAssertionLocation = () => {
+	const err = new Error();
+	const stack = (err.stack || '').split('\n');
+	return (stack[3] || '').trim();
+};
 const assertMethodHook = fn => function (...args) {
 	const assertResult = fn(...args);
+
+	if (assertResult.pass === false) {
+		assertResult.at = getAssertionLocation();
+	}
+
 	this.collect(assertResult);
 	return assertResult;
 };
@@ -289,11 +299,12 @@ const printTestCase = (assertion, id) => {
 	const status = pass === true ? 'ok' : 'not ok';
 	console.log(`${status} ${id} ${assertion.message}`);
 	if (pass !== true) {
-		console.log(`	---
-	operator: ${assertion.operator}					
-	expected: ${stringify(assertion.expected)}					
-	actual: ${stringify(assertion.actual)}					
-	...`);
+		console.log(`  ---    
+    operator: ${assertion.operator}
+    expected: ${stringify(assertion.expected)}
+    actual: ${stringify(assertion.actual)}
+    at: ${(assertion.at).replace(/^at/i, '').trim()}
+  ...`);
 	}
 };
 const printSummary = ({count, pass, fail, skipped, executionTime}) => {
@@ -312,7 +323,6 @@ var tap = ({displaySkipped = true} = {}) => function * () {
 	let fail = 0;
 	let id = 0;
 	let skipped = 0;
-	let executionError;
 	console.log('TAP version 13');
 	try {
 		/* eslint-disable no-constant-condition */
@@ -340,18 +350,10 @@ var tap = ({displaySkipped = true} = {}) => function * () {
 		/* eslint-enable no-constant-condition */
 	} catch (err) {
 		console.log('Bail out! unhandled exception');
-		executionError = err;
+		throw err;
 	} finally {
 		const executionTime = Date.now() - startTime;
 		printSummary({count: id, executionTime, skipped, pass, fail});
-	}
-
-	if (executionError) {
-		throw executionError; // Environments see unhandled error (exit a process with a valid code)
-	}
-
-	if (fail > 0) {
-		throw new Error('Some tests have failed. See report above'); // Environments see the process has failed (exit a process with a valid code)
 	}
 };
 
