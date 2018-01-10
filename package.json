@@ -31,7 +31,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "zora-reporter": "0.0.2"
   },
   "devDependencies": {
     "rollup": "^0.53.3",

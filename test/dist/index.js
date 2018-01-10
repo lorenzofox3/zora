@@ -2119,7 +2119,7 @@ var tape_3 = tape.test;
 const getAssertionLocation = () => {
 	const err = new Error();
 	const stack = (err.stack || '').split('\n');
-	return (stack[3] || '').trim();
+	return (stack[3] || '').replace(/^at/i, '').trim();
 };
 const assertMethodHook = fn => function (...args) {
 	const assertResult = fn(...args);
@@ -2585,11 +2585,9 @@ const Test$2 = {
 		const start = Date.now();
 		await Promise.resolve(this.spec(assert(collect)));
 		const executionTime = Date.now() - start;
-		return {
-			items: this.items,
-			description: this.description,
+		return Object.assign(this, {
 			executionTime
-		};
+		});
 	},
 	skip() {
 		return skip(this.description);
@@ -2665,7 +2663,7 @@ const printTestCase = (assertion, id) => {
     operator: ${assertion.operator}
     expected: ${stringify(assertion.expected)}
     actual: ${stringify(assertion.actual)}
-    at: ${(assertion.at).replace(/^at/i, '').trim()}
+    at: ${(assertion.at || '')}
   ...
 `);
 	}
@@ -2674,13 +2672,13 @@ const printSummary = ({count, pass, fail, skipped, executionTime}) => {
 	console.log(`
 1..${count}
 # duration ${executionTime}ms
-# tests ${count} (${skipped} skipped)
+# ${skipped > 0 ? '🚨' : ''}tests ${count} (${skipped} skipped)
 # pass  ${pass}
-# fail  ${fail}
+# ${fail > 0 ? '🚨' : ''}fail  ${fail} 
 		`);
 };
 
-var tap = ({displaySkipped = true} = {}) => function * () {
+var tap = ({displaySkipped = false} = {}) => function * () {
 	const startTime = Date.now();
 	let pass = 0;
 	let fail = 0;

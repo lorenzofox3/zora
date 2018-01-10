@@ -1,3 +1,69 @@
+const stringify = JSON.stringify;
+const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
+const printTestCase = (assertion, id) => {
+	const pass = assertion.pass;
+	const status = pass === true ? 'ok' : 'not ok';
+	console.log(`${status} ${id} ${assertion.message}`);
+	if (pass !== true) {
+		console.log(`  ---
+    operator: ${assertion.operator}
+    expected: ${stringify(assertion.expected)}
+    actual: ${stringify(assertion.actual)}
+    at: ${(assertion.at || '')}
+  ...
+`);
+	}
+};
+const printSummary = ({count, pass, fail, skipped, executionTime}) => {
+	console.log(`
+1..${count}
+# duration ${executionTime}ms
+# ${skipped > 0 ? '🚨' : ''}tests ${count} (${skipped} skipped)
+# pass  ${pass}
+# ${fail > 0 ? '🚨' : ''}fail  ${fail} 
+		`);
+};
+
+var tap = ({displaySkipped = false} = {}) => function * () {
+	const startTime = Date.now();
+	let pass = 0;
+	let fail = 0;
+	let id = 0;
+	let skipped = 0;
+	console.log('TAP version 13');
+	try {
+		/* eslint-disable no-constant-condition */
+		while (true) {
+			const test = yield;
+
+			if (test.items.length === 0) {
+				skipped++;
+			}
+
+			if (test.items.length > 0 || displaySkipped === true) {
+				printTestHeader(test);
+			}
+
+			for (const assertion of test.items) {
+				id++;
+				if (assertion.pass === true) {
+					pass++;
+				} else {
+					fail++;
+				}
+				printTestCase(assertion, id);
+			}
+		}
+		/* eslint-enable no-constant-condition */
+	} catch (err) {
+		console.log('Bail out! unhandled exception');
+		throw err;
+	} finally {
+		const executionTime = Date.now() - startTime;
+		printSummary({count: id, executionTime, skipped, pass, fail});
+	}
+};
+
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
@@ -142,7 +208,7 @@ function objEquiv(a, b, opts) {
 const getAssertionLocation = () => {
 	const err = new Error();
 	const stack = (err.stack || '').split('\n');
-	return (stack[3] || '').trim();
+	return (stack[3] || '').replace(/^at/i, '').trim();
 };
 const assertMethodHook = fn => function (...args) {
 	const assertResult = fn(...args);
@@ -266,11 +332,9 @@ const Test = {
 		const start = Date.now();
 		await Promise.resolve(this.spec(assert(collect)));
 		const executionTime = Date.now() - start;
-		return {
-			items: this.items,
-			description: this.description,
+		return Object.assign(this, {
 			executionTime
-		};
+		});
 	},
 	skip() {
 		return skip(this.description);
@@ -285,72 +349,6 @@ function test(description, spec, {only = false} = {}) {
 		description: {value: description}
 	});
 }
-
-const stringify = JSON.stringify;
-const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
-const printTestCase = (assertion, id) => {
-	const pass = assertion.pass;
-	const status = pass === true ? 'ok' : 'not ok';
-	console.log(`${status} ${id} ${assertion.message}`);
-	if (pass !== true) {
-		console.log(`  ---
-    operator: ${assertion.operator}
-    expected: ${stringify(assertion.expected)}
-    actual: ${stringify(assertion.actual)}
-    at: ${(assertion.at).replace(/^at/i, '').trim()}
-  ...
-`);
-	}
-};
-const printSummary = ({count, pass, fail, skipped, executionTime}) => {
-	console.log(`
-1..${count}
-# duration ${executionTime}ms
-# tests ${count} (${skipped} skipped)
-# pass  ${pass}
-# fail  ${fail}
-		`);
-};
-
-var tap = ({displaySkipped = true} = {}) => function * () {
-	const startTime = Date.now();
-	let pass = 0;
-	let fail = 0;
-	let id = 0;
-	let skipped = 0;
-	console.log('TAP version 13');
-	try {
-		/* eslint-disable no-constant-condition */
-		while (true) {
-			const test = yield;
-
-			if (test.items.length === 0) {
-				skipped++;
-			}
-
-			if (test.items.length > 0 || displaySkipped === true) {
-				printTestHeader(test);
-			}
-
-			for (const assertion of test.items) {
-				id++;
-				if (assertion.pass === true) {
-					pass++;
-				} else {
-					fail++;
-				}
-				printTestCase(assertion, id);
-			}
-		}
-		/* eslint-enable no-constant-condition */
-	} catch (err) {
-		console.log('Bail out! unhandled exception');
-		throw err;
-	} finally {
-		const executionTime = Date.now() - startTime;
-		printSummary({count: id, executionTime, skipped, pass, fail});
-	}
-};
 
 const PlanProto = {
 	[Symbol.iterator]() {
