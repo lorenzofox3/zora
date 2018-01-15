@@ -350,6 +350,8 @@ function test(description, spec, {only = false} = {}) {
 	});
 }
 
+const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
+
 const PlanProto = {
 	[Symbol.iterator]() {
 		return this.items[Symbol.iterator]();
@@ -386,7 +388,7 @@ const PlanProto = {
 			const runningTests = tests.map(t => t.run());
 			/* eslint-disable no-await-in-loop */
 			for (const r of runningTests) {
-				const executedTest = await r;
+				const executedTest = await onNextTick(r); // Force to resolve on next tick so consumer can do something with previous iteration result (until async iterator are natively supported ...)
 				sinkIterator.next(executedTest);
 			}
 			/* eslint-enable no-await-in-loop */

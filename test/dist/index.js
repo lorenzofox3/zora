@@ -6,7 +6,7 @@ var stream = _interopDefault(require('stream'));
 var fs = _interopDefault(require('fs'));
 var path = _interopDefault(require('path'));
 var util = _interopDefault(require('util'));
-var events = _interopDefault(require('events'));
+var require$$0 = _interopDefault(require('events'));
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -381,10 +381,10 @@ var functionBind = Function.prototype.bind || implementation;
 
 var src = functionBind.call(Function.call, Object.prototype.hasOwnProperty);
 
-var toStr$3 = Object.prototype.toString;
+var toStr$1 = Object.prototype.toString;
 
 var isArguments$1 = function isArguments(value) {
-	var str = toStr$3.call(value);
+	var str = toStr$1.call(value);
 	var isArgs = str === '[object Arguments]';
 	if (!isArgs) {
 		isArgs = str !== '[object Array]' &&
@@ -392,7 +392,7 @@ var isArguments$1 = function isArguments(value) {
 			typeof value === 'object' &&
 			typeof value.length === 'number' &&
 			value.length >= 0 &&
-			toStr$3.call(value.callee) === '[object Function]';
+			toStr$1.call(value.callee) === '[object Function]';
 	}
 	return isArgs;
 };
@@ -402,9 +402,9 @@ var has = Object.prototype.hasOwnProperty;
 var toStr$2 = Object.prototype.toString;
 var slice$1 = Array.prototype.slice;
 
-var isEnumerable$1 = Object.prototype.propertyIsEnumerable;
-var hasDontEnumBug = !isEnumerable$1.call({ toString: null }, 'toString');
-var hasProtoEnumBug = isEnumerable$1.call(function () {}, 'prototype');
+var isEnumerable = Object.prototype.propertyIsEnumerable;
+var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
+var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
 var dontEnums = [
 	'toString',
 	'toLocaleString',
@@ -559,10 +559,10 @@ var foreach = function forEach (obj, fn, ctx) {
 
 var hasSymbols = typeof Symbol === 'function' && typeof Symbol() === 'symbol';
 
-var toStr$1 = Object.prototype.toString;
+var toStr$3 = Object.prototype.toString;
 
 var isFunction = function (fn) {
-	return typeof fn === 'function' && toStr$1.call(fn) === '[object Function]';
+	return typeof fn === 'function' && toStr$3.call(fn) === '[object Function]';
 };
 
 var arePropertyDescriptorsSupported = function () {
@@ -698,7 +698,7 @@ var ES5internalSlots = {
 };
 
 // https://es5.github.io/#x9
-var es5$2 = function ToPrimitive(input, PreferredType) {
+var es5 = function ToPrimitive(input, PreferredType) {
 	if (isPrimitive(input)) {
 		return input;
 	}
@@ -707,7 +707,7 @@ var es5$2 = function ToPrimitive(input, PreferredType) {
 
 // https://es5.github.io/#x9
 var ES5 = {
-	ToPrimitive: es5$2,
+	ToPrimitive: es5,
 
 	ToBoolean: function ToBoolean(value) {
 		return !!value;
@@ -927,7 +927,7 @@ var ES5 = {
 	}
 };
 
-var es5 = ES5;
+var es5$2 = ES5;
 
 var replace = functionBind.call(Function.call, String.prototype.replace);
 
@@ -935,7 +935,7 @@ var leftWhitespace = /^[\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u20
 var rightWhitespace = /[\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF]+$/;
 
 var implementation$3 = function trim() {
-	var S = es5.ToString(es5.CheckObjectCoercible(this));
+	var S = es5$2.ToString(es5$2.CheckObjectCoercible(this));
 	return replace(replace(S, leftWhitespace, ''), rightWhitespace, '');
 };
 
@@ -966,10 +966,10 @@ var string_prototype_trim = boundTrim;
 
 var isFunction_1 = isFunction$1;
 
-var toString$2 = Object.prototype.toString;
+var toString$1 = Object.prototype.toString;
 
 function isFunction$1 (fn) {
-  var string = toString$2.call(fn);
+  var string = toString$1.call(fn);
   return string === '[object Function]' ||
     (typeof fn === 'function' && string !== '[object RegExp]') ||
     (typeof window !== 'undefined' &&
@@ -982,7 +982,7 @@ function isFunction$1 (fn) {
 
 var forEach_1 = forEach;
 
-var toString$1 = Object.prototype.toString;
+var toString$2 = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 function forEach(list, iterator, context) {
@@ -994,7 +994,7 @@ function forEach(list, iterator, context) {
         context = this;
     }
     
-    if (toString$1.call(list) === '[object Array]')
+    if (toString$2.call(list) === '[object Array]')
         forEachArray(list, iterator, context);
     else if (typeof list === 'string')
         forEachString(list, iterator, context);
@@ -1025,12 +1025,12 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-var EventEmitter = events.EventEmitter;
+var EventEmitter = require$$0.EventEmitter;
 
 
 
 
-var isEnumerable = functionBind.call(Function.call, Object.prototype.propertyIsEnumerable);
+var isEnumerable$1 = functionBind.call(Function.call, Object.prototype.propertyIsEnumerable);
 
 var test = Test;
 
@@ -1463,7 +1463,7 @@ Test.prototype['throws'] = function (fn, expected, msg, extra) {
         fn();
     } catch (err) {
         caught = { error : err };
-        if ((err != null) && (!isEnumerable(err, 'message') || !src(err, 'message'))) {
+        if ((err != null) && (!isEnumerable$1(err, 'message') || !src(err, 'message'))) {
             var message = err.message;
             delete err.message;
             err.message = message;
@@ -1520,7 +1520,7 @@ Test.skip = function (name_, _opts, _cb) {
     return Test(args.name, args.opts, args.cb);
 };
 
-var nextTick$2 = typeof setImmediate !== 'undefined'
+var nextTick$1 = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick;
 
@@ -1541,7 +1541,7 @@ var resumer = function (write, end) {
         return resume.apply(this, arguments);
     };
     
-    nextTick$2(function () {
+    nextTick$1(function () {
         if (!paused) tr.resume();
     });
     
@@ -1781,7 +1781,7 @@ function arrObjKeys (obj, inspect) {
     return xs;
 }
 
-var EventEmitter$1 = events.EventEmitter;
+var EventEmitter$1 = require$$0.EventEmitter;
 
 
 
@@ -1790,7 +1790,7 @@ var EventEmitter$1 = events.EventEmitter;
 
 var regexpTest = functionBind.call(Function.call, RegExp.prototype.test);
 var yamlIndicators = /\:|\-|\?/;
-var nextTick$1 = typeof setImmediate !== 'undefined'
+var nextTick$2 = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick;
 
@@ -1846,11 +1846,11 @@ Results.prototype.createStream = function (opts) {
         self._stream.pipe(output);
     }
     
-    nextTick$1(function next() {
+    nextTick$2(function next() {
         var t;
         while (t = getNextTest(self)) {
             t.run();
-            if (!t.ended) return t.once('end', function(){ nextTick$1(next); });
+            if (!t.ended) return t.once('end', function(){ nextTick$2(next); });
         }
         self.emit('done');
     });
@@ -2577,7 +2577,7 @@ function testFunc() {
 
 const noop = () => {};
 
-const skip = description => test$3('SKIPPED - ' + description, noop);
+const skip = description => test$2('SKIPPED - ' + description, noop);
 
 const Test$2 = {
 	async run() {
@@ -2594,7 +2594,7 @@ const Test$2 = {
 	}
 };
 
-function test$3(description, spec, {only = false} = {}) {
+function test$2(description, spec, {only = false} = {}) {
 	return Object.create(Test$2, {
 		items: {value: []},
 		only: {value: only},
@@ -2606,7 +2606,7 @@ function test$3(description, spec, {only = false} = {}) {
 function testFunc$1() {
 
 	tape('test: run and resolve with assertions', t => {
-		const tp = test$3('desc', function (assert) {
+		const tp = test$2('desc', function (assert) {
 			assert.ok(true);
 		});
 
@@ -2625,7 +2625,7 @@ function testFunc$1() {
 	});
 
 	tape('test: run and resolve with assertions async flow', t => {
-		const tp = test$3('desc', async function (assert) {
+		const tp = test$2('desc', async function (assert) {
 			const presult = new Promise(function (resolve) {
 				setTimeout(function () {
 					resolve(true);
@@ -2718,6 +2718,8 @@ var tap = ({displaySkipped = false} = {}) => function * () {
 	}
 };
 
+const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
+
 const PlanProto = {
 	[Symbol.iterator]() {
 		return this.items[Symbol.iterator]();
@@ -2727,7 +2729,7 @@ const PlanProto = {
 			// If it is a plan
 			this.items.push(...description);
 		} else {
-			this.items.push(test$3(description, spec, opts));
+			this.items.push(test$2(description, spec, opts));
 		}
 		return this;
 	},
@@ -2754,7 +2756,7 @@ const PlanProto = {
 			const runningTests = tests.map(t => t.run());
 			/* eslint-disable no-await-in-loop */
 			for (const r of runningTests) {
-				const executedTest = await r;
+				const executedTest = await onNextTick(r); // Force to resolve on next tick so consumer can do something with previous iteration result (until async iterator are natively supported ...)
 				sinkIterator.next(executedTest);
 			}
 			/* eslint-enable no-await-in-loop */

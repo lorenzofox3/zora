@@ -18,10 +18,17 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:test": "rm -rf ./test/dist",
+    "clean:benchmark": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
     "build:test": "rollup -c ./rollup/test.js",
     "build:es": "rollup -c ./rollup/es.js",
     "build:umd": "rollup -c ./rollup/umd.js",
-    "sample": "node ./test/sample.js | faucet",
+    "build:benchmark": "npm run clean:benchmark && node ./scripts/generate.js",
+    "bench:zora": "time (node ./benchmarks/zora/index.js | tap-diff)",
+    "bench:ava": "time ava ./benchmarks/ava/test/",
+    "bench:mocha": "time mocha ./benchmarks/mocha/test/",
+    "bench:tape": "time (node ./benchmarks/tape/index)",
+    "bench:jest": "time jest",
+    "sample": "node ./test/sample.js",
     "build": "npm run clean && npm run build:es && npm run build:umd",
     "test": "xo ./lib/*.js && npm run clean:test && npm run build:test && node ./test/dist/index.js"
   },
@@ -35,10 +42,22 @@
     "zora-reporter": "0.0.2"
   },
   "devDependencies": {
-    "rollup": "^0.53.3",
+    "ava": "^0.24.0",
+    "jest": "^22.1.1",
+    "mkdirp": "^0.5.1",
+    "mocha": "^4.1.0",
+    "rollup": "^0.54.0",
     "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-node-resolve": "^3.0.2",
+    "tap-diff": "^0.1.1",
     "tape": "^4.8.0",
     "xo": "^0.18.2"
+  },
+  "jest": {
+    "testRegex": ".*.js",
+    "roots": [
+      "./benchmarks/jest/test"
+    ],
+    "testEnvironment": "node"
   }
 }

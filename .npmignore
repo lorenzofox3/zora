@@ -6,3 +6,5 @@ circle.yml
 yarn.lock
 lib
 rollup
+benchmarks
+scripts
