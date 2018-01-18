@@ -5,8 +5,7 @@ export default {
 	input: './test/index.js',
 	output:{
 		file:'./test/dist/index.js',
-		format:'cjs',
-		sourcemap:true
+		format:'cjs'
 	},
 	plugins: [node(), commonjs()],
 };

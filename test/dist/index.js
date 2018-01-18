@@ -2954,4 +2954,3 @@ function testFunc$2() {
 testFunc();
 testFunc$1();
 testFunc$2();
-//# sourceMappingURL=index.js.map
