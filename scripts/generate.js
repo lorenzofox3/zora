@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 8;
-const testCount = 10;
-const waitTime = 60;
+const filesCount = 1;
+const testCount = 5;
+const waitTime = 20;
 
 const zoraCode = `
 const plan = require('../../../dist/zora.js')();

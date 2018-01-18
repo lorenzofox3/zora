@@ -14,18 +14,18 @@ const printTestCase = (assertion, id) => {
 `);
 	}
 };
-const printSummary = ({count, pass, fail, skipped, executionTime}) => {
+const printSummary = ({count, pass, skipped, fail}) => {
 	console.log(`
 1..${count}
-# duration ${executionTime}ms
-# ${skipped > 0 ? '🚨' : ''}tests ${count} (${skipped} skipped)
+# tests ${count} (${skipped} skipped)
 # pass  ${pass}
-# ${fail > 0 ? '🚨' : ''}fail  ${fail} 
-		`);
+${fail > 0 ? `# fail  ${fail}
+` : `
+# ok
+`}`);
 };
 
 var tap = ({displaySkipped = false} = {}) => function * () {
-	const startTime = Date.now();
 	let pass = 0;
 	let fail = 0;
 	let id = 0;
@@ -59,8 +59,7 @@ var tap = ({displaySkipped = false} = {}) => function * () {
 		console.log('Bail out! unhandled exception');
 		throw err;
 	} finally {
-		const executionTime = Date.now() - startTime;
-		printSummary({count: id, executionTime, skipped, pass, fail});
+		printSummary({count: id, pass, skipped, fail});
 	}
 };
 
@@ -208,7 +207,7 @@ function objEquiv(a, b, opts) {
 const getAssertionLocation = () => {
 	const err = new Error();
 	const stack = (err.stack || '').split('\n');
-	return (stack[3] || '').replace(/^at/i, '').trim();
+	return (stack[3] || '').trim().replace(/^at/i, '');
 };
 const assertMethodHook = fn => function (...args) {
 	const assertResult = fn(...args);

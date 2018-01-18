@@ -1,5 +1,4 @@
 const plan = require('../dist/zora')();
-// const tape = require('tape');
 
 plan
 	.test('assertions', (assert) => {
@@ -15,7 +14,7 @@ plan
 		const p = new Promise(function (resolve) {
 			setTimeout(function () {
 				resolve('foo')
-			}, 3100)
+			}, 200)
 		});
 
 		const val = await p;
@@ -25,7 +24,7 @@ plan
 		const p = new Promise(function (resolve) {
 			setTimeout(function () {
 				resolve('foo')
-			}, 3100)
+			}, 100)
 		});
 
 		const val = await p;
@@ -33,13 +32,3 @@ plan
 	});
 
 plan.run();
-//
-// tape('assertions', (assert) => {
-// 	assert.equal('foo', 'foo');
-// 	assert.equal('foo', 'bar');
-// 	assert.deepEqual({foo: 'bar'}, {foo: 'bar'});
-// 	assert.deepEqual({foo: 'bar'}, 'foo');
-// 	assert.ok(true);
-// 	assert.ok(false);
-// 	assert.fail('wanted to fail');
-// })
