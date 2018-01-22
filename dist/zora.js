@@ -1,8 +1,5 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.zora = factory());
-}(this, (function () { 'use strict';
+var zora = (function () {
+'use strict';
 
 const stringify = JSON.stringify;
 const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
@@ -21,14 +18,15 @@ const printTestCase = (assertion, id) => {
 	}
 };
 const printSummary = ({count, pass, skipped, fail}) => {
-	console.log(`
-1..${count}
-# tests ${count} (${skipped} skipped)
-# pass  ${pass}
-${fail > 0 ? `# fail  ${fail}
-` : `
-# ok
-`}`);
+	//Some parsers seem to fail to detect end of stream if we use a single console.log call with a template string...
+	console.log(`1..${count}`);
+	console.log(`# tests ${count} (${skipped} skipped)`);
+	console.log(`# pass  ${pass}`);
+	if (fail > 0) {
+		console.log(`# fail  ${fail}`);
+	} else {
+		console.log('# ok');
+	}
 };
 
 var tap = ({displaySkipped = false} = {}) => function * () {
@@ -417,4 +415,5 @@ function factory() {
 
 return factory;
 
-})));
+}());
+//# sourceMappingURL=zora.js.map

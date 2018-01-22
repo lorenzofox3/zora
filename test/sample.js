@@ -1,4 +1,4 @@
-const plan = require('../dist/zora')();
+const plan = require('../dist/')();
 
 plan
 	.test('assertions', (assert) => {

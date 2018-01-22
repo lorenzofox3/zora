@@ -3,7 +3,7 @@ const path = require('path');
 
 const filesCount = 1;
 const testCount = 5;
-const waitTime = 20;
+const waitTime = 50;
 
 const zoraCode = `
 const plan = require('../../../dist/zora.js')();
@@ -91,17 +91,18 @@ for (let f of tests){
 masterPlan.run();
 `;
 
+
 for (let i = 1; i <= filesCount; i++) {
 	const zoraPath = path.join(process.cwd(), '/benchmarks/zora/test/', 'test' + i + '.js');
 	const avaPath = path.join(process.cwd(), '/benchmarks/ava/test/', 'test' + i + '.js');
 	const mochaPath = path.join(process.cwd(), '/benchmarks/mocha/test/', 'test' + i + '.js');
 	const tapePath = path.join(process.cwd(), '/benchmarks/tape/test/', 'test' + i + '.js');
 	const jestPath = path.join(process.cwd(), '/benchmarks/jest/test/', 'test' + i + '.js');
-	fs.writeFile(zoraPath, zoraCode);
-	fs.writeFile(avaPath, avaCode);
-	fs.writeFile(mochaPath, mochaCode);
-	fs.writeFile(tapePath, tapeCode);
-	fs.writeFile(jestPath, jestCode);
-	fs.writeFile(path.join(process.cwd(), '/benchmarks/tape/index.js'), tapeIndex);
-	fs.writeFile(path.join(process.cwd(), '/benchmarks/zora/index.js'), zoraIndex);
+	fs.writeFileSync(zoraPath, zoraCode);
+	fs.writeFileSync(avaPath, avaCode);
+	fs.writeFileSync(mochaPath, mochaCode);
+	fs.writeFileSync(tapePath, tapeCode);
+	fs.writeFileSync(jestPath, jestCode);
+	fs.writeFileSync(path.join(process.cwd(), '/benchmarks/tape/index.js'), tapeIndex);
+	fs.writeFileSync(path.join(process.cwd(), '/benchmarks/zora/index.js'), zoraIndex);
 }

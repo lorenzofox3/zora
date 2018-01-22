@@ -1,15 +1,10 @@
-import node from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-
 export default {
 	input: './lib/plan.js',
 	output:[{
-		file:'./dist/zora.mjs',
+		file:'./dist/index.mjs',
 		format:'es'
 	},{
-		file:'./dist/zora.js',
-		format:'umd',
-		name:'zora'
-	}],
-	plugins: [node(), commonjs()]
+		file:'./dist/index.js',
+		format:'cjs'
+	}]
 };
