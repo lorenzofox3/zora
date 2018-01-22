@@ -13,7 +13,7 @@
     "tap-producer"
   ],
   "main": "./dist/",
-  "module": "./dist/index.mjs",
+  "module": "./lib/plan.js",
   "jsnext:main": "./lib/plan.js",
   "repository": {
     "type": "git",
