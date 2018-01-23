@@ -99,7 +99,7 @@ function testFunc() {
 		], t));
 	});
 
-	tape.skip('only: only run the tests with only statement with composition', t => {
+	tape('only: only run the tests with only statement with composition', t => {
 		const p1 = plan();
 		const p2 = plan();
 		const masterPlan = plan();
@@ -171,6 +171,53 @@ function testFunc() {
 				operator: 'ok',
 				pass: true,
 			}
+		], t));
+	});
+
+	tape('plan running tests in sequence', t => {
+		const p = plan({sequence: true});
+		let globalCounter = 0;
+		const test = (assert, value, delay) => {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					assert.equal(globalCounter, value);
+					globalCounter++;
+					resolve();
+				}, delay);
+			});
+		};
+
+		p.test('test 1', async assert => {
+			await test(assert, 0, 300);
+		});
+
+		p.test('test 2', async assert => {
+			await test(assert, 1, 200);
+		});
+
+		p.test('test 3', async assert => {
+			await test(assert, 2, 100);
+		});
+
+		p.run(assert([{
+			actual: 0,
+			expected: 0,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 1,
+			expected: 1,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 2,
+			expected: 2,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}
 		], t));
 	});
 }

@@ -28,7 +28,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 
 ## features
 ### ⚡️ Zero config
-It is just Javascript, write your program, bundle it (if needed) for the environment you want to test in and execute the script! No whatever.conf.js
+It is just Javascript, write your test program, bundle it (if needed) for the environment you want to test in and execute the script! No whatever.conf.js or specific test runner.
 
 ### 🎯 No global
 There is no global, just a function providing a two methods API.
@@ -42,12 +42,21 @@ plan.test('my async test',async (assert) => {
 });
 
 ```
-### 📐 parallelism
-Each test run in parallel. It will likely be **faster** than other sequential test runner.
+### 📐 "parallelism"
+Each test run in "parallel", ie as
+
+```Javascript
+const tests = [test1,test2,test3];
+
+const results = Promise.all(tests.map(t=>t.run()));
+```
+(so do note they run it the same process)
+
+It will likely be **faster** than other sequential test runner.
 It therefore enforces you to write your tests in isolation which is often a good practice.
 
 ### 🚀 fast
-Zora does not do rocket science but seems to be the **fastest** (by at least 10 times) among mocha, tape, ava, jest on my machine according to [a simple test case](https://github.com/lorenzofox3/zora#benchmark)
+Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to [a simple test case](https://github.com/lorenzofox3/zora#benchmark)
 The test is pretty simple: a nodejs test suite split into N(=8) files with M(=8) tests lasting T(=60ms). Anyway you can simply fork the repo and sort it out yourself.
 
 ### 💄 tap (Test Anything Protocol) producer
@@ -55,7 +64,7 @@ By default zora produces a tap report through the console, so you can pipe in wi
 
 ### 🌎 browser friendly
 No sophisticated or platform specific (nodejs) dependency in it. Just regular EcmaScript supported by all the major platforms and browsers.
-Moreover Zora does not make any choice on transpilation, bundling, file serving, etc like most other test runners. You use what fits the best for your use cases.
+Moreover Zora does not make any choice on transpilation, bundling, file serving, etc like most other test runners. You use what fits the best for your use cases and you don't need any specific test runner.
 
 ## Usage
 ### simple case one file
@@ -100,13 +109,16 @@ Then in you entry point
 ```Javascript
 //./test/index.js
 import zora from 'zora';
-import plan from './test1.js'; // import all your test plans
+import plan1 from './test1.js'; // import all your test plans
+import plan2 from './test2.js'; // import all your test plans
+// etc
 
 // you create a test plan
 const masterPlan = zora();
 
 masterPlan
-    .test(plan)
+    .test(plan1)
+    .skip(plan2)
     .run(); // and run your plans
 ```
 
@@ -136,7 +148,7 @@ You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/z
 </script>
 </body>
 <!-- some content -->
-``` 
+```
 
 ### As part of CI (example with rollup)
 I will use [rollup](http://rollupjs.org/) for this example, but you should not have any problem with [webpack](https://webpack.github.io/) or [browserify](http://browserify.org/). The idea is simply to create a test file your testing browsers will be able to run.

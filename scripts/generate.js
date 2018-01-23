@@ -1,12 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 1;
-const testCount = 5;
-const waitTime = 50;
+const filesCount = 8;
+const testCount = 8;
+const waitTime = 60;
 
 const zoraCode = `
-const plan = require('../../../dist/zora.js')();
+const plan = require('../../../dist/index.js')();
 for (let i = 0; i < ${testCount}; i++) {
   plan.test('test ' + i, async function (assert) {
     await new Promise(resolve => {
@@ -78,7 +78,7 @@ for (let f of tests){
 }
 `;
 const zoraIndex = `
-const zora = require('../../dist/zora.js');
+const zora = require('../../dist/index.js');
 const masterPlan = zora();
 const path = require('path');
 const fs = require('fs');

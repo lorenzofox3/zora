@@ -2718,6 +2718,7 @@ var tap = ({displaySkipped = false} = {}) => function * () {
 	}
 };
 
+// Force to resolve on next tick so consumer can do something with previous iteration result
 const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
 
 const PlanProto = {
@@ -2746,35 +2747,47 @@ const PlanProto = {
 			this.items.push(skip(description));
 		}
 		return this;
-	},
-	async run(sink = tap()) {
-		const sinkIterator = sink();
-		sinkIterator.next();
-		try {
-			const hasOnly = this.items.some(t => t.only);
-			const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-			const runningTests = tests.map(t => t.run());
-			/* eslint-disable no-await-in-loop */
-			for (const r of runningTests) {
-				const executedTest = await onNextTick(r); // Force to resolve on next tick so consumer can do something with previous iteration result (until async iterator are natively supported ...)
-				sinkIterator.next(executedTest);
-			}
-			/* eslint-enable no-await-in-loop */
-		} catch (err) {
-			sinkIterator.throw(err);
-		} finally {
-			sinkIterator.return();
-		}
 	}
 };
 
-function factory() {
-	return Object.create(PlanProto, {
+const runnify = fn => async function (sink = tap()) {
+	const sinkIterator = sink();
+	sinkIterator.next();
+	try {
+		const hasOnly = this.items.some(t => t.only);
+		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
+		await fn(tests, sinkIterator);
+	} catch (err) {
+		sinkIterator.throw(err);
+	} finally {
+		sinkIterator.return();
+	}
+};
+
+function factory({sequence = false} = {sequence: false}) {
+	/* eslint-disable no-await-in-loop */
+	const exec = sequence === true ? async (tests, sinkIterator) => {
+		for (const t of tests) {
+			const result = await onNextTick(t.run());
+			sinkIterator.next(result);
+		}
+	} : async (tests, sinkIterator) => {
+		const runningTests = tests.map(t => t.run());
+		for (const r of runningTests) {
+			const executedTest = await onNextTick(r);
+			sinkIterator.next(executedTest);
+		}
+	};
+	/* eslint-enable no-await-in-loop */
+
+	return Object.assign(Object.create(PlanProto, {
 		items: {value: []}, length: {
 			get() {
 				return this.items.length;
 			}
 		}
+	}), {
+		run: runnify(exec)
 	});
 }
 
@@ -2876,7 +2889,7 @@ function testFunc$2() {
 		], t));
 	});
 
-	tape.skip('only: only run the tests with only statement with composition', t => {
+	tape('only: only run the tests with only statement with composition', t => {
 		const p1 = factory();
 		const p2 = factory();
 		const masterPlan = factory();
@@ -2948,6 +2961,53 @@ function testFunc$2() {
 				operator: 'ok',
 				pass: true,
 			}
+		], t));
+	});
+
+	tape('plan running tests in sequence', t => {
+		const p = factory({sequence: true});
+		let globalCounter = 0;
+		const test = (assert, value, delay) => {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					assert.equal(globalCounter, value);
+					globalCounter++;
+					resolve();
+				}, delay);
+			});
+		};
+
+		p.test('test 1', async assert => {
+			await test(assert, 0, 300);
+		});
+
+		p.test('test 2', async assert => {
+			await test(assert, 1, 200);
+		});
+
+		p.test('test 3', async assert => {
+			await test(assert, 2, 100);
+		});
+
+		p.run(assert$1([{
+			actual: 0,
+			expected: 0,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 1,
+			expected: 1,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 2,
+			expected: 2,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}
 		], t));
 	});
 }
