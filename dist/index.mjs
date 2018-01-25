@@ -179,7 +179,9 @@ const PlanProto = {
 };
 
 const runnify = fn => async function (sink = tap()) {
-	const sinkIterator = sink();
+	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
+		sink[Symbol.iterator]() :
+		sink(); // Backward compatibility
 	sinkIterator.next();
 	try {
 		const hasOnly = this.items.some(t => t.only);

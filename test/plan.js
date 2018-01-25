@@ -1,31 +1,29 @@
 import tape from 'tape';
 import plan from '../lib/plan';
 
-function assert(expArray, t) {
-	return function * () {
-		let index = 0;
-		try {
-			while (true) {
-				const test = yield;
-				const {items} = test;
-				t.ok(test.executionTime !== undefined, 'execution time');
-				for (let a of items) {
-					const exp = expArray[index];
-					t.equal(a.actual, exp.actual, 'actual');
-					t.equal(a.expected, exp.expected, 'expected');
-					t.equal(a.message, exp.message, 'message');
-					t.equal(a.operator, exp.operator, 'operator');
-					t.equal(a.pass, exp.pass, 'pass');
-					index++;
-				}
+function * assert(expArray, t) {
+	let index = 0;
+	try {
+		while (true) {
+			const test = yield;
+			const {items} = test;
+			t.ok(test.executionTime !== undefined, 'execution time');
+			for (let a of items) {
+				const exp = expArray[index];
+				t.equal(a.actual, exp.actual, 'actual');
+				t.equal(a.expected, exp.expected, 'expected');
+				t.equal(a.message, exp.message, 'message');
+				t.equal(a.operator, exp.operator, 'operator');
+				t.equal(a.pass, exp.pass, 'pass');
+				index++;
 			}
-		} catch (e) {
-			console.log(e);
 		}
-		finally {
-			t.equal(index, expArray.length);
-			t.end();
-		}
+	} catch (e) {
+		console.log(e);
+	}
+	finally {
+		t.equal(index, expArray.length);
+		t.end();
 	}
 }
 

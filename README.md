@@ -50,7 +50,7 @@ const tests = [test1,test2,test3];
 
 const results = Promise.all(tests.map(t=>t.run()));
 ```
-(so do note they run it the same process)
+(so do note, they run it the same process)
 
 It will likely be **faster** than other sequential test runner.
 It therefore enforces you to write your tests in isolation which is often a good practice.
