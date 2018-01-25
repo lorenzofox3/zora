@@ -8,6 +8,10 @@ export default {
 		format: 'iife',
 		name: 'zora',
 		sourcemap: true
+	},{
+		file: './dist/zora.es.js',
+		format: 'es',
+		sourcemap: true
 	}],
 	plugins: [node(), cjs()]
 };

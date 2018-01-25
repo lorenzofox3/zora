@@ -2653,71 +2653,115 @@ function testFunc$1() {
 }
 
 const stringify = JSON.stringify;
-const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
-const printTestCase = (assertion, id) => {
-	const pass = assertion.pass;
-	const status = pass === true ? 'ok' : 'not ok';
-	console.log(`${status} ${id} ${assertion.message}`);
-	if (pass !== true) {
-		console.log(`  ---
-    operator: ${assertion.operator}
-    expected: ${stringify(assertion.expected)}
-    actual: ${stringify(assertion.actual)}
-    at: ${(assertion.at || '')}
-  ...
-`);
+const print = String.prototype.padStart !== undefined ? (message, padding = 0) => {
+	console.log(message.padStart(message.length + padding));
+} : (message, padding = 0) => {
+	console.log(' '.repeat(padding) + message);
+};
+const toYaml = (obj, depth = 0) => {
+	const padding = (depth + 2) * 2;
+	for (const [prop, value] of Object.entries(obj)) {
+		print(`${prop}: ${value}`, padding);
 	}
 };
-const printSummary = ({count, pass, skipped, fail}) => {
-	//Some parsers seem to fail to detect end of stream if we use a single console.log call with a template string...
-	console.log(`1..${count}`);
-	console.log(`# tests ${count} (${skipped} skipped)`);
-	console.log(`# pass  ${pass}`);
-	if (fail > 0) {
-		console.log(`# fail  ${fail}`);
-	} else {
-		console.log('# ok');
-	}
-};
-
-var tap = ({displaySkipped = false} = {}) => function * () {
+const tap = ({displaySkipped = false, depth = 0} = {}) => {
+	const padding = depth * 2;
 	let pass = 0;
 	let fail = 0;
 	let id = 0;
 	let skipped = 0;
-	console.log('TAP version 13');
-	try {
-		/* eslint-disable no-constant-condition */
-		while (true) {
-			const test = yield;
+	let hasError = false;
+	return {
+		[Symbol.iterator]() {
+			if (depth === 0) {
+				this.printVersion();
+			}
+			return this;
+		},
+		next(test) {
+			if (test === undefined) {
+				return; // Skip
+			}
 
 			if (test.items.length === 0) {
 				skipped++;
 			}
 
 			if (test.items.length > 0 || displaySkipped === true) {
-				printTestHeader(test);
+				this.printComment(`${test.description} - ${test.executionTime}ms`);
 			}
 
 			for (const assertion of test.items) {
-				id++;
-				if (assertion.pass === true) {
-					pass++;
+				if (assertion[Symbol.iterator] !== undefined) {
+					// todo Subtest
+					const subTap = tap({displaySkipped, depth: depth + 1});
+					const iterator = subTap[Symbol.iterator]();
+					for (const subAssert of assertion) {
+						iterator.next(subAssert);
+					}
+					iterator.return({count: assertion.length});
 				} else {
-					fail++;
+					id++;
+					if (assertion.pass === true) {
+						pass++;
+					} else {
+						fail++;
+					}
 				}
-				printTestCase(assertion, id);
+				this.printTestPoint(Object.assign({id}, assertion));
 			}
+		},
+		throw(err) {
+			this.printBailOut();
+			hasError = true;
+			throw err;
+		},
+		return(summary = {count: id, pass, skipped, fail}) {
+			if (hasError === false) {
+				this.printSummary(summary);
+			}
+		},
+		printVersion() {
+			print('TAP version 13');
+		},
+		printPlan({count, start = 1}) {
+			print(`${start}..${count}`, padding);
+		},
+		printSummary({count, pass, skipped, fail}) {
+			this.printPlan({count});
+			if (pass !== undefined && fail !== undefined && skipped !== undefined) {
+				this.printComment(`tests ${count} (${skipped} skipped)`);
+				this.printComment(`pass  ${pass}`);
+				if (fail > 0) {
+					this.printComment(`fail  ${fail}`);
+				} else {
+					this.printComment('ok');
+				}
+			}
+		},
+		printTestPoint({pass, message, id, operator, expected, actual, at = ''}) {
+			const status = pass === true ? 'ok' : 'not ok';
+			print(`${status} ${id} ${message}`, padding);
+			if (pass !== true) {
+				this.printDiagnostic({operator, expected: stringify(expected), actual: stringify(actual), at});
+			}
+		},
+		printComment(comment) {
+			print(`# ${comment}`, padding);
+		},
+		printBailOut() {
+			print('Bail out! unhandled exception', padding);
+		},
+		printDiagnostic(diag) {
+			const yamlOffset = padding + 2;
+			print('---', yamlOffset);
+			toYaml(diag, depth);
+			print('...', yamlOffset);
 		}
-		/* eslint-enable no-constant-condition */
-	} catch (err) {
-		console.log('Bail out! unhandled exception');
-		throw err;
-	} finally {
-		printSummary({count: id, pass, skipped, fail});
-	}
+	};
 };
 
+// Force to resolve on next tick so consumer can do something with previous iteration result
 const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
 
 const PlanProto = {
@@ -2746,63 +2790,75 @@ const PlanProto = {
 			this.items.push(skip(description));
 		}
 		return this;
-	},
-	async run(sink = tap()) {
-		const sinkIterator = sink();
-		sinkIterator.next();
-		try {
-			const hasOnly = this.items.some(t => t.only);
-			const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-			const runningTests = tests.map(t => t.run());
-			/* eslint-disable no-await-in-loop */
-			for (const r of runningTests) {
-				const executedTest = await onNextTick(r); // Force to resolve on next tick so consumer can do something with previous iteration result (until async iterator are natively supported ...)
-				sinkIterator.next(executedTest);
-			}
-			/* eslint-enable no-await-in-loop */
-		} catch (err) {
-			sinkIterator.throw(err);
-		} finally {
-			sinkIterator.return();
-		}
 	}
 };
 
-function factory() {
-	return Object.create(PlanProto, {
+const runnify = fn => async function (sink = tap()) {
+	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
+		sink[Symbol.iterator]() :
+		sink(); // Backward compatibility
+	sinkIterator.next();
+	try {
+		const hasOnly = this.items.some(t => t.only);
+		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
+		await fn(tests, sinkIterator);
+	} catch (err) {
+		sinkIterator.throw(err);
+	} finally {
+		sinkIterator.return();
+	}
+};
+
+function factory({sequence = false} = {sequence: false}) {
+	/* eslint-disable no-await-in-loop */
+	const exec = sequence === true ? async (tests, sinkIterator) => {
+		for (const t of tests) {
+			const result = await onNextTick(t.run());
+			sinkIterator.next(result);
+		}
+	} : async (tests, sinkIterator) => {
+		const runningTests = tests.map(t => t.run());
+		for (const r of runningTests) {
+			const executedTest = await onNextTick(r);
+			sinkIterator.next(executedTest);
+		}
+	};
+	/* eslint-enable no-await-in-loop */
+
+	return Object.assign(Object.create(PlanProto, {
 		items: {value: []}, length: {
 			get() {
 				return this.items.length;
 			}
 		}
+	}), {
+		run: runnify(exec)
 	});
 }
 
-function assert$1(expArray, t) {
-	return function * () {
-		let index = 0;
-		try {
-			while (true) {
-				const test = yield;
-				const {items} = test;
-				t.ok(test.executionTime !== undefined, 'execution time');
-				for (let a of items) {
-					const exp = expArray[index];
-					t.equal(a.actual, exp.actual, 'actual');
-					t.equal(a.expected, exp.expected, 'expected');
-					t.equal(a.message, exp.message, 'message');
-					t.equal(a.operator, exp.operator, 'operator');
-					t.equal(a.pass, exp.pass, 'pass');
-					index++;
-				}
+function * assert$1(expArray, t) {
+	let index = 0;
+	try {
+		while (true) {
+			const test = yield;
+			const {items} = test;
+			t.ok(test.executionTime !== undefined, 'execution time');
+			for (let a of items) {
+				const exp = expArray[index];
+				t.equal(a.actual, exp.actual, 'actual');
+				t.equal(a.expected, exp.expected, 'expected');
+				t.equal(a.message, exp.message, 'message');
+				t.equal(a.operator, exp.operator, 'operator');
+				t.equal(a.pass, exp.pass, 'pass');
+				index++;
 			}
-		} catch (e) {
-			console.log(e);
 		}
-		finally {
-			t.equal(index, expArray.length);
-			t.end();
-		}
+	} catch (e) {
+		console.log(e);
+	}
+	finally {
+		t.equal(index, expArray.length);
+		t.end();
 	}
 }
 
@@ -2876,7 +2932,7 @@ function testFunc$2() {
 		], t));
 	});
 
-	tape.skip('only: only run the tests with only statement with composition', t => {
+	tape('only: only run the tests with only statement with composition', t => {
 		const p1 = factory();
 		const p2 = factory();
 		const masterPlan = factory();
@@ -2948,6 +3004,53 @@ function testFunc$2() {
 				operator: 'ok',
 				pass: true,
 			}
+		], t));
+	});
+
+	tape('plan running tests in sequence', t => {
+		const p = factory({sequence: true});
+		let globalCounter = 0;
+		const test = (assert, value, delay) => {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					assert.equal(globalCounter, value);
+					globalCounter++;
+					resolve();
+				}, delay);
+			});
+		};
+
+		p.test('test 1', async assert => {
+			await test(assert, 0, 300);
+		});
+
+		p.test('test 2', async assert => {
+			await test(assert, 1, 200);
+		});
+
+		p.test('test 3', async assert => {
+			await test(assert, 2, 100);
+		});
+
+		p.run(assert$1([{
+			actual: 0,
+			expected: 0,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 1,
+			expected: 1,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}, {
+			actual: 2,
+			expected: 2,
+			message: 'should be equal',
+			operator: 'equal',
+			pass: true
+		}
 		], t));
 	});
 }

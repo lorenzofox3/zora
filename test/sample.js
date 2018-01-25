@@ -13,7 +13,7 @@ plan
 	.test('async test', async (assert) => {
 		const p = new Promise(function (resolve) {
 			setTimeout(function () {
-				resolve('foo')
+				resolve('foo');
 			}, 200)
 		});
 
@@ -23,7 +23,7 @@ plan
 	.test('async test', async (assert) => {
 		const p = new Promise(function (resolve) {
 			setTimeout(function () {
-				resolve('foo')
+				resolve('foo');
 			}, 100)
 		});
 

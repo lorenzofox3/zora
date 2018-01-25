@@ -1,6 +1,3 @@
-var zora = (function () {
-'use strict';
-
 const stringify = JSON.stringify;
 const print = String.prototype.padStart !== undefined ? (message, padding = 0) => {
 	console.log(message.padStart(message.length + padding));
@@ -471,7 +468,5 @@ function factory({sequence = false} = {sequence: false}) {
 	});
 }
 
-return factory;
-
-}());
-//# sourceMappingURL=zora.js.map
+export default factory;
+//# sourceMappingURL=zora.es.js.map

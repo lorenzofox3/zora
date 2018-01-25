@@ -146,6 +146,7 @@ function test(description, spec, {only = false} = {}) {
 	});
 }
 
+// Force to resolve on next tick so consumer can do something with previous iteration result
 const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
 
 const PlanProto = {
@@ -174,35 +175,49 @@ const PlanProto = {
 			this.items.push(skip(description));
 		}
 		return this;
-	},
-	async run(sink = tap()) {
-		const sinkIterator = sink();
-		sinkIterator.next();
-		try {
-			const hasOnly = this.items.some(t => t.only);
-			const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-			const runningTests = tests.map(t => t.run());
-			/* eslint-disable no-await-in-loop */
-			for (const r of runningTests) {
-				const executedTest = await onNextTick(r); // Force to resolve on next tick so consumer can do something with previous iteration result (until async iterator are natively supported ...)
-				sinkIterator.next(executedTest);
-			}
-			/* eslint-enable no-await-in-loop */
-		} catch (err) {
-			sinkIterator.throw(err);
-		} finally {
-			sinkIterator.return();
-		}
 	}
 };
 
-function factory() {
-	return Object.create(PlanProto, {
+const runnify = fn => async function (sink = tap()) {
+	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
+		sink[Symbol.iterator]() :
+		sink(); // Backward compatibility
+	sinkIterator.next();
+	try {
+		const hasOnly = this.items.some(t => t.only);
+		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
+		await fn(tests, sinkIterator);
+	} catch (err) {
+		sinkIterator.throw(err);
+	} finally {
+		sinkIterator.return();
+	}
+};
+
+function factory({sequence = false} = {sequence: false}) {
+	/* eslint-disable no-await-in-loop */
+	const exec = sequence === true ? async (tests, sinkIterator) => {
+		for (const t of tests) {
+			const result = await onNextTick(t.run());
+			sinkIterator.next(result);
+		}
+	} : async (tests, sinkIterator) => {
+		const runningTests = tests.map(t => t.run());
+		for (const r of runningTests) {
+			const executedTest = await onNextTick(r);
+			sinkIterator.next(executedTest);
+		}
+	};
+	/* eslint-enable no-await-in-loop */
+
+	return Object.assign(Object.create(PlanProto, {
 		items: {value: []}, length: {
 			get() {
 				return this.items.length;
 			}
 		}
+	}), {
+		run: runnify(exec)
 	});
 }
 
