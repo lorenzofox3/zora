@@ -25,7 +25,7 @@
     "clean:benchmark": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
     "build:test": "rollup -c ./rollup/test.js",
     "build:benchmark": "npm run clean:benchmark && node ./scripts/generate.js",
-    "bench:zora": "time (node ./benchmarks/zora/index.js | tap-mocha-reporter spec)",
+    "bench:zora": "time (node ./benchmarks/zora/index.js)",
     "bench:ava": "time ava ./benchmarks/ava/test/",
     "bench:mocha": "time mocha ./benchmarks/mocha/test/",
     "bench:tape": "time (node ./benchmarks/tape/index)",
@@ -52,8 +52,6 @@
     "rollup": "^0.54.1",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.2",
-    "tap-diff": "^0.1.1",
-    "tap-mocha-reporter": "^3.0.6",
     "tape": "^4.8.0",
     "xo": "^0.18.2"
   },

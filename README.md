@@ -56,8 +56,12 @@ It will likely be **faster** than other sequential test runner.
 It therefore enforces you to write your tests in isolation which is often a good practice.
 
 ### 🚀 fast
-Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to [a simple test case](https://github.com/lorenzofox3/zora#benchmark)
+Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to a simple test case.
 The test is pretty simple: a nodejs test suite split into N(=8) files with M(=8) tests lasting T(=60ms). Anyway you can simply fork the repo and sort it out yourself.
+To generate the benchmark files run `npm run build:benchmark`
+Then you can run the tests with the framework of your choice.
+Ex:
+`npm run bench:zora`
 
 ### 💄 tap (Test Anything Protocol) producer
 By default zora produces a tap report through the console, so you can pipe in with any [tap reporter](https://github.com/sindresorhus/awesome-tap#reporters). Alternatively you can use the reporter API to build any custom reporter... even a full [dashboard](https://github/lorenzofox3/zora-reporter)

@@ -1,110 +1,67 @@
 const stringify = JSON.stringify;
-const print = String.prototype.padStart !== undefined ? (message, padding = 0) => {
-	console.log(message.padStart(message.length + padding));
-} : (message, padding = 0) => {
-	console.log(' '.repeat(padding) + message);
-};
-const toYaml = (obj, depth = 0) => {
-	const padding = (depth + 2) * 2;
-	for (const [prop, value] of Object.entries(obj)) {
-		print(`${prop}: ${value}`, padding);
+const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
+const printTestCase = (assertion, id) => {
+	const pass = assertion.pass;
+	const status = pass === true ? 'ok' : 'not ok';
+	console.log(`${status} ${id} ${assertion.message}`);
+	if (pass !== true) {
+		console.log(`  ---
+    operator: ${assertion.operator}
+    expected: ${stringify(assertion.expected)}
+    actual: ${stringify(assertion.actual)}
+    at: ${(assertion.at || '')}
+  ...
+`);
 	}
 };
-const tap = ({displaySkipped = false, depth = 0} = {}) => {
-	const padding = depth * 2;
+const printSummary = ({count, pass, skipped, fail}) => {
+	//Some parsers seem to fail to detect end of stream if we use a single console.log call with a template string...
+	console.log(`1..${count}`);
+	console.log(`# tests ${count} (${skipped} skipped)`);
+	console.log(`# pass  ${pass}`);
+	if (fail > 0) {
+		console.log(`# fail  ${fail}`);
+	} else {
+		console.log('# ok');
+	}
+};
+
+var tap = ({displaySkipped = false} = {}) => function * () {
 	let pass = 0;
 	let fail = 0;
 	let id = 0;
 	let skipped = 0;
-	let hasError = false;
-	return {
-		[Symbol.iterator]() {
-			if (depth === 0) {
-				this.printVersion();
-			}
-			return this;
-		},
-		next(test) {
-			if (test === undefined) {
-				return; // Skip
-			}
+	console.log('TAP version 13');
+	try {
+		/* eslint-disable no-constant-condition */
+		while (true) {
+			const test = yield;
 
 			if (test.items.length === 0) {
 				skipped++;
 			}
 
 			if (test.items.length > 0 || displaySkipped === true) {
-				this.printComment(`${test.description} - ${test.executionTime}ms`);
+				printTestHeader(test);
 			}
 
 			for (const assertion of test.items) {
-				if (assertion[Symbol.iterator] !== undefined) {
-					// todo Subtest
-					const subTap = tap({displaySkipped, depth: depth + 1});
-					const iterator = subTap[Symbol.iterator]();
-					for (const subAssert of assertion) {
-						iterator.next(subAssert);
-					}
-					iterator.return({count: assertion.length});
+				id++;
+				if (assertion.pass === true) {
+					pass++;
 				} else {
-					id++;
-					if (assertion.pass === true) {
-						pass++;
-					} else {
-						fail++;
-					}
+					fail++;
 				}
-				this.printTestPoint(Object.assign({id}, assertion));
+				printTestCase(assertion, id);
 			}
-		},
-		throw(err) {
-			this.printBailOut();
-			hasError = true;
-			throw err;
-		},
-		return(summary = {count: id, pass, skipped, fail}) {
-			if (hasError === false) {
-				this.printSummary(summary);
-			}
-		},
-		printVersion() {
-			print('TAP version 13');
-		},
-		printPlan({count, start = 1}) {
-			print(`${start}..${count}`, padding);
-		},
-		printSummary({count, pass, skipped, fail}) {
-			this.printPlan({count});
-			if (pass !== undefined && fail !== undefined && skipped !== undefined) {
-				this.printComment(`tests ${count} (${skipped} skipped)`);
-				this.printComment(`pass  ${pass}`);
-				if (fail > 0) {
-					this.printComment(`fail  ${fail}`);
-				} else {
-					this.printComment('ok');
-				}
-			}
-		},
-		printTestPoint({pass, message, id, operator, expected, actual, at = ''}) {
-			const status = pass === true ? 'ok' : 'not ok';
-			print(`${status} ${id} ${message}`, padding);
-			if (pass !== true) {
-				this.printDiagnostic({operator, expected: stringify(expected), actual: stringify(actual), at});
-			}
-		},
-		printComment(comment) {
-			print(`# ${comment}`, padding);
-		},
-		printBailOut() {
-			print('Bail out! unhandled exception', padding);
-		},
-		printDiagnostic(diag) {
-			const yamlOffset = padding + 2;
-			print('---', yamlOffset);
-			toYaml(diag, depth);
-			print('...', yamlOffset);
 		}
-	};
+		/* eslint-enable no-constant-condition */
+	} catch (err) {
+		console.log('Bail out! unhandled exception');
+		throw err;
+	} finally {
+		printSummary({count: id, pass, skipped, fail});
+	}
 };
 
 function createCommonjsModule(fn, module) {
