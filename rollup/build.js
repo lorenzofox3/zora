@@ -1,5 +1,5 @@
 export default {
-	input: './lib/plan.js',
+	input: './lib/test.js',
 	output:[{
 		file:'./dist/index.mjs',
 		format:'es'

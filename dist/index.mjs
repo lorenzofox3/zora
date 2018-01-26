@@ -1,4 +1,3 @@
-import tap from 'zora-tap-reporter';
 import deepEqual from 'deep-equal';
 
 const getAssertionLocation = () => {
@@ -7,7 +6,7 @@ const getAssertionLocation = () => {
 	return (stack[3] || '').trim().replace(/^at/i, '');
 };
 const assertMethodHook = fn => function (...args) {
-	const assertResult = fn(...args);
+	let assertResult = fn(...args);
 
 	if (assertResult.pass === false) {
 		assertResult.at = getAssertionLocation();
@@ -18,6 +17,11 @@ const assertMethodHook = fn => function (...args) {
 };
 
 const Assertion = {
+	test(description, spec) {
+		const t = test(description, spec).run();
+		this.collect(t);
+		return t;
+	},
 	ok: assertMethodHook((val, message = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
@@ -119,17 +123,19 @@ const Assertion = {
 var assert = collect => Object.create(Assertion, {collect: {value: collect}});
 
 const noop = () => {};
-
 const skip = description => test('SKIPPED - ' + description, noop);
 
 const Test = {
 	async run() {
-		const collect = assertion => this.items.push(assertion);
+		const assertions = [];
+		const collectResult = assertion => assertions.push(assertion);
 		const start = Date.now();
-		await Promise.resolve(this.spec(assert(collect)));
+		await this.spec(assert(collectResult));
+		const items = await Promise.all(assertions);
 		const executionTime = Date.now() - start;
 		return Object.assign(this, {
-			executionTime
+			executionTime,
+			items
 		});
 	},
 	skip() {
@@ -139,86 +145,10 @@ const Test = {
 
 function test(description, spec, {only = false} = {}) {
 	return Object.create(Test, {
-		items: {value: []},
 		only: {value: only},
 		spec: {value: spec},
 		description: {value: description}
 	});
 }
 
-// Force to resolve on next tick so consumer can do something with previous iteration result
-const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
-
-const PlanProto = {
-	[Symbol.iterator]() {
-		return this.items[Symbol.iterator]();
-	},
-	test(description, spec, opts) {
-		if (!spec && description.test) {
-			// If it is a plan
-			this.items.push(...description);
-		} else {
-			this.items.push(test(description, spec, opts));
-		}
-		return this;
-	},
-	only(description, spec) {
-		return this.test(description, spec, {only: true});
-	},
-	skip(description, spec) {
-		if (!spec && description.test) {
-			// If it is a plan we skip the whole plan
-			for (const t of description) {
-				this.items.push(t.skip());
-			}
-		} else {
-			this.items.push(skip(description));
-		}
-		return this;
-	}
-};
-
-const runnify = fn => async function (sink = tap()) {
-	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
-		sink[Symbol.iterator]() :
-		sink(); // Backward compatibility
-	sinkIterator.next();
-	try {
-		const hasOnly = this.items.some(t => t.only);
-		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-		await fn(tests, sinkIterator);
-	} catch (err) {
-		sinkIterator.throw(err);
-	} finally {
-		sinkIterator.return();
-	}
-};
-
-function factory({sequence = false} = {sequence: false}) {
-	/* eslint-disable no-await-in-loop */
-	const exec = sequence === true ? async (tests, sinkIterator) => {
-		for (const t of tests) {
-			const result = await onNextTick(t.run());
-			sinkIterator.next(result);
-		}
-	} : async (tests, sinkIterator) => {
-		const runningTests = tests.map(t => t.run());
-		for (const r of runningTests) {
-			const executedTest = await onNextTick(r);
-			sinkIterator.next(executedTest);
-		}
-	};
-	/* eslint-enable no-await-in-loop */
-
-	return Object.assign(Object.create(PlanProto, {
-		items: {value: []}, length: {
-			get() {
-				return this.items.length;
-			}
-		}
-	}), {
-		run: runnify(exec)
-	});
-}
-
-export default factory;
+export default test;

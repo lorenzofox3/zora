@@ -1,69 +1,3 @@
-const stringify = JSON.stringify;
-const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
-const printTestCase = (assertion, id) => {
-	const pass = assertion.pass;
-	const status = pass === true ? 'ok' : 'not ok';
-	console.log(`${status} ${id} ${assertion.message}`);
-	if (pass !== true) {
-		console.log(`  ---
-    operator: ${assertion.operator}
-    expected: ${stringify(assertion.expected)}
-    actual: ${stringify(assertion.actual)}
-    at: ${(assertion.at || '')}
-  ...
-`);
-	}
-};
-const printSummary = ({count, pass, skipped, fail}) => {
-	//Some parsers seem to fail to detect end of stream if we use a single console.log call with a template string...
-	console.log(`1..${count}`);
-	console.log(`# tests ${count} (${skipped} skipped)`);
-	console.log(`# pass  ${pass}`);
-	if (fail > 0) {
-		console.log(`# fail  ${fail}`);
-	} else {
-		console.log('# ok');
-	}
-};
-
-var tap = ({displaySkipped = false} = {}) => function * () {
-	let pass = 0;
-	let fail = 0;
-	let id = 0;
-	let skipped = 0;
-	console.log('TAP version 13');
-	try {
-		/* eslint-disable no-constant-condition */
-		while (true) {
-			const test = yield;
-
-			if (test.items.length === 0) {
-				skipped++;
-			}
-
-			if (test.items.length > 0 || displaySkipped === true) {
-				printTestHeader(test);
-			}
-
-			for (const assertion of test.items) {
-				id++;
-				if (assertion.pass === true) {
-					pass++;
-				} else {
-					fail++;
-				}
-				printTestCase(assertion, id);
-			}
-		}
-		/* eslint-enable no-constant-condition */
-	} catch (err) {
-		console.log('Bail out! unhandled exception');
-		throw err;
-	} finally {
-		printSummary({count: id, pass, skipped, fail});
-	}
-};
-
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
@@ -211,7 +145,7 @@ const getAssertionLocation = () => {
 	return (stack[3] || '').trim().replace(/^at/i, '');
 };
 const assertMethodHook = fn => function (...args) {
-	const assertResult = fn(...args);
+	let assertResult = fn(...args);
 
 	if (assertResult.pass === false) {
 		assertResult.at = getAssertionLocation();
@@ -222,6 +156,11 @@ const assertMethodHook = fn => function (...args) {
 };
 
 const Assertion = {
+	test(description, spec) {
+		const t = test(description, spec).run();
+		this.collect(t);
+		return t;
+	},
 	ok: assertMethodHook((val, message = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
@@ -323,17 +262,19 @@ const Assertion = {
 var assert = collect => Object.create(Assertion, {collect: {value: collect}});
 
 const noop = () => {};
-
 const skip = description => test('SKIPPED - ' + description, noop);
 
 const Test = {
 	async run() {
-		const collect = assertion => this.items.push(assertion);
+		const assertions = [];
+		const collectResult = assertion => assertions.push(assertion);
 		const start = Date.now();
-		await Promise.resolve(this.spec(assert(collect)));
+		await this.spec(assert(collectResult));
+		const items = await Promise.all(assertions);
 		const executionTime = Date.now() - start;
 		return Object.assign(this, {
-			executionTime
+			executionTime,
+			items
 		});
 	},
 	skip() {
@@ -343,87 +284,11 @@ const Test = {
 
 function test(description, spec, {only = false} = {}) {
 	return Object.create(Test, {
-		items: {value: []},
 		only: {value: only},
 		spec: {value: spec},
 		description: {value: description}
 	});
 }
 
-// Force to resolve on next tick so consumer can do something with previous iteration result
-const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
-
-const PlanProto = {
-	[Symbol.iterator]() {
-		return this.items[Symbol.iterator]();
-	},
-	test(description, spec, opts) {
-		if (!spec && description.test) {
-			// If it is a plan
-			this.items.push(...description);
-		} else {
-			this.items.push(test(description, spec, opts));
-		}
-		return this;
-	},
-	only(description, spec) {
-		return this.test(description, spec, {only: true});
-	},
-	skip(description, spec) {
-		if (!spec && description.test) {
-			// If it is a plan we skip the whole plan
-			for (const t of description) {
-				this.items.push(t.skip());
-			}
-		} else {
-			this.items.push(skip(description));
-		}
-		return this;
-	}
-};
-
-const runnify = fn => async function (sink = tap()) {
-	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
-		sink[Symbol.iterator]() :
-		sink(); // Backward compatibility
-	sinkIterator.next();
-	try {
-		const hasOnly = this.items.some(t => t.only);
-		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-		await fn(tests, sinkIterator);
-	} catch (err) {
-		sinkIterator.throw(err);
-	} finally {
-		sinkIterator.return();
-	}
-};
-
-function factory({sequence = false} = {sequence: false}) {
-	/* eslint-disable no-await-in-loop */
-	const exec = sequence === true ? async (tests, sinkIterator) => {
-		for (const t of tests) {
-			const result = await onNextTick(t.run());
-			sinkIterator.next(result);
-		}
-	} : async (tests, sinkIterator) => {
-		const runningTests = tests.map(t => t.run());
-		for (const r of runningTests) {
-			const executedTest = await onNextTick(r);
-			sinkIterator.next(executedTest);
-		}
-	};
-	/* eslint-enable no-await-in-loop */
-
-	return Object.assign(Object.create(PlanProto, {
-		items: {value: []}, length: {
-			get() {
-				return this.items.length;
-			}
-		}
-	}), {
-		run: runnify(exec)
-	});
-}
-
-export default factory;
+export default test;
 //# sourceMappingURL=zora.es.js.map
