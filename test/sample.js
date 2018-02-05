@@ -7,15 +7,7 @@ const sleep = (time) => new Promise(resolve => {
 	}, time);
 });
 const testSuite = test('my test', t => {
-	// t.test('assertions', (t) => {
-	// assert.equal('foo', 'foo');
-	// assert.equal('foo', 'bar');
 	t.deepEqual({foo: 'bar'}, {foo: 'bar'}, 'hey hey hey');
-	// assert.deepEqual({foo: 'bar'}, 'foo');
-	// assert.ok(true);
-	// assert.ok(false);
-	// assert.fail('wanted to fail');
-	// })
 	t.test('nested', async t => {
 		t.equal('foo', 'foo', 'before waiting');
 		await sleep(200);
@@ -31,29 +23,8 @@ const testSuite = test('my test', t => {
 	t.test('another async', async t => {
 		await sleep(300);
 		t.equal(42, 42, 'the answer');
-	})
-
+	});
 });
-// .skip('async test', async (assert) => {
-// 	const p = new Promise(function (resolve) {
-// 		setTimeout(function () {
-// 			resolve('foo');
-// 		}, 200)
-// 	});
-//
-// 	const val = await p;
-// 	assert.equal(val, 'foo', 'should have passed an async test');
-// })
-// .skip('async test', async (assert) => {
-// 	const p = new Promise(function (resolve) {
-// 		setTimeout(function () {
-// 			resolve('foo');
-// 		}, 100)
-// 	});
-//
-// 	const val = await p;
-// 	assert.equal(val, 'foo', 'should have passed an async test');
-// });
 
 const print = (message, offset = 0) => {
 	console.log(message.padStart(message.length + offset * 2));
@@ -80,22 +51,3 @@ function printResult(r, offset = 0) {
 testSuite
 	.run()
 	.then(printResult);
-
-
-// const printItems = function * (t) {
-// 	for (const i of t.items) {
-// 		if (i.items) {
-// 			yield * printItems(i);
-// 		} else {
-// 			console.log(inspect(i));
-// 		}
-// 	}
-// };
-//
-//
-// plan.run(function * () {
-// 	while (true) {
-// 		const t = yield;
-// 		yield * printItems(t);
-// 	}
-// });

@@ -13,8 +13,8 @@
     "tap-producer"
   ],
   "main": "./dist/",
-  "module": "./lib/plan.js",
-  "jsnext:main": "./lib/plan.js",
+  "module": "index.js",
+  "jsnext:main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/lorenzofox3/zora.git"
@@ -52,6 +52,7 @@
     "rollup": "^0.54.1",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.2",
+    "tap-diff": "^0.1.1",
     "tape": "^4.8.0",
     "xo": "^0.18.2"
   },

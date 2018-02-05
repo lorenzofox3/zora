@@ -1,5 +1,5 @@
 export default {
-	input: './lib/test.js',
+	input: './index.js',
 	output:[{
 		file:'./dist/index.mjs',
 		format:'es'

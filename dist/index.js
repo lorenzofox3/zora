@@ -9,8 +9,9 @@ const getAssertionLocation = () => {
 	const stack = (err.stack || '').split('\n');
 	return (stack[3] || '').trim().replace(/^at/i, '');
 };
+
 const assertMethodHook = fn => function (...args) {
-	let assertResult = fn(...args);
+	const assertResult = fn(...args);
 
 	if (assertResult.pass === false) {
 		assertResult.at = getAssertionLocation();
@@ -22,58 +23,60 @@ const assertMethodHook = fn => function (...args) {
 
 const Assertion = {
 	test(description, spec) {
-		const t = test(description, spec).run();
+		const t = tester(description, spec)
+			.run()
+			.then(r => Object.assign(r, {pass: r.testPoints.every(tp => tp.pass === true)}));
 		this.collect(t);
 		return t;
 	},
-	ok: assertMethodHook((val, message = 'should be truthy') => ({
+	ok: assertMethodHook((val, description = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
 		expected: true,
-		message,
+		description,
 		operator: 'ok'
 	})),
-	deepEqual: assertMethodHook((actual, expected, message = 'should be equivalent') => ({
+	deepEqual: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
 		pass: deepEqual(actual, expected),
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'deepEqual'
 	})),
-	equal: assertMethodHook((actual, expected, message = 'should be equal') => ({
+	equal: assertMethodHook((actual, expected, description = 'should be equal') => ({
 		pass: actual === expected,
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'equal'
 	})),
-	notOk: assertMethodHook((val, message = 'should not be truthy') => ({
+	notOk: assertMethodHook((val, description = 'should not be truthy') => ({
 		pass: !val,
 		expected: false,
 		actual: val,
-		message,
+		description,
 		operator: 'notOk'
 	})),
-	notDeepEqual: assertMethodHook((actual, expected, message = 'should not be equivalent') => ({
+	notDeepEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
 		pass: !deepEqual(actual, expected),
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'notDeepEqual'
 	})),
-	notEqual: assertMethodHook((actual, expected, message = 'should not be equal') => ({
+	notEqual: assertMethodHook((actual, expected, description = 'should not be equal') => ({
 		pass: actual !== expected,
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'notEqual'
 	})),
-	throws: assertMethodHook((func, expected, message) => {
+	throws: assertMethodHook((func, expected, description) => {
 		let caught;
 		let pass;
 		let actual;
 		if (typeof expected === 'string') {
-			[expected, message] = [message, expected];
+			[expected, description] = [description, expected];
 		}
 		try {
 			func();
@@ -94,13 +97,13 @@ const Assertion = {
 			expected,
 			actual,
 			operator: 'throws',
-			message: message || 'should throw'
+			description: description || 'should throw'
 		};
 	}),
-	doesNotThrow: assertMethodHook((func, expected, message) => {
+	doesNotThrow: assertMethodHook((func, expected, description) => {
 		let caught;
 		if (typeof expected === 'string') {
-			[expected, message] = [message, expected];
+			[expected, description] = [description, expected];
 		}
 		try {
 			func();
@@ -112,14 +115,14 @@ const Assertion = {
 			expected: 'no thrown error',
 			actual: caught && caught.error,
 			operator: 'doesNotThrow',
-			message: message || 'should not throw'
+			message: description || 'should not throw'
 		};
 	}),
-	fail: assertMethodHook((message = 'fail called') => ({
+	fail: assertMethodHook((description = 'fail called') => ({
 		pass: false,
 		actual: 'fail called',
 		expected: 'fail not called',
-		message,
+		description,
 		operator: 'fail'
 	}))
 };
@@ -131,15 +134,15 @@ const skip = description => test('SKIPPED - ' + description, noop);
 
 const Test = {
 	async run() {
-		const assertions = [];
-		const collectResult = assertion => assertions.push(assertion);
+		const tests = [];
+		const collectResult = tp => tests.push(tp);
 		const start = Date.now();
-		await this.spec(assert(collectResult));
-		const items = await Promise.all(assertions);
+		await this.spec(assert(collectResult)); // Collection
+		const testPoints = await Promise.all(tests); // Execution (some collection functions are async such sub test)
 		const executionTime = Date.now() - start;
 		return Object.assign(this, {
 			executionTime,
-			items
+			testPoints
 		});
 	},
 	skip() {
@@ -147,12 +150,66 @@ const Test = {
 	}
 };
 
-function test(description, spec, {only = false} = {}) {
-	return Object.create(Test, {
-		only: {value: only},
-		spec: {value: spec},
-		description: {value: description}
-	});
+var tester = (description, spec, {only = false} = {}) => Object.create(Test, {
+	only: {value: only},
+	spec: {value: spec},
+	description: {value: description}
+});
+
+const print = (message, offset = 0) => {
+	console.log(message.padStart(message.length + offset * 2));
+};
+
+function printResult(r, offset = 0) {
+	const comment = `# ${r.description} - ${r.executionTime}ms`;
+	print(comment, offset);
+	for (const item of r.testPoints) {
+		if (item.testPoints) {
+			// Sub test
+			printResult(item, offset + 1);
+		}
+		const toPrint = `${item.pass === true ? 'ok' : 'not ok'} - ${item.description}`;
+		print(toPrint, offset);
+	}
+
+	if (offset > 0) {
+		const plan = `1..${r.testPoints.length}`;
+		print(plan, offset);
+		print(`# time=${r.executionTime}ms`, offset);
+	}
 }
 
-module.exports = test;
+const onNextTick = v => new Promise(resolve => {
+	setTimeout(() => {
+		resolve(v);
+	}, 0);
+});
+
+
+const factory = (reporter = printResult) => {
+	const tests = [];
+	setTimeout(async () => {
+		for (const t of tests) {
+			const r = await onNextTick(t); // On next tick to give some time to the reporter if it needs (like browser reporter)
+			if (r.pass) {
+				
+			} else {
+				
+			}
+			reporter(r);
+		}
+		//todo print summary!
+	}, 0);
+
+	//todo add a only/skip on the factory
+	const test = (description, spec) => {
+		const t = tester(description, spec);
+		tests.push(t.run());
+	};
+
+	return test;
+};
+
+var index = factory()
+
+module.exports = index;
