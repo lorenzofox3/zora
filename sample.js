@@ -1,34 +1,37 @@
-const test = require('./dist');
+const test = require('./dist/');
 
-const wait = async (fn, time = 0) => {
+const wait = async (time = 0) => {
 	return new Promise(resolve => {
-		setTimeout(() => {resolve(fn())}, time)
+		setTimeout(() => {resolve()}, time)
 	});
 };
 
-test('foo bar bim', async t => {
-	t.ok(true, 'sure');
-	await wait(() => {}, 400);
-	t.ok(false, 'not sure');
-});
+test('foo bar', async t => {
+	let count = 1;
 
-test('that one too', async t => {
-	await wait(() => {}, 700);
+	t.ok(true, 'should be ok');
 
-	t.test('some subTest', async t => {
-		t.ok(true, 'inner');
-		await wait(() => {}, 200);
-
-		t.test('deeply inside', async t=>{
-			t.ok(true,'dale');
-		});
-
-		t.ok(false, 'oh noooo');
+	await t.test('insider', async t => {
+		await wait(1000);
+		t.ok(count === 1, 'from inside');
+		count++;
 	});
 
-	t.test('another sub test', t => {
-		t.ok(true, 'oh yeah!');
+	t.ok(count === 2, 'should be ok too');
+});
+
+test('another one bites the dust', async t => {
+	let count = 1;
+
+	await wait(300);
+	t.ok(true, 'very true');
+
+	t.test('insider too', async t => {
+		await wait(500);
+		t.ok(count === 1, 'from inside bis');
+		count++;
 	});
 
-	t.ok('that', 'bim');
+	t.ok(count === 1, 'And this one should not wait to execute !');
 });
+

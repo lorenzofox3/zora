@@ -1,0 +1,35 @@
+TAP version 13
+# with some nested tests
+    # Subtest: foo bar bim
+    ok 1 - sure
+    ok 2 - not sure
+    1..2
+    # time=406ms
+ok 1 - foo bar bim
+
+    # Subtest: that one too
+        # Subtest: some subTest
+        ok 1 - inner
+            # Subtest: deeply inside
+            ok 1 - dale
+            1..1
+            # time=0ms
+        ok 2 - deeply inside
+        
+        ok 3 - oh noooo
+        1..3
+        # time=205ms
+    ok 1 - some subTest
+    
+        # Subtest: another sub test
+        ok 1 - oh yeah!
+        1..1
+        # time=0ms
+    ok 2 - another sub test
+    
+    ok 3 - bim
+    1..3
+    # time=911ms
+ok 2 - that one too
+
+1..2

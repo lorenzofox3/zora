@@ -1,6 +1,6 @@
 
 const plan = require('../../../dist/index.js')();
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 5; i++) {
   plan.test('test ' + i, async function (assert) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),60);

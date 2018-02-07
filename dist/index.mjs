@@ -13,18 +13,11 @@ const assertMethodHook = fn => function (...args) {
 		assertResult.at = getAssertionLocation();
 	}
 
-	this.collect(assertResult);
+	this.collect({type: 'assert', data: assertResult, offset: this.offset});
 	return assertResult;
 };
 
 const Assertion = {
-	test(description, spec) {
-		const t = tester(description, spec)
-			.run()
-			.then(r => Object.assign(r, {pass: r.testPoints.every(tp => tp.pass === true)}));
-		this.collect(t);
-		return t;
-	},
 	ok: assertMethodHook((val, description = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
@@ -123,89 +116,150 @@ const Assertion = {
 	}))
 };
 
-var assert = collect => Object.create(Assertion, {collect: {value: collect}});
+var assert = (collect, offset = 0) => {
 
-const noop = () => {};
-const skip = description => test('SKIPPED - ' + description, noop);
+	const test = tester(collect, offset + 1);
 
-const Test = {
-	async run() {
-		const tests = [];
-		const collectResult = tp => tests.push(tp);
-		const start = Date.now();
-		await this.spec(assert(collectResult)); // Collection
-		const testPoints = await Promise.all(tests); // Execution (some collection functions are async such sub test)
-		const executionTime = Date.now() - start;
-		return Object.assign(this, {
-			executionTime,
-			testPoints
+	return Object.assign(
+		Object.create(Assertion, {collect: {value: collect}, offset: {value: offset}}), {
+			test(description, spec) {
+				// Note: we return the coroutine so the caller can control whether he wants to wait for the sub test to complete or not
+				return Promise.resolve(test(description, spec).coRoutine);
+			}
 		});
-	},
-	skip() {
-		return skip(this.description);
-	}
-};
-
-var tester = (description, spec, {only = false} = {}) => Object.create(Test, {
-	only: {value: only},
-	spec: {value: spec},
-	description: {value: description}
-});
-
-const print = (message, offset = 0) => {
-	console.log(message.padStart(message.length + offset * 2));
-};
-
-function printResult(r, offset = 0) {
-	const comment = `# ${r.description} - ${r.executionTime}ms`;
-	print(comment, offset);
-	for (const item of r.testPoints) {
-		if (item.testPoints) {
-			// Sub test
-			printResult(item, offset + 1);
-		}
-		const toPrint = `${item.pass === true ? 'ok' : 'not ok'} - ${item.description}`;
-		print(toPrint, offset);
-	}
-
-	if (offset > 0) {
-		const plan = `1..${r.testPoints.length}`;
-		print(plan, offset);
-		print(`# time=${r.executionTime}ms`, offset);
-	}
 }
 
-const onNextTick = v => new Promise(resolve => {
-	setTimeout(() => {
-		resolve(v);
-	}, 0);
-});
-
-
-const factory = (reporter = printResult) => {
-	const tests = [];
-	setTimeout(async () => {
-		for (const t of tests) {
-			const r = await onNextTick(t); // On next tick to give some time to the reporter if it needs (like browser reporter)
-			if (r.pass) {
-				
-			} else {
-				
+const Test = {
+	[Symbol.asyncIterator]() {
+		return this;
+	},
+	async next() {
+		if (this.buffer.length === 0) {
+			if (this.result !== null) {
+				return {done: true, value: this.result};
 			}
-			reporter(r);
+			// Flush
+			await this.coRoutine;
+			return this.next();
 		}
-		//todo print summary!
-	}, 0);
 
-	//todo add a only/skip on the factory
-	const test = (description, spec) => {
-		const t = tester(description, spec);
-		tests.push(t.run());
-	};
+		const next = this.buffer[0];
+
+		// Delegate with sub tests
+		if (next[Symbol.asyncIterator] !== void 0) {
+			const delegated = await next.next();
+
+			// Delegate is exhausted
+			if (delegated.done === true) {
+				const {executionTime, count, offset} = delegated.value;
+				this.buffer.shift();
+
+				this.buffer.unshift({type: 'time', data: executionTime, offset});
+				this.buffer.unshift({type: 'plan', data: {start: 1, end: count}, offset});
+
+				// this.buffer.unshift({type:'assert',data:{}, offset})
+
+
+				return this.next();
+			}
+
+			return delegated;
+		}
+
+		return {value: this.buffer.shift(), done: false};
+	}
+};
+
+var tester = (collect, offset = 0) => (description, spec) => {
+	const buffer = [{type: 'title', data: description, offset}];
+	let result = null;
+	let count = 0;
+
+	// Start assertion collection
+	const assertFn = assert(i => {
+		count++;
+		if (i.data) {
+			i.data.id = count;
+		} else {
+			i.id = count;
+		}
+		buffer.push(i);
+	}, offset);
+	const start = Date.now();
+	const coRoutine = Promise.resolve(spec(assertFn))
+		.then(() => {
+			return {
+				offset,
+				spec,
+				description,
+				count,
+				executionTime: Date.now() - start
+			};
+		})
+		.then(r => result = r);
+
+	const test = Object.create(Test, {
+		buffer: {value: buffer},
+		coRoutine: {value: coRoutine},
+		result: {get() {return result;}},
+		count: {get() {return count;}}
+	});
+
+	// Collection by the calling test
+	collect(test);
 
 	return test;
 };
 
-var index = factory()
+const print = (message, offset = 0) => {
+	console.log(message.padStart(message.length + offset * 4)); // 4 white space used as indent (see tap-parser)
+};
 
-export default index;
+const tap = {
+	version(version = 13, offset = 0) {
+		print(`TAP version ${version}`, offset);
+	},
+	title(value, offset = 0) {
+		const message = offset > 0 ? `Subtest: ${value}` : value;
+		this.comment(message, offset);
+	},
+	assert(value, offset = 0) {
+		const {pass, description, id} = value;
+		const label = pass === true ? 'ok' : 'not ok';
+		print(`${label} ${id} - ${description}`, offset);
+	},
+	plan(value, offset = 0) {
+		print(`1..${value.end}`, offset);
+	},
+	time(value, offset = 0) {
+		this.comment(`time=${value}ms`, offset);
+	},
+	comment(value, offset = 0) {
+		print(`# ${value}`, offset);
+	}
+};
+
+var tap$1 = (toPrint = {}) => {
+	const {data, type, offset = 0,} = toPrint;
+	if (typeof tap[type] === 'function') {
+		tap[type](data, offset);
+	}
+	// Else ignore
+};
+
+const tests = [];
+const test = tester(t => tests.push(t));
+setTimeout(async () => {
+	tap$1({type:'version'});
+	for (const t of tests) {
+		while (true) {
+			const {done, value} = await t.next();
+			if (done === true) {
+				break;
+			}
+			tap$1(value);
+		}
+	}
+}, 0);
+
+export default test;

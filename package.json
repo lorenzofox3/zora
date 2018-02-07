@@ -41,6 +41,8 @@
   "license": "MIT",
   "dependencies": {
     "deep-equal": "^1.0.1",
+    "tap-mocha-reporter": "^3.0.6",
+    "tap-parser": "^7.0.0",
     "zora-tap-reporter": "^1.0.2"
   },
   "devDependencies": {
