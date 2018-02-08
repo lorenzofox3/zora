@@ -1,74 +1,68 @@
 # zora
+
 Fast javascript test runner for **nodejs** and **browsers**
 
 [![CircleCI](https://circleci.com/gh/lorenzofox3/zora.svg?style=svg)](https://circleci.com/gh/lorenzofox3/zora)
 
-## Table of Contents 
-
-  - [installation](#installation)
-  - [features](#features)
-    - [Zero config](#zero-config)
-    - [No global](#no-global)
-    - [Async testing made easy](#async-testing-made-easy)
-    - [parallelism](#parallelism)
-    - [fast](#fast)
-    - [tap (Test Anything Protocol) producer](#tap-test-anything-protocol-producer)
-    - [browser friendly](#browser-friendly)
-  - [Usage](#usage)
-    - [simple case one file](#simple-case-one-file)
-    - [multiple files setup (recommended)](#multiple-files-setup-recommended)
-  - [In the browser](#in-the-browser)
-    - [drop in file](#drop-in-file)
-    - [As part of CI (example with rollup)](#as-part-of-ci-example-with-rollup)
-  - [Use output data not as a tap output](#use-output-data-not-as-a-tap-output)
-  - [CLI](#cli)
-
 ## installation
 ``npm install --save-dev zora``
 
-## features
-### ⚡️ Zero config
-It is just Javascript, write your test program, bundle it (if needed) for the environment you want to test in and execute the script! No whatever.conf.js or specific test runner.
+## (Un)Opinions and Design
 
-### 🎯 No global
-There is no global, just a function providing a two methods API.
+### Tests are regular Javascript programs.
 
-### ⌛️ Async testing made easy
-Use the Javascript native [AsyncFunction](http://devdocs.io/javascript/statements/async_function) to write your asynchronous code as it was synchronous. No need for a callback or to plan ahead.
+You don't need a specific test runner, a specific platform or any build step to run your `zora` tests. They are only regular valid EcmaScript 2017 programs.
+If you have the following test.
 ```Javascript
-plan.test('my async test',async (assert) => {
-    const resolvedResult = await db.findUser('foo');
-    assert.deepEqual(resolvedResult, {name:'foo'}, 'should have fetched mister foo');
+import test from 'path/to/zora';
+
+test('should result to the answer', t=>{
+    const answer = 42
+    t.equal(answer, 42, 'answer should be 42');
+});
+```
+
+You can run your test with
+1. Node: ``node ./myTestFile.js`
+2. In the browser ``<script type="module" src="./myTestFile.js></script>`` identically
+
+Moreover zora does not use specific platform API which should make it transparent to your module bundler or transpiler.
+
+In few words:
+> Zora is only Javascript, no less, no more.
+
+### Tests are fast
+
+### Control flow is managed the way you want with regular Javascript idioms
+
+### Reporter is handled with other process (TAP)
+
+blahblah
+
+
+## Usage
+
+Zora API is very straightforward: you have only **1** function and the assertion library is pretty standard and obvious.
+The tests will start by themselves with no extra effort.
+
+```Javascript
+import test from 'zora';
+
+test('some independent test', t=>{
+    t.equal(1+1,2,'one plus one should equal 2');
 });
 
+test('other independent test', t=>{
+    t.equal(1+2,3,'one plus two should equal 3');
+});
 ```
-### 📐 "parallelism"
-Each test run in "parallel", ie as
 
-```Javascript
-const tests = [test1,test2,test3];
+### Control flow
 
-const results = Promise.all(tests.map(t=>t.run()));
-```
-(so do note, they run it the same process)
+//
 
-It will likely be **faster** than other sequential test runner.
-It therefore enforces you to write your tests in isolation which is often a good practice.
 
-### 🚀 fast
-Zora does not do rocket science but seems to be the **fastest** among mocha, tape, ava, jest on my machine according to a simple test case.
-The test is pretty simple: a nodejs test suite split into N(=8) files with M(=8) tests lasting T(=60ms). Anyway you can simply fork the repo and sort it out yourself.
-To generate the benchmark files run `npm run build:benchmark`
-Then you can run the tests with the framework of your choice.
-Ex:
-`npm run bench:zora`
 
-### 💄 tap (Test Anything Protocol) producer
-By default zora produces a tap report through the console, so you can pipe in with any [tap reporter](https://github.com/sindresorhus/awesome-tap#reporters). Alternatively you can use the reporter API to build any custom reporter... even a full [dashboard](https://github/lorenzofox3/zora-reporter)
-
-### 🌎 browser friendly
-No sophisticated or platform specific (nodejs) dependency in it. Just regular EcmaScript supported by all the major platforms and browsers.
-Moreover Zora does not make any choice on transpilation, bundling, file serving, etc like most other test runners. You use what fits the best for your use cases and you don't need any specific test runner.
 
 ## Usage
 ### simple case one file
