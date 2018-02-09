@@ -1,7 +1,4 @@
-import assertions from './assertions'
-import test from './test.js';
-import plan from './plan';
-
-assertions();
-test();
-plan();
+import combinator from './combinators';
+import assertions from './assertions';
+import tap from './tap';
+import test from './tester';

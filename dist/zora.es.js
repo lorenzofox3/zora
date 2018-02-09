@@ -1,69 +1,3 @@
-const stringify = JSON.stringify;
-const printTestHeader = test => console.log(`# ${test.description} - ${test.executionTime}ms`);
-const printTestCase = (assertion, id) => {
-	const pass = assertion.pass;
-	const status = pass === true ? 'ok' : 'not ok';
-	console.log(`${status} ${id} ${assertion.message}`);
-	if (pass !== true) {
-		console.log(`  ---
-    operator: ${assertion.operator}
-    expected: ${stringify(assertion.expected)}
-    actual: ${stringify(assertion.actual)}
-    at: ${(assertion.at || '')}
-  ...
-`);
-	}
-};
-const printSummary = ({count, pass, skipped, fail}) => {
-	//Some parsers seem to fail to detect end of stream if we use a single console.log call with a template string...
-	console.log(`1..${count}`);
-	console.log(`# tests ${count} (${skipped} skipped)`);
-	console.log(`# pass  ${pass}`);
-	if (fail > 0) {
-		console.log(`# fail  ${fail}`);
-	} else {
-		console.log('# ok');
-	}
-};
-
-var tap = ({displaySkipped = false} = {}) => function * () {
-	let pass = 0;
-	let fail = 0;
-	let id = 0;
-	let skipped = 0;
-	console.log('TAP version 13');
-	try {
-		/* eslint-disable no-constant-condition */
-		while (true) {
-			const test = yield;
-
-			if (test.items.length === 0) {
-				skipped++;
-			}
-
-			if (test.items.length > 0 || displaySkipped === true) {
-				printTestHeader(test);
-			}
-
-			for (const assertion of test.items) {
-				id++;
-				if (assertion.pass === true) {
-					pass++;
-				} else {
-					fail++;
-				}
-				printTestCase(assertion, id);
-			}
-		}
-		/* eslint-enable no-constant-condition */
-	} catch (err) {
-		console.log('Bail out! unhandled exception');
-		throw err;
-	} finally {
-		printSummary({count: id, pass, skipped, fail});
-	}
-};
-
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
@@ -210,6 +144,7 @@ const getAssertionLocation = () => {
 	const stack = (err.stack || '').split('\n');
 	return (stack[3] || '').trim().replace(/^at/i, '');
 };
+
 const assertMethodHook = fn => function (...args) {
 	const assertResult = fn(...args);
 
@@ -222,54 +157,54 @@ const assertMethodHook = fn => function (...args) {
 };
 
 const Assertion = {
-	ok: assertMethodHook((val, message = 'should be truthy') => ({
+	ok: assertMethodHook((val, description = 'should be truthy') => ({
 		pass: Boolean(val),
 		actual: val,
 		expected: true,
-		message,
+		description,
 		operator: 'ok'
 	})),
-	deepEqual: assertMethodHook((actual, expected, message = 'should be equivalent') => ({
+	deepEqual: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
 		pass: deepEqual_1(actual, expected),
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'deepEqual'
 	})),
-	equal: assertMethodHook((actual, expected, message = 'should be equal') => ({
+	equal: assertMethodHook((actual, expected, description = 'should be equal') => ({
 		pass: actual === expected,
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'equal'
 	})),
-	notOk: assertMethodHook((val, message = 'should not be truthy') => ({
+	notOk: assertMethodHook((val, description = 'should not be truthy') => ({
 		pass: !val,
 		expected: false,
 		actual: val,
-		message,
+		description,
 		operator: 'notOk'
 	})),
-	notDeepEqual: assertMethodHook((actual, expected, message = 'should not be equivalent') => ({
+	notDeepEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
 		pass: !deepEqual_1(actual, expected),
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'notDeepEqual'
 	})),
-	notEqual: assertMethodHook((actual, expected, message = 'should not be equal') => ({
+	notEqual: assertMethodHook((actual, expected, description = 'should not be equal') => ({
 		pass: actual !== expected,
 		actual,
 		expected,
-		message,
+		description,
 		operator: 'notEqual'
 	})),
-	throws: assertMethodHook((func, expected, message) => {
+	throws: assertMethodHook((func, expected, description) => {
 		let caught;
 		let pass;
 		let actual;
 		if (typeof expected === 'string') {
-			[expected, message] = [message, expected];
+			[expected, description] = [description, expected];
 		}
 		try {
 			func();
@@ -290,13 +225,13 @@ const Assertion = {
 			expected,
 			actual,
 			operator: 'throws',
-			message: message || 'should throw'
+			description: description || 'should throw'
 		};
 	}),
-	doesNotThrow: assertMethodHook((func, expected, message) => {
+	doesNotThrow: assertMethodHook((func, expected, description) => {
 		let caught;
 		if (typeof expected === 'string') {
-			[expected, message] = [message, expected];
+			[expected, description] = [description, expected];
 		}
 		try {
 			func();
@@ -308,122 +243,314 @@ const Assertion = {
 			expected: 'no thrown error',
 			actual: caught && caught.error,
 			operator: 'doesNotThrow',
-			message: message || 'should not throw'
+			description: description || 'should not throw'
 		};
 	}),
-	fail: assertMethodHook((message = 'fail called') => ({
+	fail: assertMethodHook((description = 'fail called') => ({
 		pass: false,
 		actual: 'fail called',
 		expected: 'fail not called',
-		message,
+		description,
 		operator: 'fail'
 	}))
 };
 
-var assert = collect => Object.create(Assertion, {collect: {value: collect}});
-
-const noop = () => {};
-
-const skip = description => test('SKIPPED - ' + description, noop);
-
-const Test = {
-	async run() {
-		const collect = assertion => this.items.push(assertion);
-		const start = Date.now();
-		await Promise.resolve(this.spec(assert(collect)));
-		const executionTime = Date.now() - start;
-		return Object.assign(this, {
-			executionTime
-		});
-	},
-	skip() {
-		return skip(this.description);
-	}
-};
-
-function test(description, spec, {only = false} = {}) {
-	return Object.create(Test, {
-		items: {value: []},
-		only: {value: only},
-		spec: {value: spec},
-		description: {value: description}
+var assert = (collect, test) => Object.assign(
+	Object.create(Assertion, {collect: {value: collect}}), {
+		async test(description, spec) {
+			// Note: we return the task so the caller can control whether he wants to wait for the sub test to complete or not
+			return test(description, spec).task;
+		}
 	});
-}
 
-// Force to resolve on next tick so consumer can do something with previous iteration result
-const onNextTick = val => new Promise(resolve => setTimeout(() => resolve(val), 0));
+const tester = (collect, {offset = 0} = {}) => (description, spec) => {
+	const buffer = [{type: 'title', data: description, offset}];
+	const result = {count: 0, pass: true, description, spec};
+	let done = false;
 
-const PlanProto = {
-	[Symbol.iterator]() {
-		return this.items[Symbol.iterator]();
-	},
-	test(description, spec, opts) {
-		if (!spec && description.test) {
-			// If it is a plan
-			this.items.push(...description);
+	const createAssertion = item => {
+		result.pass = result.pass && item.pass;
+		return {type: 'assert', data: item, offset};
+	};
+
+	const collector = item => {
+		result.count++;
+		item.id = result.count;
+		if (item[Symbol.asyncIterator] === undefined) {
+			// Assertion
+			buffer.push(createAssertion(item));
 		} else {
-			this.items.push(test(description, spec, opts));
-		}
-		return this;
-	},
-	only(description, spec) {
-		return this.test(description, spec, {only: true});
-	},
-	skip(description, spec) {
-		if (!spec && description.test) {
-			// If it is a plan we skip the whole plan
-			for (const t of description) {
-				this.items.push(t.skip());
-			}
-		} else {
-			this.items.push(skip(description));
-		}
-		return this;
-	}
-};
-
-const runnify = fn => async function (sink = tap()) {
-	const sinkIterator = typeof sink[Symbol.iterator] === 'function' ?
-		sink[Symbol.iterator]() :
-		sink(); // Backward compatibility
-	sinkIterator.next();
-	try {
-		const hasOnly = this.items.some(t => t.only);
-		const tests = hasOnly ? this.items.map(t => t.only ? t : t.skip()) : this.items;
-		await fn(tests, sinkIterator);
-	} catch (err) {
-		sinkIterator.throw(err);
-	} finally {
-		sinkIterator.return();
-	}
-};
-
-function factory({sequence = false} = {sequence: false}) {
-	/* eslint-disable no-await-in-loop */
-	const exec = sequence === true ? async (tests, sinkIterator) => {
-		for (const t of tests) {
-			const result = await onNextTick(t.run());
-			sinkIterator.next(result);
-		}
-	} : async (tests, sinkIterator) => {
-		const runningTests = tests.map(t => t.run());
-		for (const r of runningTests) {
-			const executedTest = await onNextTick(r);
-			sinkIterator.next(executedTest);
+			// Sub test
+			buffer.push(item);
 		}
 	};
-	/* eslint-enable no-await-in-loop */
 
-	return Object.assign(Object.create(PlanProto, {
-		items: {value: []}, length: {
-			get() {
-				return this.items.length;
-			}
+	const handleDelegate = async delegate => {
+		const {value, done} = await delegate.next();
+
+		// Delegate is exhausted: create a summary test point in the stream and throw the delegate
+		if (done === true) {
+			const {executionTime, pass, description} = value;
+			const subTestAssertion = Object.assign(createAssertion({
+				pass,
+				description,
+				id: delegate.id,
+				executionTime
+			}), {type: 'testAssert'});
+			buffer.shift();
+			buffer.unshift(subTestAssertion);
+			return instance.next();
 		}
-	}), {
-		run: runnify(exec)
+		return {value, done};
+	};
+
+	const subTest = tester(collector, {offset: offset + 1});
+
+	const start = Date.now();
+	// Execute the test collecting assertions
+	const assertFn = assert(collector, subTest);
+	const task = new Promise(resolve => resolve(spec(assertFn)))
+		.then(() => {
+			// Always report a plan and summary: the calling test will know how to deal with it
+			result.executionTime = Date.now() - start;
+			buffer.push({type: 'plan', data: {start: 1, end: result.count}, offset});
+			buffer.push({type: 'time', data: result.executionTime, offset});
+			done = true;
+			return result;
+		})
+		.catch(err => {
+			// We report a failing test before bail out ... while unhandled promise rejection is still allowed by nodejs...
+			buffer.push({type: 'assert', data: {pass: false, description}});
+			buffer.push({type: 'comment', data: 'Unhandled exception'});
+			buffer.push({type: 'bailout', data: err, offset});
+			done = true;
+		});
+
+	const instance = {
+		test: subTest,
+		task,
+		[Symbol.asyncIterator]() {
+			return this;
+		},
+		async next() {
+			if (buffer.length === 0) {
+				if (done === true) {
+					return {done: true, value: result};
+				}
+				// Flush
+				await task;
+				return this.next();
+			}
+
+			const next = buffer[0];
+
+			// Delegate if sub test
+			if (next[Symbol.asyncIterator] !== undefined) {
+				return handleDelegate(next);
+			}
+
+			return {value: buffer.shift(), done: false};
+		}
+	};
+
+	// Collection by the calling test
+	collect(instance);
+
+	return instance;
+};
+
+const print = (message, offset = 0) => {
+	console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
+};
+
+const toYaml = print => (obj, offset = 0) => {
+	for (const [prop, value] of Object.entries(obj)) {
+		print(`${prop}: ${JSON.stringify(value)}`, offset + 0.5);
+	}
+};
+
+const tap = print => {
+	const yaml = toYaml(print);
+	return {
+		version(version = 13) {
+			print(`TAP version ${version}`);
+		},
+		title(value, offset = 0) {
+			const message = offset > 0 ? `Subtest: ${value}` : value;
+			this.comment(message, offset);
+		},
+		assert(value, offset = 0) {
+			const {pass, description, id, executionTime, expected = '', actual = '', at = '', operator = ''} = value;
+			const label = pass === true ? 'ok' : 'not ok';
+			print(`${label} ${id} - ${description}${executionTime ? ` # time=${executionTime}ms` : ''}`, offset);
+			if (pass === false && value.operator) {
+				print('---', offset + 0.5);
+				yaml({expected, actual, at, operator}, offset);
+				print('...', offset + 0.5);
+			}
+		},
+		plan(value, offset = 0) {
+			print(`1..${value.end}`, offset);
+		},
+		time(value, offset = 0) {
+			this.comment(`time=${value}ms`, offset);
+		},
+		comment(value, offset = 0) {
+			print(`# ${value}`, offset);
+		},
+		bailout(value = 'Unhandled exception') {
+			print(`Bail out! ${value}`);
+		},
+		testAssert(value, offset = 0) {
+			return this.assert(value, offset);
+		}
+	};
+};
+
+var tap$1 = (printFn = print) => {
+	const reporter = tap(printFn);
+	return (toPrint = {}) => {
+		const {data, type, offset = 0} = toPrint;
+		if (typeof reporter[type] === 'function') {
+			reporter[type](data, offset);
+		}
+		// Else ignore (unknown message type)
+	};
+};
+
+// Some combinators for asynchronous iterators: this will be way more easier when
+// Async generator are widely supported
+
+const asyncIterator = behavior => Object.assign({
+	[Symbol.asyncIterator]() {
+		return this;
+	}
+}, behavior);
+
+const filter = predicate => iterator => asyncIterator({
+	async next() {
+		const {done, value} = await iterator.next();
+
+		if (done === true) {
+			return {done};
+		}
+
+		if (!predicate(value)) {
+			return this.next();
+		}
+
+		return {done, value};
+	}
+});
+
+const map = mapFn => iterator => asyncIterator({
+	[Symbol.asyncIterator]() {
+		return this;
+	},
+	async next() {
+		const {done, value} = await iterator.next();
+		if (done === true) {
+			return {done};
+		}
+		return {done, value: mapFn(value)};
+	}
+});
+
+const stream = asyncIterator => Object.assign(asyncIterator, {
+	map(fn) {
+		return stream(map(fn)(asyncIterator));
+	},
+	filter(fn) {
+		return stream(filter(fn)(asyncIterator));
+	}
+});
+
+const combine = (...iterators) => {
+	const [...pending] = iterators;
+	let current = pending.shift();
+
+	return asyncIterator({
+		async next() {
+			if (current === undefined) {
+				return {done: true};
+			}
+
+			const {done, value} = await current.next();
+
+			if (done === true) {
+				current = pending.shift();
+				return this.next();
+			}
+
+			return {done, value};
+		}
 	});
+};
+
+let flatten = true;
+const tests = [];
+const test = tester(t => tests.push(t));
+
+// Provide a root context for BSD style test suite
+const subTest = (test('Root', () => {})).test;
+test.test = (description, spec) => {
+	flatten = false; // Turn reporter into BSD style
+	return subTest(description, spec);
+};
+
+const start = async ({reporter = tap$1()} = {}) => {
+	let count = 0;
+	let failure = 0;
+	reporter({type: 'version', data: 13});
+
+	// Remove the irrelevant root title
+	await tests[0].next();
+
+	let outputStream = stream(combine(...tests));
+	outputStream = flatten ? outputStream
+		.filter(({type}) => type !== 'testAssert')
+		.map(item => Object.assign(item, {offset: 0})) :
+		outputStream;
+
+	const filterOutAtRootLevel = ['plan', 'time'];
+	outputStream = outputStream
+		.filter(item => item.offset > 0 || !filterOutAtRootLevel.includes(item.type))
+		.map(item => {
+			if (item.offset > 0 || (item.type !== 'assert' && item.type !== 'testAssert')) {
+				return item;
+			}
+
+			count++;
+			item.data.id = count;
+			failure += item.data.pass ? 0 : 1;
+			return item;
+		});
+
+	// One day with for await loops ... :) !
+	while (true) {
+		const {done, value} = await outputStream.next();
+
+		if (done === true) {
+			break;
+		}
+
+		reporter(value);
+
+		if (value.type === 'bailout') {
+			throw value.data; // Rethrow but with Nodejs we keep getting the deprecation warning (unhandled promise) and the process exists with 0 exit code...
+		}
+	}
+
+	reporter({type: 'plan', data: {start: 1, end: count}});
+	reporter({type: 'comment', data: failure > 0 ? `failed ${failure} of ${count} tests` : 'ok'});
+};
+
+// Auto bootstrap following async env vs sync env (browser vs node)
+if (typeof window === 'undefined') {
+	setTimeout(start, 0);
+} else {
+	window.addEventListener('load', start);
 }
 
-export default factory;
+export default test;
 //# sourceMappingURL=zora.es.js.map

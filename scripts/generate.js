@@ -1,21 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 8;
-const testCount = 8;
-const waitTime = 60;
+const filesCount = 12;
+const testCount = 10;
+const waitTime = 100;
 
 const zoraCode = `
-const plan = require('../../../dist/index.js')();
+const test = require('../../../dist/index.js');
 for (let i = 0; i < ${testCount}; i++) {
-  plan.test('test ' + i, async function (assert) {
+  test('test ' + i, async function (assert) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
     assert.ok(Math.random() * 100 > 10);
   });
 }
-module.exports = plan;
 `;
 
 const avaCode = `
@@ -78,17 +77,12 @@ for (let f of tests){
 }
 `;
 const zoraIndex = `
-const zora = require('../../dist/index.js');
-const masterPlan = zora();
 const path = require('path');
 const fs = require('fs');
 const tests = fs.readdirSync(path.join(process.cwd(),'./benchmarks/zora/test'));
 for (let f of tests){
-  const subPlan = require(path.join(process.cwd(),'./benchmarks/zora/test/',f));
-  masterPlan.test(subPlan);
+  require(path.join(process.cwd(),'./benchmarks/zora/test/',f));
 }
-
-masterPlan.run();
 `;
 
 
