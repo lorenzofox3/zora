@@ -6,7 +6,6 @@ let flatten = true;
 const tests = [];
 const test = tester(t => tests.push(t));
 
-
 // Provide a root context for BSD style test suite
 const subTest = (test('Root', () => {})).test;
 test.test = (description, spec) => {
@@ -16,7 +15,6 @@ test.test = (description, spec) => {
 
 const start = async ({reporter = tap()} = {}) => {
 	let count = 0;
-	let success = 0;
 	let failure = 0;
 	reporter({type: 'version', data: 13});
 
@@ -29,9 +27,9 @@ const start = async ({reporter = tap()} = {}) => {
 		.map(item => Object.assign(item, {offset: 0})) :
 		outputStream;
 
-	const toKeep = ['assert', 'comment', 'title', 'testAssert'];
+	const filterOutAtRootLevel = ['plan', 'time'];
 	outputStream = outputStream
-		.filter(item => item.offset > 0 || toKeep.includes(item.type))
+		.filter(item => item.offset > 0 || !filterOutAtRootLevel.includes(item.type))
 		.map(item => {
 			if (item.offset > 0 || (item.type !== 'assert' && item.type !== 'testAssert')) {
 				return item;
@@ -40,11 +38,10 @@ const start = async ({reporter = tap()} = {}) => {
 			count++;
 			item.data.id = count;
 			failure += item.data.pass ? 0 : 1;
-			success += item.data.pass ? 1 : 0;
-
 			return item;
 		});
 
+	// One day with for await loops ... :) !
 	while (true) {
 		const {done, value} = await outputStream.next();
 

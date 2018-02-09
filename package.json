@@ -22,7 +22,6 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "clean:benchmark": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
-    "build:test": "rollup -c ./rollup/test.js",
     "build:benchmark": "npm run clean:benchmark && node ./scripts/generate.js",
     "bench:zora": "time (node ./benchmarks/zora/index.js)",
     "bench:ava": "time ava ./benchmarks/ava/test/",
@@ -30,7 +29,8 @@
     "bench:tape": "time (node ./benchmarks/tape/index)",
     "bench:jest": "time jest",
     "build": "npm run clean && rollup -c ./rollup/build.js && rollup -c ./rollup/build-cdn.js",
-    "test": "rollup -c ./rollup/test.js | node && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec",
+    "test:unit": "rollup -c ./rollup/test.js | node",
+    "test": "npm run test:unit && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec",
     "xo": "xo lib/*.js index.js"
   },
   "author": {

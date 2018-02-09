@@ -172,6 +172,7 @@ const tester = (collect, {offset = 0} = {}) => (description, spec) => {
 	const assertFn = assert(collector, subTest);
 	const coRoutine = new Promise(resolve => resolve(spec(assertFn)))
 		.then(() => {
+			// Always report a plan and summary: the calling test will know how to deal with it
 			result.executionTime = Date.now() - start;
 			buffer.push({type: 'plan', data: {start: 1, end: result.count}, offset});
 			buffer.push({type: 'time', data: result.executionTime, offset});
@@ -183,6 +184,7 @@ const tester = (collect, {offset = 0} = {}) => (description, spec) => {
 			buffer.push({type: 'assert', data: {pass: false, description}});
 			buffer.push({type: 'comment', data: 'Unhandled exception'});
 			buffer.push({type: 'bailout', data: err, offset});
+			done = true;
 		});
 
 	const instance = {
@@ -275,9 +277,9 @@ var tap$1 = (printFn = print) => {
 		}
 		// Else ignore (unknown message type)
 	};
-}
+};
 
-// Some combinator for asynchronous iterators: this will be way more easier when
+// Some combinators for asynchronous iterators: this will be way more easier when
 // Async generator are widely supported
 
 const asyncIterator = behavior => Object.assign({
@@ -286,14 +288,6 @@ const asyncIterator = behavior => Object.assign({
 	}
 }, behavior);
 
-const stream = asyncIterator => Object.assign(asyncIterator, {
-	map(fn) {
-		return stream(map(fn)(asyncIterator));
-	},
-	filter(fn) {
-		return stream(filter(fn)(asyncIterator));
-	}
-});
 const filter = predicate => iterator => asyncIterator({
 	async next() {
 		const {done, value} = await iterator.next();
@@ -323,8 +317,16 @@ const map = mapFn => iterator => asyncIterator({
 	}
 });
 
-const combine = (...iterators) => {
+const stream = asyncIterator => Object.assign(asyncIterator, {
+	map(fn) {
+		return stream(map(fn)(asyncIterator));
+	},
+	filter(fn) {
+		return stream(filter(fn)(asyncIterator));
+	}
+});
 
+const combine = (...iterators) => {
 	const [...pending] = iterators;
 	let current = pending.shift();
 
@@ -350,7 +352,6 @@ let flatten = true;
 const tests = [];
 const test = tester(t => tests.push(t));
 
-
 // Provide a root context for BSD style test suite
 const subTest = (test('Root', () => {})).test;
 test.test = (description, spec) => {
@@ -360,7 +361,6 @@ test.test = (description, spec) => {
 
 const start = async ({reporter = tap$1()} = {}) => {
 	let count = 0;
-	let success = 0;
 	let failure = 0;
 	reporter({type: 'version', data: 13});
 
@@ -373,9 +373,9 @@ const start = async ({reporter = tap$1()} = {}) => {
 		.map(item => Object.assign(item, {offset: 0})) :
 		outputStream;
 
-	const toKeep = ['assert', 'comment', 'title', 'testAssert'];
+	const filterOutAtRootLevel = ['plan', 'time'];
 	outputStream = outputStream
-		.filter(item => item.offset > 0 || toKeep.includes(item.type))
+		.filter(item => item.offset > 0 || !filterOutAtRootLevel.includes(item.type))
 		.map(item => {
 			if (item.offset > 0 || (item.type !== 'assert' && item.type !== 'testAssert')) {
 				return item;
@@ -384,11 +384,10 @@ const start = async ({reporter = tap$1()} = {}) => {
 			count++;
 			item.data.id = count;
 			failure += item.data.pass ? 0 : 1;
-			success += item.data.pass ? 1 : 0;
-
 			return item;
 		});
 
+	// One day with for await loops ... :) !
 	while (true) {
 		const {done, value} = await outputStream.next();
 
