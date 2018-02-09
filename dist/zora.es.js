@@ -258,8 +258,8 @@ const Assertion = {
 var assert = (collect, test) => Object.assign(
 	Object.create(Assertion, {collect: {value: collect}}), {
 		async test(description, spec) {
-			// Note: we return the coroutine so the caller can control whether he wants to wait for the sub test to complete or not
-			return test(description, spec).coRoutine;
+			// Note: we return the task so the caller can control whether he wants to wait for the sub test to complete or not
+			return test(description, spec).task;
 		}
 	});
 
@@ -309,7 +309,7 @@ const tester = (collect, {offset = 0} = {}) => (description, spec) => {
 	const start = Date.now();
 	// Execute the test collecting assertions
 	const assertFn = assert(collector, subTest);
-	const coRoutine = new Promise(resolve => resolve(spec(assertFn)))
+	const task = new Promise(resolve => resolve(spec(assertFn)))
 		.then(() => {
 			// Always report a plan and summary: the calling test will know how to deal with it
 			result.executionTime = Date.now() - start;
@@ -328,7 +328,7 @@ const tester = (collect, {offset = 0} = {}) => (description, spec) => {
 
 	const instance = {
 		test: subTest,
-		coRoutine,
+		task,
 		[Symbol.asyncIterator]() {
 			return this;
 		},
@@ -338,7 +338,7 @@ const tester = (collect, {offset = 0} = {}) => (description, spec) => {
 					return {done: true, value: result};
 				}
 				// Flush
-				await coRoutine;
+				await task;
 				return this.next();
 			}
 

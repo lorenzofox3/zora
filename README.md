@@ -26,7 +26,7 @@ test('should result to the answer', t=>{
 ```
 
 You can run your test with
-1. Node: ``node ./myTestFile.js`
+1. Node: ``node ./myTestFile.js``
 2. In the browser ``<script type="module" src="./myTestFile.js></script>`` identically
 
 Moreover zora does not use specific platform API which should make it transparent to most of your tools such module bundlers or transpilers.
@@ -52,21 +52,20 @@ Each framework runs with its default settings
 
 Here are the result of different test frameworks on my developer machine with node 9.3.0 :
 
-        |  zora@2.0.0  |  tape@4.8.0 |  Jest@22.1.4  |  AvA@0.24.0  |  Mocha@5.0.0
-----------------------------------------------------------------------------------
-Library |  118ms       |  1239ms     |  1872ms       |  1703ms      |  1351ms
-----------------------------------------------------------------------------------
-Web app |  142ms       |  3597ms     |  4356ms       |  2441ms      |  3757ms
-----------------------------------------------------------------------------------
-API     |  203ms       |  12637ms    |  13385ms      |  2966ms      | 12751ms
+|        |  zora@2.0.0  |  tape@4.8.0 |  Jest@22.2.2  |  AvA@0.25.0  |  Mocha@5.0.0|
+|--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
+|Library |  118ms       |  1239ms     |  1872ms       |  1703ms      |  1351ms     |
+|Web app |  142ms       |  3597ms     |  4356ms       |  2441ms      |  3757ms     |
+|API     |  203ms       |  12637ms    |  13385ms      |  2966ms      | 12751ms     |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion
 
 ### Focus on tests only
 
 zora does one thing but hopefully does it well: **test**.
+
 In my opinions:
-1. Pretty reporting (I have not said ~efficient reporting~) should be handled by a specific tool.
+1. Pretty reporting (I have not said *efficient reporting*) should be handled by a specific tool.
 2. Transipilation and other code transformation should be handled by a specific tool.
 3. File watching and caching should be handled by a specific tool.
 4. File serving should be handled by a specific tool.
@@ -94,9 +93,9 @@ test('should handle async operation', async t => {
 When you run a test you usually want to know whether there is any failure, where and why in order to debug and solve the issue as fast as possible.
 Whether you want it to be printed in red, yellow etc is a matter of preference.
 
-For this reason, zora output [TAP]() (Test Anything Protocol) by default. This protocol is widely used and [there are plenty of tools]() to parse and deal with it the way **you** want.
+For this reason, zora output [TAP](http://testanything.org/) (Test Anything Protocol) by default. This protocol is widely used and [there are plenty of tools](https://github.com/sindresorhus/awesome-tap) to parse and deal with it the way **you** want.
 
-You are not stuck into a specific reporting format, you'll be using a ~standard~ instead.
+You are not stuck into a specific reporting format, you'll be using a *standard* instead.
 
 ## Usage
 
@@ -131,7 +130,8 @@ The assertion api you can use within your test is pretty simple and highly inspi
 ### Control flow
 
 Notice that each test runs in its own micro task in parallel (for performance). It implies your tests should not depend on each other.
-It is often a good practice. However, you'll be able to group your tests if you wish to conserve some state between them or wait one to finish before you start another one (ideal with tests running against real database).
+It is often a good practice.
+However, you'll be able to group your tests if you wish to conserve some state between them or wait one to finish before you start another one (ideal with tests running against real database).
 
 The sequence is simply controlled by AsyncFunction (and await keyboard)
 
@@ -158,7 +158,7 @@ t.test('grouped', t=>{
         state++;
     });
 
-    test('test 2', t=>{
+    t.test('test 2', t=>{
         //Maybe yes maybe no, you have no guarantee ! In this case it will work as everything is sync
         t.equal(state, 1);
     });
@@ -196,9 +196,9 @@ t.test('grouped', async t=>{
 });
 ```
 
-### BSD style
+### BDD style
 
-zora also allows you to nest tests in each other in a [BSD style]().
+zora also allows you to nest tests in each other in a [BDD style](https://en.wikipedia.org/wiki/Behavior-driven_development).
 You just need to call the `test` property of zora at root level.
 
 ```
@@ -284,10 +284,10 @@ ok 2 - test 2 # time=1ms
 ```
 
 The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
-do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter]) aware of this specific structure to get the whole benefit
+do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter](https://www.npmjs.com/package/tap-mocha-reporter)) aware of this specific structure to get the whole benefit
 of the format.
 
-![tap output in a bsd format](./media/bsd.png)
+![tap output in a BDD format](./media/bsd.png)
 
 ### In the browser
 
