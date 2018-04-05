@@ -201,7 +201,7 @@ t.test('grouped', async t=>{
 zora also allows you to nest tests in each other in a [BDD style](https://en.wikipedia.org/wiki/Behavior-driven_development).
 You just need to call the `test` property of zora at root level.
 
-```
+```js
 import zora from 'zora';
 const describe = zora.test;
 
