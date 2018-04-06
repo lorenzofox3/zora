@@ -213,7 +213,7 @@ test('throws operator: expected (RegExp)', t => {
 	t.equal(description, 'should throw', 'should have the default description');
 	t.equal(pass, true, 'should have passed');
 	t.equal(expected, '/^totally/i');
-	t.equal(actual, error);
+	t.equal(actual, error.message);
 	t.equal(items.length, 1, 'should have added the assertion');
 	t.end();
 });
@@ -230,7 +230,7 @@ test('throws operator: expected (RegExp, failed)', t => {
 	t.equal(description, 'should throw', 'should have the default description');
 	t.equal(pass, false, 'should have passed');
 	t.equal(expected, '/^totally/i');
-	t.equal(actual, error);
+	t.equal(actual, error.message);
 	t.equal(items.length, 1, 'should have added the assertion');
 	t.end();
 });
