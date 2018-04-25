@@ -306,9 +306,6 @@ const filter = predicate => iterator => asyncIterator({
 });
 
 const map = mapFn => iterator => asyncIterator({
-	[Symbol.asyncIterator]() {
-		return this;
-	},
 	async next() {
 		const {done, value} = await iterator.next();
 		if (done === true) {

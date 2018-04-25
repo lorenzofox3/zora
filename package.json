@@ -43,16 +43,16 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "jest": "^22.2.2",
+    "jest": "^22.4.3",
     "mkdirp": "^0.5.1",
-    "mocha": "^5.0.0",
-    "rollup": "^0.55.4",
-    "rollup-plugin-commonjs": "^8.3.0",
-    "rollup-plugin-node-resolve": "^3.0.2",
+    "mocha": "^5.1.1",
+    "rollup": "^0.58.2",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
     "tap-diff": "^0.1.1",
-    "tap-mocha-reporter": "^3.0.6",
-    "tape": "^4.8.0",
-    "xo": "^0.18.2"
+    "tap-mocha-reporter": "^3.0.7",
+    "tape": "^4.9.0",
+    "xo": "^0.20.3"
   },
   "jest": {
     "testRegex": ".*.js",

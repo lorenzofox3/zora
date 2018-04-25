@@ -13,8 +13,13 @@ function shim (obj) {
   return keys;
 }
 });
-
 var keys_1 = keys.shim;
+
+var keys$1 = /*#__PURE__*/Object.freeze({
+	default: keys,
+	__moduleExports: keys,
+	shim: keys_1
+});
 
 var is_arguments = createCommonjsModule(function (module, exports) {
 var supportsArgumentsClass = (function(){
@@ -27,7 +32,6 @@ exports.supported = supported;
 function supported(object) {
   return Object.prototype.toString.call(object) == '[object Arguments]';
 }
-
 exports.unsupported = unsupported;
 function unsupported(object){
   return object &&
@@ -36,11 +40,20 @@ function unsupported(object){
     Object.prototype.hasOwnProperty.call(object, 'callee') &&
     !Object.prototype.propertyIsEnumerable.call(object, 'callee') ||
     false;
-}
-});
-
+}});
 var is_arguments_1 = is_arguments.supported;
 var is_arguments_2 = is_arguments.unsupported;
+
+var is_arguments$1 = /*#__PURE__*/Object.freeze({
+	default: is_arguments,
+	__moduleExports: is_arguments,
+	supported: is_arguments_1,
+	unsupported: is_arguments_2
+});
+
+var objectKeys = ( keys$1 && keys ) || keys$1;
+
+var isArguments = ( is_arguments$1 && is_arguments ) || is_arguments$1;
 
 var deepEqual_1 = createCommonjsModule(function (module) {
 var pSlice = Array.prototype.slice;
@@ -93,8 +106,8 @@ function objEquiv(a, b, opts) {
   if (a.prototype !== b.prototype) return false;
   //~~~I've managed to break Object.keys through screwy arguments passing.
   //   Converting to array solves the problem.
-  if (is_arguments(a)) {
-    if (!is_arguments(b)) {
+  if (isArguments(a)) {
+    if (!isArguments(b)) {
       return false;
     }
     a = pSlice.call(a);
@@ -112,8 +125,8 @@ function objEquiv(a, b, opts) {
     return true;
   }
   try {
-    var ka = keys(a),
-        kb = keys(b);
+    var ka = objectKeys(a),
+        kb = objectKeys(b);
   } catch (e) {//happens when one is a string literal and the other isn't
     return false;
   }
@@ -445,9 +458,6 @@ const filter = predicate => iterator => asyncIterator({
 });
 
 const map = mapFn => iterator => asyncIterator({
-	[Symbol.asyncIterator]() {
-		return this;
-	},
 	async next() {
 		const {done, value} = await iterator.next();
 		if (done === true) {
