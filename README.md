@@ -319,6 +319,7 @@ test('some failing test', (assert) => {
 ```
 
 #### As part of CI (example with rollup)
+
 I will use [rollup](http://rollupjs.org/) for this example, but you should not have any problem with [webpack](https://webpack.github.io/) or [browserify](http://browserify.org/). The idea is simply to create a test file your testing browsers will be able to run.
 
 assuming you have your entry point as follow :
@@ -376,3 +377,12 @@ so all together, in your package.json you can have something like that
 // ...
 }
 ```
+
+#### On exit codes
+
+Whether you have failing tests or not, unless you have an unexpected error, the process will return an exit code 0. Often CI platforms require an exit code of 1
+to mark a build as failed. That is not an issue, there are plenty of TAP reporters which when parsing a TAP stream will exit the process with code 1 if they encounter a failing test.
+Hence you'll need to pipe zora output into one of those reporters to avoid false positive on your CI platform.
+
+For example, one of package.json script can be
+``"test:ci": npm test | tap-diff``
