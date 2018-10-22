@@ -351,9 +351,9 @@ module.exports = {
     input: './test/index.js',
     output: [{
         name: 'test',
-        format: 'test',
+        format: 'iife',
         sourcemap: 'inline' // ideal to debug
-    }]
+    }],
     plugins: [node(), commonjs()], //you can add babel plugin if you need transpilation
 };
 ```
