@@ -2,8 +2,9 @@
 
 Fast javascript test runner for **nodejs** and **browsers**
 
-[![CircleCI](https://circleci.com/gh/lorenzofox3/zora.svg?style=svg)](https://circleci.com/gh/lorenzofox3/zora)
-[![install size](https://packagephobia.now.sh/badge?p=zora)](https://packagephobia.now.sh/result?p=zora)
+[![CircleCI](https://badgen.net/circleci/github/lorenzofox3/zora)](https://circleci.com/gh/lorenzofox3/zora)
+[![npm](https://badgen.net/npm/v/zora)](https://www.npmjs.com/package/zora)
+[![install size](https://badgen.net/packagephobia/install/zora)](https://packagephobia.now.sh/result?p=zora)
 
 ## installation
 ``npm install --save-dev zora``
