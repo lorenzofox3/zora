@@ -4,7 +4,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 
 [![CircleCI](https://badgen.net/circleci/github/lorenzofox3/zora)](https://circleci.com/gh/lorenzofox3/zora)
 [![npm](https://badgen.net/npm/v/zora)](https://www.npmjs.com/package/zora)
-[![Install Size](https://badgen.net/packagephobia/install/zora)](https://packagephobia.now.sh/result?p=zora)
+[![install size](https://badgen.net/packagephobia/install/zora)](https://packagephobia.now.sh/result?p=zora)
 
 ## installation
 ``npm install --save-dev zora``
@@ -21,7 +21,7 @@ If you have the following test.
 ```Javascript
 import test from 'path/to/zora';
 
-test('should result to the answer', t=>{
+test('should result to the answer', t => {
     const answer = 42
     t.equal(answer, 42, 'answer should be 42');
 });
@@ -86,7 +86,7 @@ import test from 'zora';
 
 test('should handle async operation', async t => {
     const user = await getUserAsync();
-    t.deepEqual(user,{name:'John doe'});
+    t.deepEqual(user, {name:'John doe'});
 });
 ```
 
@@ -107,12 +107,12 @@ The tests will start by themselves with no extra effort.
 ```Javascript
 import test from 'zora';
 
-test('some independent test', t=>{
-    t.equal(1+1,2,'one plus one should equal 2');
+test('some independent test', t => {
+    t.equal(1 + 1, 2, 'one plus one should equal 2');
 });
 
-test('other independent test', t=>{
-    t.equal(1+2,3,'one plus two should equal 3');
+test('other independent test', t => {
+    t.equal(1 + 2, 3, 'one plus two should equal 3');
 });
 ```
 
@@ -141,33 +141,33 @@ The sequence is simply controlled by AsyncFunction (and await keyboard)
 
 let state = 0;
 
-test('test 1', t=>{
+test('test 1', t => {
     t.ok(true);
     state++;
 });
 
-test('test 2', t=>{
+test('test 2', t => {
     //Maybe yes maybe no, you have no guarantee ! In this case it will work as everything is sync
     t.equal(state, 1);
 });
 
 //Same thing here even in nested tests
-t.test('grouped', t=>{
+test('grouped', t => {
     let state = 0;
 
-    t.test('test 1', t=>{
+    t.test('test 1', t => {
         t.ok(true);
         state++;
     });
 
-    t.test('test 2', t=>{
+    t.test('test 2', t => {
         //Maybe yes maybe no, you have no guarantee ! In this case it will work as everything is sync
         t.equal(state, 1);
     });
 });
 
 //And
-t.test('grouped', t=>{
+test('grouped', t=>{
     let state = 0;
 
     t.test('test 1', async t=>{
@@ -182,17 +182,17 @@ t.test('grouped', t=>{
 });
 
 //But
-t.test('grouped', async t=>{
+test('grouped', async t => {
     let state = 0;
 
     //specifically wait the end of this test before continuing !
-    await t.test('test 1', async t=>{
+    await t.test('test 1', async t => {
         t.ok(true);
         await wait(100);
         state++;
     });
 
-    test('test 2', t=>{
+    test('test 2', t => {
         t.equal(state, 1, 'see the updated value!');
     });
 });
@@ -210,36 +210,36 @@ const describe = zora.test;
 // and write you tests
 describe('test 1', t => {
 
-	t.ok(true, 'assert1');
+    t.ok(true, 'assert1');
 
     // inside simply call t.test for nested test
-	t.test('some nested test', t => {
-		t.ok(true, 'nested 1');
-		t.ok(true, 'nested 2');
-	});
+    t.test('some nested test', t => {
+        t.ok(true, 'nested 1');
+        t.ok(true, 'nested 2');
+    });
 
-	t.test('some nested test bis', t => {
-		t.ok(true, 'nested 1');
+    t.test('some nested test bis', t => {
+        t.ok(true, 'nested 1');
 
-		t.test('deeply nested', t => {
-			t.ok(true, 'deeply nested really');
-			t.ok(true, 'deeply nested again');
-		});
+        t.test('deeply nested', t => {
+            t.ok(true, 'deeply nested really');
+            t.ok(true, 'deeply nested again');
+        });
 
-		t.ok(true, 'nested 2');
-	});
+        t.ok(true, 'nested 2');
+    });
 
-	t.ok(true, 'assert2');
+    t.ok(true, 'assert2');
 });
 
 describe('test 2', t => {
-	t.ok(true, 'assert3');
+    t.ok(true, 'assert3');
 
-	t.test('nested in two', t => {
-		t.ok(true, 'still happy');
-	});
+    t.test('nested in two', t => {
+        t.ok(true, 'still happy');
+    });
 
-	t.ok(true, 'assert4');
+    t.ok(true, 'assert4');
 });
 ```
 
@@ -336,12 +336,12 @@ where for example ./test/test1.js is
 ```Javascript
 import test from 'zora';
 
-test('mytest',(assertions) => {
-   assertions.ok(true);
+test('mytest', (assertions) => {
+    assertions.ok(true);
 })
 
-test('mytest',(assertions) => {
-   assertions.ok(true);
+test('mytest', (assertions) => {
+    assertions.ok(true);
 });
 ```
 you can then bundle your test as single app.
@@ -350,13 +350,13 @@ you can then bundle your test as single app.
 const node = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 module.exports = {
-  input: './test/index.js',
-  output:[{
-    name:'test',
-    format:'test',
-    sourcemap:'inline' // ideal to debug
-  }]
-  plugins: [node(), commonjs()], //you can add babel plugin if you need transpilation
+    input: './test/index.js',
+    output: [{
+        name: 'test',
+        format: 'iife',
+        sourcemap: 'inline' // ideal to debug
+    }],
+    plugins: [node(), commonjs()], //you can add babel plugin if you need transpilation
 };
 ```
 
