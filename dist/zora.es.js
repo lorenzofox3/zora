@@ -377,12 +377,12 @@ const tap = print => {
 			this.comment(message, offset);
 		},
 		assert(value, offset = 0) {
-			const {pass, description, id, executionTime, ...rest} = value;
+			const {pass, description, id, executionTime, expected = '', actual = '', at = '', operator = ''} = value;
 			const label = pass === true ? 'ok' : 'not ok';
 			print(`${label} ${id} - ${description}${executionTime ? ` # time=${executionTime}ms` : ''}`, offset);
 			if (pass === false && value.operator) {
 				print('---', offset + 0.5);
-				yaml(rest, offset);
+				yaml({expected, actual, at, operator}, offset);
 				print('...', offset + 0.5);
 			}
 		},
