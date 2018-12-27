@@ -141,14 +141,14 @@ test('tap bailout with offset', t => {
 	t.end();
 });
 
-test('tap test assert', t=>{
+test('tap tester assert', t=>{
 	const r = reporter();
 	r({type: 'testAssert', data: {description: 'hello world', pass: true, id: 4, executionTime: 666}});
 	t.deepEqual(r.lines, [{value: 'ok 4 - hello world # time=666ms', offset: 0}]);
 	t.end();
 });
 
-test('tap test assert with offset', t=>{
+test('tap tester assert with offset', t=>{
 	const r = reporter();
 	r({type: 'testAssert', data: {description: 'hello world', pass: true, id: 4, executionTime: 666}, offset: 2});
 	t.deepEqual(r.lines, [{value: 'ok 4 - hello world # time=666ms', offset: 2}]);

@@ -6,7 +6,7 @@ let flatten = true;
 const tests = [];
 const test = tester(t => tests.push(t));
 
-// Provide a root context for BSD style test suite
+// Provide a root context for BSD style tester suite
 const subTest = (test('Root', () => {})).test;
 test.test = (description, spec) => {
 	flatten = false; // Turn reporter into BSD style

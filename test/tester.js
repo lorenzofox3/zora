@@ -38,23 +38,22 @@ const check = async (t, buffer, expected) => {
 	t.deepEqual(toCheck, expected, 'should have the list of message');
 };
 
-
 test('simple case', async t => {
 	const fn = createTester();
 
-	fn('some test', t => {
+	fn('some tester', t => {
 		t.equal(2, 2, 'equality');
 		t.ok(true, 'a second assertion');
 	});
 
-	fn('some second test', t => {
-		t.equal(2, 2, 'equality in second test');
+	fn('some second tester', t => {
+		t.equal(2, 2, 'equality in second tester');
 		t.ok(true, 'and another one');
 	});
 
 	const {buffer} = fn;
 
-	await check(t, buffer, [{type: 'title', data: 'some test', offset: 0}, {
+	await check(t, buffer, [{type: 'title', data: 'some tester', offset: 0}, {
 			type: 'assert',
 			data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal', id: 1},
 			offset: 0
@@ -64,11 +63,11 @@ test('simple case', async t => {
 			offset: 0
 		}, {type: 'plan', data: {start: 1, end: 2}, offset: 0}, {
 			type: 'title',
-			data: 'some second test',
+			data: 'some second tester',
 			offset: 0
 		}, {
 			type: 'assert',
-			data: {pass: true, actual: 2, expected: 2, description: 'equality in second test', operator: 'equal', id: 1},
+			data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal', id: 1},
 			offset: 0
 		}, {
 			type: 'assert',
@@ -83,21 +82,21 @@ test('simple case', async t => {
 test('async case', async t => {
 	const fn = createTester();
 
-	fn('some longer test first', async t => {
+	fn('some longer tester first', async t => {
 		t.equal(2, 2, 'equality');
 		await wait(100);
 		t.ok(true, 'a second assertion');
 	});
 
-	fn('some faster test second', async t => {
-		t.equal(2, 2, 'equality in second test');
+	fn('some faster tester second', async t => {
+		t.equal(2, 2, 'equality in second tester');
 		await wait(50);
 		t.ok(true, 'and another one');
 	});
 
 	const {buffer} = fn;
 
-	await check(t, buffer, [{type: 'title', data: 'some longer test first', offset: 0}, {
+	await check(t, buffer, [{type: 'title', data: 'some longer tester first', offset: 0}, {
 			type: 'assert',
 			data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal', id: 1},
 			offset: 0
@@ -107,11 +106,11 @@ test('async case', async t => {
 			offset: 0
 		}, {type: 'plan', data: {start: 1, end: 2}, offset: 0}, {
 			type: 'title',
-			data: 'some faster test second',
+			data: 'some faster tester second',
 			offset: 0
 		}, {
 			type: 'assert',
-			data: {pass: true, actual: 2, expected: 2, description: 'equality in second test', operator: 'equal', id: 1},
+			data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal', id: 1},
 			offset: 0
 		}, {
 			type: 'assert',
@@ -142,7 +141,7 @@ test('nested', async t => {
 		t.ok(true, 'after');
 	});
 
-	fn('some other test', async t => {
+	fn('some other tester', async t => {
 		t.ok(true, 'just to check');
 	});
 
@@ -177,7 +176,7 @@ test('nested', async t => {
 			offset: 0
 		}, {type: 'plan', data: {start: 1, end: 3}, offset: 0}, {
 			type: 'title',
-			data: 'some other test',
+			data: 'some other tester',
 			offset: 0
 		}, {
 			type: 'assert',
@@ -194,7 +193,7 @@ test('nested async', async t => {
 	fn('keep parallel', async t => {
 		let counter = 0;
 
-		t.test('a first test', async t => {
+		t.test('a first tester', async t => {
 			t.ok(true, 'inside first');
 			await wait(50);
 			counter++;
@@ -209,7 +208,7 @@ test('nested async', async t => {
 	fn('control flow', async t => {
 		let counter = 0;
 
-		await t.test('a first test', async t => {
+		await t.test('a first tester', async t => {
 			t.ok(true, 'inside first');
 			await wait(50);
 			counter++;
@@ -223,7 +222,7 @@ test('nested async', async t => {
 	const {buffer} = fn;
 	await check(t, buffer, [{type: 'title', data: 'keep parallel', offset: 0}, {
 		type: 'title',
-		data: 'a first test',
+		data: 'a first tester',
 		offset: 1
 	}, {
 		type: 'assert',
@@ -231,7 +230,7 @@ test('nested async', async t => {
 		offset: 1
 	}, {type: 'plan', data: {start: 1, end: 1}, offset: 1}, {
 		type: 'testAssert',
-		data: {pass: true, description: 'a first test', id: 1},
+		data: {pass: true, description: 'a first tester', id: 1},
 		offset: 0
 	}, {type: 'title', data: 'check counter', offset: 1}, {
 		type: 'assert',
@@ -252,13 +251,13 @@ test('nested async', async t => {
 		type: 'title',
 		data: 'control flow',
 		offset: 0
-	}, {type: 'title', data: 'a first test', offset: 1}, {
+	}, {type: 'title', data: 'a first tester', offset: 1}, {
 		type: 'assert',
 		data: {pass: true, actual: true, expected: true, description: 'inside first', operator: 'ok', id: 1},
 		offset: 1
 	}, {type: 'plan', data: {start: 1, end: 1}, offset: 1}, {
 		type: 'testAssert',
-		data: {pass: true, description: 'a first test', id: 1},
+		data: {pass: true, description: 'a first tester', id: 1},
 		offset: 0
 	}, {type: 'title', data: 'check counter', offset: 1}, {
 		type: 'assert',

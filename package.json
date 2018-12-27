@@ -12,15 +12,18 @@
     "harness",
     "tap-producer"
   ],
-  "main": "./dist/",
-  "module": "index.js",
-  "jsnext:main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lorenzofox3/zora.git"
-  },
+  "main": "./dist/bundle/index",
+  "module": "./dist/bundle/module.js",
+  "types": "./dist/declarations/index.d.ts",
+  "files": [
+    "dist/bundle",
+    "dist/declarations"
+  ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "build:clean": "rm -rf ./dist && mkdir -p ./dist/bundle ./dist/declarations && cp -r ./src ./dist/src",
+    "build:compile": "tsc",
+    "build:bundle": "rollup -c ./rollup/build.js && rollup -c ./rollup/cdn.js",
+    "build": "npm run build:clean && npm run build:compile && npm run build:bundle",
     "clean:benchmark": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
     "build:benchmark": "npm run clean:benchmark && node ./scripts/generate.js",
     "bench:zora": "time (node ./benchmarks/zora/index.js)",
@@ -28,10 +31,8 @@
     "bench:mocha": "time mocha ./benchmarks/mocha/test/",
     "bench:tape": "time (node ./benchmarks/tape/index)",
     "bench:jest": "time jest",
-    "build": "npm run clean && rollup -c ./rollup/build.js && rollup -c ./rollup/build-cdn.js",
     "test:unit": "rollup -c ./rollup/test.js | node",
-    "test": "npm run test:unit && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec",
-    "xo": "xo lib/*.js index.js"
+    "test": "npm run test:unit && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec"
   },
   "author": {
     "name": "Laurent Renard",
@@ -41,11 +42,10 @@
   "dependencies": {
     "deep-equal": "^1.0.1"
   },
-  "files": [
-    "dist"
-  ],
   "devDependencies": {
+    "@lorenzofox3/for-await": "^0.2.0",
     "ava": "^0.25.0",
+    "fast-deep-equal": "^2.0.1",
     "jest": "^23.6.0",
     "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
@@ -55,6 +55,7 @@
     "tap-diff": "^0.1.1",
     "tap-mocha-reporter": "^3.0.7",
     "tape": "^4.9.1",
+    "typescript": "^3.2.2",
     "xo": "^0.23.0"
   },
   "jest": {

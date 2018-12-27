@@ -4,7 +4,7 @@ const wait = time => new Promise(resolve => {
 	setTimeout(() => resolve(), time);
 });
 
-test('test 1', async t => {
+test('tester 1', async t => {
 
 	let counter = 0;
 
@@ -22,7 +22,7 @@ test('test 1', async t => {
 	t.ok(true, 'assert2');
 });
 
-test('test 2', async t => {
+test('tester 2', async t => {
 	let counter = 0;
 	t.ok(true, 'assert3');
 
