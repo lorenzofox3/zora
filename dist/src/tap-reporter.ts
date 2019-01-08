@@ -25,9 +25,9 @@ const printComment = (message: CommentMessage): void => {
     print(`# ${message.data}`, message.offset);
 };
 
-const printTitle = (message: StartTestMessage): void => {
+const printSubTest = (message: StartTestMessage): void => {
     const {data} = message;
-    print(`# ${data.description}`, message.offset);
+    print(`# Subtest: ${data.description}`, message.offset);
 };
 
 const printAssert = (message: AssertionMessage): void => {
@@ -38,7 +38,7 @@ const printAssert = (message: AssertionMessage): void => {
         print(`${label} ${id} - ${description}`, offset);
         if (pass === false) {
             const {expected, actual, at, operator} = data;
-            printYAML({expected, actual, at, operator}, offset);
+            printYAML({expected, found: actual, wanted: expected, actual, at, operator}, offset);
         }
     } else {
         print(`${pass ? 'ok' : 'not ok' } ${id} - ${description} # ${data.executionTime}ms`, message.offset);
@@ -58,7 +58,7 @@ const printTest = (message: TestEndMessage): void => {
 export const tap = (message: Message<any>): void => {
     switch (message.type) {
         case MessageType.TEST_START:
-            printTitle(message);
+            printSubTest(message);
             break;
         case MessageType.ASSERTION:
             printAssert(message);
@@ -77,5 +77,6 @@ export const reporter = async (stream: AsyncIterable<Message<any>>): Promise<voi
     for await (const message of stream) {
         tap(message);
     }
+    // print(`1..2`);
     // summary
 };

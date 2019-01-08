@@ -27,7 +27,7 @@ export interface TestResult extends Result {
 
 export interface AssertionResult extends Result {
     operator: Operator;
-    expected: any
+    expected: any;
     actual: any;
     at?: string;
 }

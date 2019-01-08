@@ -12,7 +12,6 @@ export const defaultTestOptions = Object.freeze({
 });
 
 // todo directive (todo & skip)
-// todo plan
 export const tester = (description, spec, {offset = 0, skip = false} = defaultTestOptions): Test => {
     let id = 0;
     let pass = true;
@@ -35,14 +34,13 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
 
     return Object.defineProperties({
         [Symbol.asyncIterator]: async function* () {
-            yield startTestMessage({description}, offset);
             await testRoutine;
             for (const assertion of assertions) {
                 assertion.id = ++id;
                 if (assertion[Symbol.asyncIterator]) {
                     // Sub test
+                    yield startTestMessage({description: assertion.description}, offset);
                     yield* assertion;
-                    // yield endTestMessage(assertion, offset); // todo merge end test and plan and replace this one by an assertion
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;

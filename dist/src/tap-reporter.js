@@ -13,9 +13,9 @@ const printYAML = (obj, offset = 0) => {
 const printComment = (message) => {
     print(`# ${message.data}`, message.offset);
 };
-const printTitle = (message) => {
+const printSubTest = (message) => {
     const { data } = message;
-    print(`# ${data.description}`, message.offset);
+    print(`# Subtest: ${data.description}`, message.offset);
 };
 const printAssert = (message) => {
     const { data, offset } = message;
@@ -25,7 +25,7 @@ const printAssert = (message) => {
         print(`${label} ${id} - ${description}`, offset);
         if (pass === false) {
             const { expected, actual, at, operator } = data;
-            printYAML({ expected, actual, at, operator }, offset);
+            printYAML({ expected, found: actual, wanted: expected, actual, at, operator }, offset);
         }
     }
     else {
@@ -43,7 +43,7 @@ const printTest = (message) => {
 export const tap = (message) => {
     switch (message.type) {
         case "TEST_START" /* TEST_START */:
-            printTitle(message);
+            printSubTest(message);
             break;
         case "ASSERTION" /* ASSERTION */:
             printAssert(message);
@@ -61,5 +61,6 @@ export const reporter = async (stream) => {
     for await (const message of stream) {
         tap(message);
     }
+    // print(`1..2`);
     // summary
 };

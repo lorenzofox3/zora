@@ -1,14 +1,13 @@
 import {defaultTestOptions, tester} from './test';
 import {reporter as tap} from './tap-reporter';
-import {SpecFunction} from './assertion';
+import {SpecFunction, assert} from './assertion';
 import {filter} from '@lorenzofox3/for-await';
-import {MessageType} from './protocol';
+import {assertionMessage, endTestMessage, MessageType, startTestMessage} from './protocol';
 
 export * from './assertion';
 
 let autoStart = true;
 
-//todo export harness interface;
 export interface TestHarness {
     test: (description: string, specFn: SpecFunction, options?: object) => void;
     run: () => Promise<void>;
@@ -22,17 +21,34 @@ async function* flatten(iterable) {
 
 const harnessFactory = (reporter = tap): TestHarness => {
     const tests = [];
-    const test = (description, specFn, opts = defaultTestOptions) => {
-        tests.push(tester(description, specFn, opts));
-    };
+    let pass = true;
+    let id = 0;
+    const collect = item => tests.push(item);
+    const api = assert(collect, 0);
 
-    return {
-        test,
-        run: async () => {
-            //todo print plan
-            return reporter(filter((message) => message.type !== MessageType.TEST_END || message.offset > 0, flatten(tests)));
+    const instance = Object.create(api, {
+        length: {
+            get() {
+                return tests.length;
+            }
         }
-    };
+    });
+
+    return Object.assign(instance, {
+        [Symbol.asyncIterator]: async function* () {
+            for (const t of tests) {
+                t.id = ++id;
+                yield startTestMessage(t, 0);
+                yield* t;
+                yield assertionMessage(t, 0);
+                pass = pass && t.pass;
+            }
+            yield endTestMessage(this, 0);
+        },
+        run: async () => {
+            return reporter(instance);
+        }
+    });
 };
 
 const defaultTestHarness = harnessFactory();

@@ -1,6 +1,85 @@
 (function () {
     'use strict';
 
+    const startTestMessage = (test, offset) => ({
+        type: "TEST_START" /* TEST_START */,
+        data: test,
+        offset
+    });
+    const assertionMessage = (assertion, offset) => ({
+        type: "ASSERTION" /* ASSERTION */,
+        data: assertion,
+        offset
+    });
+    const endTestMessage = (test, offset) => ({
+        type: "TEST_END" /* TEST_END */,
+        data: test,
+        offset
+    });
+
+    const defaultTestOptions = Object.freeze({
+        offset: 0,
+        skip: false
+    });
+    // todo directive (todo & skip)
+    const tester = (description, spec, { offset = 0, skip = false } = defaultTestOptions) => {
+        let id = 0;
+        let pass = true;
+        let executionTime = 0;
+        const assertions = [];
+        const collect = item => assertions.push(item);
+        const testRoutine = (async function () {
+            try {
+                const start = Date.now();
+                const result = await spec(assert(collect, offset));
+                executionTime = Date.now() - start;
+                return result;
+            }
+            catch (e) {
+                // todo bailout
+                console.log(e);
+            }
+        })();
+        return Object.defineProperties({
+            [Symbol.asyncIterator]: async function* () {
+                await testRoutine;
+                for (const assertion of assertions) {
+                    assertion.id = ++id;
+                    if (assertion[Symbol.asyncIterator]) {
+                        // Sub test
+                        yield startTestMessage({ description: assertion.description }, offset);
+                        yield* assertion;
+                    }
+                    yield assertionMessage(assertion, offset);
+                    pass = pass && assertion.pass;
+                }
+                yield endTestMessage(this, offset);
+            }
+        }, {
+            routine: {
+                value: testRoutine
+            },
+            description: {
+                value: description
+            },
+            pass: {
+                get() {
+                    return pass;
+                }
+            },
+            executionTime: {
+                get() {
+                    return executionTime;
+                }
+            },
+            length: {
+                get() {
+                    return id;
+                }
+            }
+        });
+    };
+
     const isAssertionResult = (result) => {
         return 'operator' in result;
     };
@@ -142,87 +221,6 @@
         });
     };
 
-    const startTestMessage = (test, offset) => ({
-        type: "TEST_START" /* TEST_START */,
-        data: test,
-        offset
-    });
-    const assertionMessage = (assertion, offset) => ({
-        type: "ASSERTION" /* ASSERTION */,
-        data: assertion,
-        offset
-    });
-    const endTestMessage = (test, offset) => ({
-        type: "TEST_END" /* TEST_END */,
-        data: test,
-        offset
-    });
-
-    const defaultTestOptions = Object.freeze({
-        offset: 0,
-        skip: false
-    });
-    // todo directive (todo & skip)
-    // todo plan
-    const tester = (description, spec, { offset = 0, skip = false } = defaultTestOptions) => {
-        let id = 0;
-        let pass = true;
-        let executionTime = 0;
-        const assertions = [];
-        const collect = item => assertions.push(item);
-        const testRoutine = (async function () {
-            try {
-                const start = Date.now();
-                const result = await spec(assert(collect, offset));
-                executionTime = Date.now() - start;
-                return result;
-            }
-            catch (e) {
-                // todo bailout
-                console.log(e);
-            }
-        })();
-        return Object.defineProperties({
-            [Symbol.asyncIterator]: async function* () {
-                yield startTestMessage({ description }, offset);
-                await testRoutine;
-                for (const assertion of assertions) {
-                    assertion.id = ++id;
-                    if (assertion[Symbol.asyncIterator]) {
-                        // Sub test
-                        yield* assertion;
-                        // yield endTestMessage(assertion, offset); // todo merge end test and plan and replace this one by an assertion
-                    }
-                    yield assertionMessage(assertion, offset);
-                    pass = pass && assertion.pass;
-                }
-                yield endTestMessage(this, offset);
-            }
-        }, {
-            routine: {
-                value: testRoutine
-            },
-            description: {
-                value: description
-            },
-            pass: {
-                get() {
-                    return pass;
-                }
-            },
-            executionTime: {
-                get() {
-                    return executionTime;
-                }
-            },
-            length: {
-                get() {
-                    return id;
-                }
-            }
-        });
-    };
-
     const print = (message, offset = 0) => {
         console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
     };
@@ -237,9 +235,9 @@
     const printComment = (message) => {
         print(`# ${message.data}`, message.offset);
     };
-    const printTitle = (message) => {
+    const printSubTest = (message) => {
         const { data } = message;
-        print(`# ${data.description}`, message.offset);
+        print(`# Subtest: ${data.description}`, message.offset);
     };
     const printAssert = (message) => {
         const { data, offset } = message;
@@ -249,7 +247,7 @@
             print(`${label} ${id} - ${description}`, offset);
             if (pass === false) {
                 const { expected, actual, at, operator } = data;
-                printYAML({ expected, actual, at, operator }, offset);
+                printYAML({ expected, found: actual, wanted: expected, actual, at, operator }, offset);
             }
         }
         else {
@@ -267,7 +265,7 @@
     const tap = (message) => {
         switch (message.type) {
             case "TEST_START" /* TEST_START */:
-                printTitle(message);
+                printSubTest(message);
                 break;
             case "ASSERTION" /* ASSERTION */:
                 printAssert(message);
@@ -285,45 +283,39 @@
         for await (const message of stream) {
             tap(message);
         }
+        // print(`1..2`);
         // summary
     };
 
-    // with two arguments
-    const curry = (fn) => (a, b) => b === void 0 ? b => fn(a, b) : fn(a, b);
-    const toCurriedIterable = gen => curry((a, b) => ({
-        [Symbol.asyncIterator]() {
-            return gen(a, b);
-        }
-    }));
-
-    const filter = toCurriedIterable(async function* (fn, asyncIterable) {
-        let index = 0;
-        for await (const i of asyncIterable) {
-            if (fn(i, index, asyncIterable) === true) {
-                yield i;
-            }
-            index++;
-        }
-    });
-
     let autoStart = true;
-    async function* flatten(iterable) {
-        for (const iter of iterable) {
-            yield* iter;
-        }
-    }
     const harnessFactory = (reporter$$1 = reporter) => {
         const tests = [];
-        const test = (description, specFn, opts = defaultTestOptions) => {
-            tests.push(tester(description, specFn, opts));
-        };
-        return {
-            test,
-            run: async () => {
-                //todo print plan
-                return reporter$$1(filter((message) => message.type !== "TEST_END" /* TEST_END */ || message.offset > 0, flatten(tests)));
+        let pass = true;
+        let id = 0;
+        const collect = item => tests.push(item);
+        const api = assert(collect, 0);
+        const instance = Object.create(api, {
+            length: {
+                get() {
+                    return tests.length;
+                }
             }
-        };
+        });
+        return Object.assign(instance, {
+            [Symbol.asyncIterator]: async function* () {
+                for (const t of tests) {
+                    t.id = ++id;
+                    yield startTestMessage(t, 0);
+                    yield* t;
+                    yield assertionMessage(t, 0);
+                    pass = pass && t.pass;
+                }
+                yield endTestMessage(this, 0);
+            },
+            run: async () => {
+                return reporter$$1(instance);
+            }
+        });
     };
     const defaultTestHarness = harnessFactory();
     const test = defaultTestHarness.test;
@@ -345,12 +337,6 @@
     const wait = (time = 500) => new Promise(resolve => {
         setTimeout(() => resolve(), time);
     });
-    test('another one', async (t) => {
-        // console.time('another one');
-        await wait(1000);
-        t.ok('foo', 'foo is truthy');
-        // console.timeEnd('another one');
-    });
     test('a simple tester', async (t) => {
         // console.time('a simple tester');
         t.is(3, 2, 'should fail');
@@ -358,7 +344,7 @@
         await t.test('inside', async (t) => {
             // console.time('inside');
             await wait(800);
-            t.is('insider', 'insidrer', 'from insider');
+            t.is('insider', 'insider', 'from insider');
             // console.timeEnd('inside');
         });
         t.test('inside not waiting', async (t) => {
@@ -366,7 +352,7 @@
             t.test('deep inside not waiting', async (t) => {
                 // console.time('deep inside not waiting');
                 await wait(400);
-                t.is('bar', 'bar', 'bar');
+                t.is('bar', 'bart', 'bar');
                 // console.timeEnd('deep inside not waiting');
             });
             await t.test('deep inside', async (t) => {
@@ -379,6 +365,12 @@
         });
         t.is(4, 4, 'four should be four bis');
         // console.timeEnd('a simple tester');
+    });
+    test('another one', async (t) => {
+        // console.time('another one');
+        await wait(1000);
+        t.ok('foo', 'foo is truthy');
+        // console.timeEnd('another one');
     });
 
 }());
