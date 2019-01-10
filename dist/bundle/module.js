@@ -1,16 +1,47 @@
+import { filter, map } from '@lorenzofox3/for-await';
+
+/**
+ * Emitted when a new sub test has started
+ * @param {{description}} test - A Test
+ * @param {number} offset - give the nested level
+ * @returns {StartTestMessage}
+ */
 const startTestMessage = (test, offset) => ({
     type: "TEST_START" /* TEST_START */,
     data: test,
     offset
 });
+/**
+ * Emitted when an assertion result is produced. Note than when a sub test finishes, it also emits an assertion result in the parent sub test stream
+ * @param {TestResult | AssertionResult} assertion
+ * @param {number} offset - give the nested level
+ * @returns {AssertionMessage}
+ */
 const assertionMessage = (assertion, offset) => ({
     type: "ASSERTION" /* ASSERTION */,
     data: assertion,
     offset
 });
+/**
+ * Emitted when a sub tests finishes
+ * @param {Test} test - The Sub test
+ * @param {number} offset - the nested level
+ * @returns {TestEndMessage}
+ */
 const endTestMessage = (test, offset) => ({
     type: "TEST_END" /* TEST_END */,
     data: test,
+    offset
+});
+/**
+ * Emitted when an error is not handled
+ * @param {Error} error
+ * @param {number} offset
+ * @returns {BailoutMessage}
+ */
+const bailout = (error, offset) => ({
+    type: "BAIL_OUT" /* BAIL_OUT */,
+    data: error,
     offset
 });
 
@@ -23,6 +54,7 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
     let id = 0;
     let pass = true;
     let executionTime = 0;
+    let error = null;
     const assertions = [];
     const collect = item => assertions.push(item);
     const testRoutine = (async function () {
@@ -33,8 +65,7 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
             return result;
         }
         catch (e) {
-            // todo bailout
-            console.log(e);
+            error = e;
         }
     })();
     return Object.defineProperties({
@@ -50,6 +81,9 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
+            if (error !== null) {
+                return yield bailout(error, 0);
+            }
             yield endTestMessage(this, offset);
         }
     }, {
@@ -57,21 +91,31 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
             value: testRoutine
         },
         description: {
-            value: description
+            value: description,
+            enumerable: true
         },
         pass: {
+            enumerable: true,
             get() {
                 return pass;
             }
         },
         executionTime: {
+            enumerable: true,
             get() {
                 return executionTime;
             }
         },
         length: {
+            enumerable: true,
             get() {
-                return id;
+                return assertions.length;
+            }
+        },
+        fullLength: {
+            enumerable: true,
+            get() {
+                return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         }
     });
@@ -85,8 +129,9 @@ const getAssertionLocation = () => {
     const stack = (err.stack || '').split('\n');
     return (stack[3] || '').trim().replace(/^at/i, '');
 };
-const assertMethodHook = (fn) => function (actual, ...rest) {
-    const assertResult = fn(actual, ...rest);
+const assertMethodHook = (fn) => function (...args) {
+    // @ts-ignore
+    const assertResult = fn(...args);
     if (assertResult.pass === false) {
         assertResult.at = getAssertionLocation();
     }
@@ -208,15 +253,13 @@ const AssertPrototype = {
         };
     })
 };
-const assert = (collect, offset) => {
-    return Object.assign(Object.create(AssertPrototype, { collect: { value: collect } }), {
-        test(description, spec, opts = defaultTestOptions) {
-            const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
-            collect(subTest);
-            return subTest.routine;
-        }
-    });
-};
+const assert = (collect, offset) => Object.assign(Object.create(AssertPrototype, { collect: { value: collect } }), {
+    test(description, spec, opts = defaultTestOptions) {
+        const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
+        collect(subTest);
+        return subTest.routine;
+    }
+});
 
 const print = (message, offset = 0) => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
@@ -229,72 +272,133 @@ const printYAML = (obj, offset = 0) => {
     }
     print('...', YAMLOffset);
 };
-const printComment = (message) => {
-    print(`# ${message.data}`, message.offset);
+const comment = (value, offset) => {
+    print(`# ${value}`, offset);
 };
-const printSubTest = (message) => {
+const subTestPrinter = (prefix = '') => (message) => {
     const { data } = message;
-    print(`# Subtest: ${data.description}`, message.offset);
+    const value = `${prefix}${data.description}`;
+    comment(value, message.offset);
 };
-const printAssert = (message) => {
+const mochaTapSubTest = subTestPrinter('Subtest: ');
+const tapeSubTest = subTestPrinter();
+const assertPrinter = (diagnostic) => (message) => {
     const { data, offset } = message;
     const { pass, description, id } = data;
     const label = pass === true ? 'ok' : 'not ok';
     if (isAssertionResult(data)) {
         print(`${label} ${id} - ${description}`, offset);
         if (pass === false) {
-            const { expected, actual, at, operator } = data;
-            printYAML({ expected, found: actual, wanted: expected, actual, at, operator }, offset);
+            printYAML(diagnostic(data), offset);
         }
     }
     else {
         print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${data.executionTime}ms`, message.offset);
     }
 };
-const printTest = (message) => {
-    const { length } = message.data;
-    print(`1..${length}`, message.offset);
+const tapeAssert = assertPrinter(val => val);
+const mochaTapAssert = assertPrinter(({ expected, actual, operator, at }) => ({
+    wanted: expected,
+    found: actual,
+    at,
+    operator
+}));
+const testPrinter = (lengthProp) => (message) => {
+    const length = message.data[lengthProp];
+    const { offset } = message;
+    if (offset === 0) {
+        print('');
+    }
+    print(`1..${length}`, offset);
+    if (offset === 0) {
+        comment(message.data.pass ? 'ok' : 'not ok', 0);
+    }
 };
-// const printPlan = (message: PlanSummaryMessage): void => {
-//     const {data, offset} = message;
-//     print(`1..${data}`, offset);
-// };
-const tap = (message) => {
+const mochaTapTest = testPrinter('length');
+const tapeTest = testPrinter('fullLength');
+const printBailout = (message) => {
+    print('Bail out! Unhandled error.');
+};
+const reportAsMochaTap = (message) => {
     switch (message.type) {
         case "TEST_START" /* TEST_START */:
-            printSubTest(message);
+            mochaTapSubTest(message);
             break;
         case "ASSERTION" /* ASSERTION */:
-            printAssert(message);
+            mochaTapAssert(message);
             break;
         case "TEST_END" /* TEST_END */:
-            printTest(message);
+            mochaTapTest(message);
             break;
-        case "COMMENT" /* COMMENT */:
-            printComment(message);
-            break;
+        case "BAIL_OUT" /* BAIL_OUT */:
+            printBailout(message);
+            throw message.data;
     }
 };
-const reporter = async (stream) => {
+const reportAsTapeTap = (message) => {
+    switch (message.type) {
+        case "TEST_START" /* TEST_START */:
+            tapeSubTest(message);
+            break;
+        case "ASSERTION" /* ASSERTION */:
+            tapeAssert(message);
+            break;
+        case "TEST_END" /* TEST_END */:
+            tapeTest(message);
+            break;
+        case "BAIL_OUT" /* BAIL_OUT */:
+            printBailout(message);
+            throw message.data;
+    }
+};
+const mochaTapLike = async (stream) => {
     print('TAP version 13');
     for await (const message of stream) {
-        tap(message);
+        reportAsMochaTap(message);
     }
-    // print(`1..2`);
-    // summary
+};
+const flatFilter = filter((message) => {
+    return message.type === "TEST_START" /* TEST_START */
+        || message.type === "BAIL_OUT" /* BAIL_OUT */
+        || (message.type === "ASSERTION" /* ASSERTION */ && isAssertionResult(message.data))
+        || (message.type === "TEST_END" /* TEST_END */ && message.offset === 0);
+});
+const flattenStream = (stream) => {
+    let id = 0;
+    const mapper = map(message => {
+        if (message.type === "ASSERTION" /* ASSERTION */) {
+            const mappedData = Object.assign({}, message.data, { id: ++id });
+            return assertionMessage(mappedData, 0);
+        }
+        return Object.assign({}, message, { offset: 0 });
+    });
+    return mapper(flatFilter(stream));
+};
+const tapeTapLike = async (stream) => {
+    print('TAP version 13');
+    for await (const message of flattenStream(stream)) {
+        reportAsTapeTap(message);
+    }
 };
 
-let autoStart = true;
-const harnessFactory = (reporter$$1 = reporter) => {
+const harnessFactory = () => {
     const tests = [];
+    const rootOffset = 0;
     let pass = true;
     let id = 0;
     const collect = item => tests.push(item);
-    const api = assert(collect, 0);
+    const api = assert(collect, rootOffset);
     const instance = Object.create(api, {
         length: {
+            enumerable: true,
             get() {
                 return tests.length;
+            },
+        },
+        fullLength: {
+            enumerable: true,
+            get() {
+                return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         }
     });
@@ -302,27 +406,56 @@ const harnessFactory = (reporter$$1 = reporter) => {
         [Symbol.asyncIterator]: async function* () {
             for (const t of tests) {
                 t.id = ++id;
-                yield startTestMessage(t, 0);
-                yield* t;
-                yield assertionMessage(t, 0);
+                if (t[Symbol.asyncIterator]) {
+                    // Sub test
+                    yield startTestMessage({ description: t.description }, rootOffset);
+                    yield* t;
+                }
+                yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
             }
-            yield endTestMessage(this, 0);
+            yield endTestMessage(instance, rootOffset);
         },
-        run: async () => {
-            return reporter$$1(instance);
+        report: async (reporter = tapeTapLike) => {
+            return reporter(instance);
         }
     });
 };
+
+let autoStart = true;
 const defaultTestHarness = harnessFactory();
-const test = defaultTestHarness.test;
-const createHarness = (reporter$$1 = reporter) => {
+const test = defaultTestHarness.test.bind(defaultTestHarness);
+const equal = defaultTestHarness.equal.bind(defaultTestHarness);
+const equals = equal;
+const eq = equal;
+const deepEqual = equal;
+const notEqual = defaultTestHarness.notEqual.bind(defaultTestHarness);
+const notEquals = notEqual;
+const notEq = notEqual;
+const notDeepEqual = notEqual;
+const is = defaultTestHarness.is.bind(defaultTestHarness);
+const same = is;
+const isNot = defaultTestHarness.isNot.bind(defaultTestHarness);
+const notSame = isNot;
+const ok = defaultTestHarness.ok.bind(defaultTestHarness);
+const truthy = ok;
+const notOk = defaultTestHarness.notOk.bind(defaultTestHarness);
+const falsy = notOk;
+const fail = defaultTestHarness.fail.bind(defaultTestHarness);
+const throws = defaultTestHarness.throws.bind(defaultTestHarness);
+const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
+/**
+ * If you create a test harness manually, report won't start automatically and you will
+ * have to call the report method yourself. This can be handy if you wish to use another reporter
+ * @returns {TestHarness}
+ */
+const createHarness = () => {
     autoStart = false;
-    return harnessFactory(reporter$$1);
+    return harnessFactory();
 };
 const start = () => {
     if (autoStart) {
-        defaultTestHarness.run();
+        defaultTestHarness.report();
     }
 };
 // on next tick start reporting
@@ -335,4 +468,4 @@ else {
     window.addEventListener('load', start);
 }
 
-export { test, createHarness, isAssertionResult, AssertPrototype, assert };
+export { test, equal, equals, eq, deepEqual, notEqual, notEquals, notEq, notDeepEqual, is, same, isNot, notSame, ok, truthy, notOk, falsy, fail, throws, doesNotThrow, createHarness, tapeTapLike, mochaTapLike };

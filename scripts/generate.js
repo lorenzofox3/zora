@@ -6,7 +6,7 @@ const testCount = 10;
 const waitTime = 100;
 
 const zoraCode = `
-const test = require('../../../dist/index.js');
+const {test} = require('../../../dist/bundle/index.js');
 for (let i = 0; i < ${testCount}; i++) {
   test('test ' + i, async function (assert) {
     await new Promise(resolve => {
@@ -87,16 +87,16 @@ for (let f of tests){
 
 
 for (let i = 1; i <= filesCount; i++) {
-	const zoraPath = path.join(process.cwd(), '/benchmarks/zora/tester/', 'test' + i + '.js');
-	const avaPath = path.join(process.cwd(), '/benchmarks/ava/tester/', 'test' + i + '.js');
-	const mochaPath = path.join(process.cwd(), '/benchmarks/mocha/tester/', 'test' + i + '.js');
-	const tapePath = path.join(process.cwd(), '/benchmarks/tape/tester/', 'test' + i + '.js');
-	const jestPath = path.join(process.cwd(), '/benchmarks/jest/tester/', 'test' + i + '.js');
-	fs.writeFileSync(zoraPath, zoraCode);
-	fs.writeFileSync(avaPath, avaCode);
-	fs.writeFileSync(mochaPath, mochaCode);
-	fs.writeFileSync(tapePath, tapeCode);
-	fs.writeFileSync(jestPath, jestCode);
-	fs.writeFileSync(path.join(process.cwd(), '/benchmarks/tape/index.js'), tapeIndex);
-	fs.writeFileSync(path.join(process.cwd(), '/benchmarks/zora/index.js'), zoraIndex);
+    const zoraPath = path.join(process.cwd(), '/benchmarks/zora/test/', 'test' + i + '.js');
+    const avaPath = path.join(process.cwd(), '/benchmarks/ava/test/', 'test' + i + '.js');
+    const mochaPath = path.join(process.cwd(), '/benchmarks/mocha/test/', 'test' + i + '.js');
+    const tapePath = path.join(process.cwd(), '/benchmarks/tape/test/', 'test' + i + '.js');
+    const jestPath = path.join(process.cwd(), '/benchmarks/jest/test/', 'test' + i + '.js');
+    fs.writeFileSync(zoraPath, zoraCode);
+    fs.writeFileSync(avaPath, avaCode);
+    fs.writeFileSync(mochaPath, mochaCode);
+    fs.writeFileSync(tapePath, tapeCode);
+    fs.writeFileSync(jestPath, jestCode);
+    fs.writeFileSync(path.join(process.cwd(), '/benchmarks/tape/index.js'), tapeIndex);
+    fs.writeFileSync(path.join(process.cwd(), '/benchmarks/zora/index.js'), zoraIndex);
 }

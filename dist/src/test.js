@@ -1,5 +1,5 @@
 import { assert } from './assertion';
-import { assertionMessage, endTestMessage, startTestMessage } from './protocol';
+import { assertionMessage, bailout, endTestMessage, startTestMessage } from './protocol';
 export const defaultTestOptions = Object.freeze({
     offset: 0,
     skip: false
@@ -9,6 +9,7 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
     let id = 0;
     let pass = true;
     let executionTime = 0;
+    let error = null;
     const assertions = [];
     const collect = item => assertions.push(item);
     const testRoutine = (async function () {
@@ -19,8 +20,7 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
             return result;
         }
         catch (e) {
-            // todo bailout
-            console.log(e);
+            error = e;
         }
     })();
     return Object.defineProperties({
@@ -36,6 +36,9 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
+            if (error !== null) {
+                return yield bailout(error, 0);
+            }
             yield endTestMessage(this, offset);
         }
     }, {
@@ -43,21 +46,31 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
             value: testRoutine
         },
         description: {
-            value: description
+            value: description,
+            enumerable: true
         },
         pass: {
+            enumerable: true,
             get() {
                 return pass;
             }
         },
         executionTime: {
+            enumerable: true,
             get() {
                 return executionTime;
             }
         },
         length: {
+            enumerable: true,
             get() {
-                return id;
+                return assertions.length;
+            }
+        },
+        fullLength: {
+            enumerable: true,
+            get() {
+                return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         }
     });

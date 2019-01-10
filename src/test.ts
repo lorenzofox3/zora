@@ -1,9 +1,16 @@
 import {assert, TestResult} from './assertion';
-import {assertionMessage, endTestMessage, Message, startTestMessage} from './protocol';
+import {assertionMessage, bailout, endTestMessage, Message, startTestMessage} from './protocol';
 
+/**
+ * A Test is defined by test function collecting assertion results: it runs eagerly in its own micro task as soon as it is created.
+ * However the result of the test routine can be awaited in the calling context (likely a parent test). This allows to fully manage the control flow within your tests.
+ * The Test produces a stream of messages defined by the protocol in @link(./protocol.ts)
+ * A Test is also a Result and may be used to emit an assertion result message in the parent context.
+ */
 export interface Test extends AsyncIterable<Message<any>>, TestResult {
     readonly routine: Promise<any>;
     readonly length: number;
+    readonly fullLength: number;
 }
 
 export const defaultTestOptions = Object.freeze({
@@ -16,6 +23,7 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
     let id = 0;
     let pass = true;
     let executionTime = 0;
+    let error = null;
 
     const assertions = [];
     const collect = item => assertions.push(item);
@@ -27,8 +35,7 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
             executionTime = Date.now() - start;
             return result;
         } catch (e) {
-            // todo bailout
-            console.log(e);
+            error = e;
         }
     })();
 
@@ -45,6 +52,9 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
+            if (error !== null) {
+                return yield bailout(error, 0);
+            }
             yield endTestMessage(this, offset);
         }
     }, {
@@ -52,21 +62,31 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
             value: testRoutine
         },
         description: {
-            value: description
+            value: description,
+            enumerable: true
         },
         pass: {
+            enumerable: true,
             get() {
                 return pass;
             }
         },
         executionTime: {
+            enumerable: true,
             get() {
                 return executionTime;
             }
         },
         length: {
+            enumerable: true,
             get() {
-                return id;
+                return assertions.length;
+            }
+        },
+        fullLength: {
+            enumerable: true,
+            get() {
+                return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         }
     });

@@ -1,6 +1,6 @@
 
 const assert = require('assert');
-describe('tester file', function() {
+describe('test file', function() {
   for(let i=0; i < 10;i++){
     it('test ' + i, function(done) {
       setTimeout(()=>{

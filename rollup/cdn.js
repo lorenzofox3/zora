@@ -7,7 +7,7 @@ export default {
         file: './dist/bundle/zora.js',
         format: 'iife',
         name: 'zora',
-        sourcemap: true
+        // sourcemap: true
     }, {
         file: './dist/bundle/zora.es.js',
         format: 'es',

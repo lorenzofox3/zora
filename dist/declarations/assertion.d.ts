@@ -17,6 +17,9 @@ export interface Result {
 export interface TestResult extends Result {
     executionTime: number;
 }
+/**
+ * An assertion result contains the information related to a given expectation
+ */
 export interface AssertionResult extends Result {
     operator: Operator;
     expected: any;
@@ -27,31 +30,48 @@ export declare const isAssertionResult: (result: TestResult | AssertionResult) =
 export interface SpecFunction {
     (t: Assert): any;
 }
-export interface Assert {
-    equal<T>(actual: T, expected: T, description?: string): AssertionResult;
-    equals<T>(actual: T, expected: T, description?: string): AssertionResult;
-    eq<T>(actual: T, expected: T, description?: string): AssertionResult;
-    deepEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
-    notEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
-    notEquals<T>(actual: T, expected: T, description?: string): AssertionResult;
-    notEq<T>(actual: T, expected: T, description?: string): AssertionResult;
-    notDeepEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
-    is<T>(actual: T, expected: T, description?: string): AssertionResult;
-    same<T>(actual: T, expected: T, description?: string): AssertionResult;
-    isNot<T>(actual: T, expected: T, description?: string): AssertionResult;
-    notSame<T>(actual: T, expected: T, description?: string): AssertionResult;
-    ok<T>(actual: T, description?: string): AssertionResult;
-    truthy<T>(actual: T, description?: string): AssertionResult;
-    notOk<T>(actual: T, description?: string): AssertionResult;
-    falsy<T>(actual: T, description?: string): AssertionResult;
-    fail(message?: string): AssertionResult;
-    throws(fn: Function, expected?: string | RegExp | Function, description?: string): AssertionResult;
-    doesNotThrow(fn: Function, expected?: string | RegExp | Function, description?: string): AssertionResult;
-    test(description: string, spec: SpecFunction): Promise<TestResult>;
+export interface ComparatorAssertionFunction {
+    <T>(actual: T, expected: T, description?: string): AssertionResult;
 }
-interface AssertionFunction {
-    (actual: any, description?: string): AssertionResult;
-    (actual: any, expected: any, description?: string): AssertionResult;
+export interface BooleanAssertionFunction {
+    <T>(actual: T, description?: string): AssertionResult;
+}
+export interface ErrorAssertionFunction {
+    (fn: Function, expected?: string | RegExp | Function, description?: string): AssertionResult;
+}
+export interface MessageAssertionFunction {
+    (message?: string): AssertionResult;
+}
+export interface TestFunction {
+    (description: string, spec: SpecFunction, options?: object): Promise<TestResult>;
+}
+declare type AssertionFunction = ComparatorAssertionFunction | BooleanAssertionFunction | ErrorAssertionFunction | MessageAssertionFunction;
+/**
+ * The Assert object provide a set of expectation method producing AssertionResult.
+ * Note these AssertionResults are collected by the calling Test.
+ * An Assert object can also create sub test.
+ */
+export interface Assert {
+    equal: ComparatorAssertionFunction;
+    equals: ComparatorAssertionFunction;
+    eq: ComparatorAssertionFunction;
+    deepEqual: ComparatorAssertionFunction;
+    notEqual: ComparatorAssertionFunction;
+    notEquals: ComparatorAssertionFunction;
+    notEq: ComparatorAssertionFunction;
+    notDeepEqual: ComparatorAssertionFunction;
+    is: ComparatorAssertionFunction;
+    same: ComparatorAssertionFunction;
+    isNot: ComparatorAssertionFunction;
+    notSame: ComparatorAssertionFunction;
+    ok: BooleanAssertionFunction;
+    truthy: BooleanAssertionFunction;
+    notOk: BooleanAssertionFunction;
+    falsy: BooleanAssertionFunction;
+    fail: MessageAssertionFunction;
+    throws: ErrorAssertionFunction;
+    doesNotThrow: ErrorAssertionFunction;
+    test: TestFunction;
 }
 export declare const AssertPrototype: {
     equal: AssertionFunction;

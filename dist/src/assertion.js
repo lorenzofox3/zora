@@ -7,8 +7,9 @@ const getAssertionLocation = () => {
     const stack = (err.stack || '').split('\n');
     return (stack[3] || '').trim().replace(/^at/i, '');
 };
-const assertMethodHook = (fn) => function (actual, ...rest) {
-    const assertResult = fn(actual, ...rest);
+const assertMethodHook = (fn) => function (...args) {
+    // @ts-ignore
+    const assertResult = fn(...args);
     if (assertResult.pass === false) {
         assertResult.at = getAssertionLocation();
     }
@@ -130,12 +131,10 @@ export const AssertPrototype = {
         };
     })
 };
-export const assert = (collect, offset) => {
-    return Object.assign(Object.create(AssertPrototype, { collect: { value: collect } }), {
-        test(description, spec, opts = defaultTestOptions) {
-            const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
-            collect(subTest);
-            return subTest.routine;
-        }
-    });
-};
+export const assert = (collect, offset) => Object.assign(Object.create(AssertPrototype, { collect: { value: collect } }), {
+    test(description, spec, opts = defaultTestOptions) {
+        const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
+        collect(subTest);
+        return subTest.routine;
+    }
+});

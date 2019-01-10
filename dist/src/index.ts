@@ -1,68 +1,58 @@
-import {defaultTestOptions, tester} from './test';
-import {reporter as tap} from './tap-reporter';
-import {SpecFunction, assert} from './assertion';
-import {filter} from '@lorenzofox3/for-await';
-import {assertionMessage, endTestMessage, MessageType, startTestMessage} from './protocol';
-
-export * from './assertion';
+import {harnessFactory, TestHarness} from './harness';
+import {
+    BooleanAssertionFunction,
+    ComparatorAssertionFunction, ErrorAssertionFunction,
+    MessageAssertionFunction,
+    TestFunction
+} from './assertion';
 
 let autoStart = true;
-
-export interface TestHarness {
-    test: (description: string, specFn: SpecFunction, options?: object) => void;
-    run: () => Promise<void>;
-}
-
-async function* flatten(iterable) {
-    for (const iter of iterable) {
-        yield* iter;
-    }
-}
-
-const harnessFactory = (reporter = tap): TestHarness => {
-    const tests = [];
-    let pass = true;
-    let id = 0;
-    const collect = item => tests.push(item);
-    const api = assert(collect, 0);
-
-    const instance = Object.create(api, {
-        length: {
-            get() {
-                return tests.length;
-            }
-        }
-    });
-
-    return Object.assign(instance, {
-        [Symbol.asyncIterator]: async function* () {
-            for (const t of tests) {
-                t.id = ++id;
-                yield startTestMessage(t, 0);
-                yield* t;
-                yield assertionMessage(t, 0);
-                pass = pass && t.pass;
-            }
-            yield endTestMessage(this, 0);
-        },
-        run: async () => {
-            return reporter(instance);
-        }
-    });
-};
-
 const defaultTestHarness = harnessFactory();
 
-export const test = defaultTestHarness.test;
+export {tapeTapLike, mochaTapLike} from './reporter';
 
-export const createHarness = (reporter = tap) => {
+export const test: TestFunction = defaultTestHarness.test.bind(defaultTestHarness);
+
+export const equal: ComparatorAssertionFunction = defaultTestHarness.equal.bind(defaultTestHarness);
+export const equals = equal;
+export const eq = equal;
+export const deepEqual = equal;
+
+export const notEqual: ComparatorAssertionFunction = defaultTestHarness.notEqual.bind(defaultTestHarness);
+export const notEquals = notEqual;
+export const notEq = notEqual;
+export const notDeepEqual = notEqual;
+
+export const is: ComparatorAssertionFunction = defaultTestHarness.is.bind(defaultTestHarness);
+export const same = is;
+
+export const isNot: ComparatorAssertionFunction = defaultTestHarness.isNot.bind(defaultTestHarness);
+export const notSame = isNot;
+
+export const ok: BooleanAssertionFunction = defaultTestHarness.ok.bind(defaultTestHarness);
+export const truthy = ok;
+
+export const notOk: BooleanAssertionFunction = defaultTestHarness.notOk.bind(defaultTestHarness);
+export const falsy = notOk;
+
+export const fail: MessageAssertionFunction = defaultTestHarness.fail.bind(defaultTestHarness);
+
+export const throws: ErrorAssertionFunction = defaultTestHarness.throws.bind(defaultTestHarness);
+export const doesNotThrow: ErrorAssertionFunction = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
+
+/**
+ * If you create a test harness manually, report won't start automatically and you will
+ * have to call the report method yourself. This can be handy if you wish to use another reporter
+ * @returns {TestHarness}
+ */
+export const createHarness = () => {
     autoStart = false;
-    return harnessFactory(reporter);
+    return harnessFactory();
 };
 
 const start = () => {
     if (autoStart) {
-        defaultTestHarness.run();
+        defaultTestHarness.report();
     }
 };
 

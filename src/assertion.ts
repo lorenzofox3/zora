@@ -25,6 +25,9 @@ export interface TestResult extends Result {
     executionTime: number;
 }
 
+/**
+ * An assertion result contains the information related to a given expectation
+ */
 export interface AssertionResult extends Result {
     operator: Operator;
     expected: any;
@@ -40,46 +43,77 @@ export interface SpecFunction {
     (t: Assert): any
 }
 
+export interface ComparatorAssertionFunction {
+    <T>(actual: T, expected: T, description?: string): AssertionResult;
+}
+
+export interface BooleanAssertionFunction {
+    <T>(actual: T, description?: string): AssertionResult;
+}
+
+export interface ErrorAssertionFunction {
+    (fn: Function, expected?: string | RegExp | Function, description ?: string): AssertionResult;
+}
+
+export interface MessageAssertionFunction {
+    (message?: string): AssertionResult;
+}
+
+export interface TestFunction {
+    (description: string, spec: SpecFunction, options?: object): Promise<TestResult>;
+}
+
+type AssertionFunction =
+    ComparatorAssertionFunction
+    | BooleanAssertionFunction
+    | ErrorAssertionFunction
+    | MessageAssertionFunction;
+
+/**
+ * The Assert object provide a set of expectation method producing AssertionResult.
+ * Note these AssertionResults are collected by the calling Test.
+ * An Assert object can also create sub test.
+ */
 export interface Assert {
-    equal<T>(actual: T, expected: T, description?: string): AssertionResult;
+    equal: ComparatorAssertionFunction;
 
-    equals<T>(actual: T, expected: T, description?: string): AssertionResult;
+    equals: ComparatorAssertionFunction;
 
-    eq<T>(actual: T, expected: T, description?: string): AssertionResult;
+    eq: ComparatorAssertionFunction;
 
-    deepEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
+    deepEqual: ComparatorAssertionFunction;
 
-    notEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
+    notEqual: ComparatorAssertionFunction;
 
-    notEquals<T>(actual: T, expected: T, description?: string): AssertionResult;
+    notEquals: ComparatorAssertionFunction;
 
-    notEq<T>(actual: T, expected: T, description?: string): AssertionResult;
+    notEq: ComparatorAssertionFunction;
 
-    notDeepEqual<T>(actual: T, expected: T, description?: string): AssertionResult;
+    notDeepEqual: ComparatorAssertionFunction;
 
-    is<T>(actual: T, expected: T, description?: string): AssertionResult;
+    is: ComparatorAssertionFunction;
 
-    same<T>(actual: T, expected: T, description?: string): AssertionResult;
+    same: ComparatorAssertionFunction;
 
-    isNot<T>(actual: T, expected: T, description?: string): AssertionResult;
+    isNot: ComparatorAssertionFunction;
 
-    notSame<T>(actual: T, expected: T, description?: string): AssertionResult;
+    notSame: ComparatorAssertionFunction;
 
-    ok<T>(actual: T, description?: string): AssertionResult;
+    ok: BooleanAssertionFunction;
 
-    truthy<T>(actual: T, description?: string): AssertionResult;
+    truthy: BooleanAssertionFunction;
 
-    notOk<T>(actual: T, description?: string): AssertionResult;
+    notOk: BooleanAssertionFunction;
 
-    falsy<T>(actual: T, description?: string): AssertionResult;
+    falsy: BooleanAssertionFunction;
 
-    fail(message?: string): AssertionResult;
+    fail: MessageAssertionFunction;
 
-    throws(fn: Function, expected?: string | RegExp | Function, description ?: string): AssertionResult;
+    throws: ErrorAssertionFunction;
 
-    doesNotThrow(fn: Function, expected?: string | RegExp | Function, description ?: string): AssertionResult;
+    doesNotThrow: ErrorAssertionFunction;
 
-    test(description: string, spec: SpecFunction): Promise<TestResult>;
+    test: TestFunction;
 }
 
 const getAssertionLocation = (): string => {
@@ -88,14 +122,9 @@ const getAssertionLocation = (): string => {
     return (stack[3] || '').trim().replace(/^at/i, '');
 };
 
-interface AssertionFunction {
-    (actual: any, description?: string): AssertionResult;
-
-    (actual: any, expected: any, description?: string): AssertionResult;
-}
-
-const assertMethodHook = (fn: AssertionFunction): AssertionFunction => function (actual, ...rest) {
-    const assertResult = fn(actual, ...rest);
+const assertMethodHook = (fn: AssertionFunction): AssertionFunction => function (...args) {
+    // @ts-ignore
+    const assertResult = fn(...args);
 
     if (assertResult.pass === false) {
         assertResult.at = getAssertionLocation();
@@ -220,15 +249,13 @@ export const AssertPrototype = {
     })
 };
 
-export const assert = (collect, offset: number): Assert => {
-    return Object.assign(
-        Object.create(AssertPrototype, {collect: {value: collect}}),
-        {
-            test(description, spec, opts = defaultTestOptions) {
-                const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
-                collect(subTest);
-                return subTest.routine;
-            }
+export const assert = (collect, offset: number): Assert => Object.assign(
+    Object.create(AssertPrototype, {collect: {value: collect}}),
+    {
+        test(description, spec, opts = defaultTestOptions) {
+            const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
+            collect(subTest);
+            return subTest.routine;
         }
-    );
-};
+    }
+);

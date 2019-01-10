@@ -1,5 +1,5 @@
 
-const test = require('../../../dist/index.js');
+const {test} = require('../../../dist/bundle/index.js');
 for (let i = 0; i < 10; i++) {
   test('test ' + i, async function (assert) {
     await new Promise(resolve => {
