@@ -1,0 +1,2 @@
+require('./assertion');
+require('./test');

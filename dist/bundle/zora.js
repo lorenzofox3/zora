@@ -1,4 +1,4 @@
-(function () {
+var zora = (function (exports) {
     'use strict';
 
     /**
@@ -78,12 +78,17 @@
                         // Sub test
                         yield startTestMessage({ description: assertion.description }, offset);
                         yield* assertion;
+                        if (assertion.error !== null) {
+                            error = assertion.error;
+                            pass = false;
+                            return;
+                        }
                     }
                     yield assertionMessage(assertion, offset);
                     pass = pass && assertion.pass;
                 }
                 if (error !== null) {
-                    return yield bailout(error, 0);
+                    return yield bailout(error, offset);
                 }
                 yield endTestMessage(this, offset);
             }
@@ -118,8 +123,68 @@
                 get() {
                     return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
                 }
+            },
+            error: {
+                enumerable: true,
+                get() {
+                    return error;
+                }
             }
         });
+    };
+
+    var isArray = Array.isArray;
+    var keyList = Object.keys;
+    var hasProp = Object.prototype.hasOwnProperty;
+
+    var fastDeepEqual = function equal(a, b) {
+      if (a === b) return true;
+
+      if (a && b && typeof a == 'object' && typeof b == 'object') {
+        var arrA = isArray(a)
+          , arrB = isArray(b)
+          , i
+          , length
+          , key;
+
+        if (arrA && arrB) {
+          length = a.length;
+          if (length != b.length) return false;
+          for (i = length; i-- !== 0;)
+            if (!equal(a[i], b[i])) return false;
+          return true;
+        }
+
+        if (arrA != arrB) return false;
+
+        var dateA = a instanceof Date
+          , dateB = b instanceof Date;
+        if (dateA != dateB) return false;
+        if (dateA && dateB) return a.getTime() == b.getTime();
+
+        var regexpA = a instanceof RegExp
+          , regexpB = b instanceof RegExp;
+        if (regexpA != regexpB) return false;
+        if (regexpA && regexpB) return a.toString() == b.toString();
+
+        var keys = keyList(a);
+        length = keys.length;
+
+        if (length !== keyList(b).length)
+          return false;
+
+        for (i = length; i-- !== 0;)
+          if (!hasProp.call(b, keys[i])) return false;
+
+        for (i = length; i-- !== 0;) {
+          key = keys[i];
+          if (!equal(a[key], b[key])) return false;
+        }
+
+        return true;
+      }
+
+      return a!==a && b!==b;
     };
 
     const isAssertionResult = (result) => {
@@ -144,7 +209,7 @@
     };
     const AssertPrototype = {
         equal: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
-            pass: Object.is(actual, expected),
+            pass: fastDeepEqual(actual, expected),
             actual,
             expected,
             description,
@@ -154,7 +219,7 @@
         eq: aliasMethodHook('equal'),
         deepEqual: aliasMethodHook('equal'),
         notEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
-            pass: Object.is(actual, expected),
+            pass: !fastDeepEqual(actual, expected),
             actual,
             expected,
             description,
@@ -163,7 +228,7 @@
         notEquals: aliasMethodHook('notEqual'),
         notEq: aliasMethodHook('notEqual'),
         notDeepEqual: aliasMethodHook('notEqual'),
-        is: assertMethodHook((actual, expected, description = 'should be the same value') => ({
+        is: assertMethodHook((actual, expected, description = 'should be the same') => ({
             pass: Object.is(actual, expected),
             actual,
             expected,
@@ -171,7 +236,7 @@
             operator: "is" /* IS */
         })),
         same: aliasMethodHook('is'),
-        isNot: assertMethodHook((actual, expected, description = 'should not be the same value') => ({
+        isNot: assertMethodHook((actual, expected, description = 'should not be the same') => ({
             pass: !Object.is(actual, expected),
             actual,
             expected,
@@ -179,18 +244,18 @@
             operator: "isNot" /* IS_NOT */
         })),
         notSame: aliasMethodHook('isNot'),
-        ok: assertMethodHook((actual, description = 'should be the truthy') => ({
+        ok: assertMethodHook((actual, description = 'should be truthy') => ({
             pass: Boolean(actual),
             actual,
-            expected: true,
+            expected: 'truthy value',
             description,
             operator: "ok" /* OK */
         })),
         truthy: aliasMethodHook('ok'),
-        notOk: assertMethodHook((actual, description = 'should be the falsy') => ({
+        notOk: assertMethodHook((actual, description = 'should be falsy') => ({
             pass: !Boolean(actual),
             actual,
-            expected: true,
+            expected: 'falsy value',
             description,
             operator: "notOk" /* NOT_OK */
         })),
@@ -307,6 +372,7 @@
         const value = `${prefix}${data.description}`;
         comment(value, message.offset);
     };
+    const mochaTapSubTest = subTestPrinter('Subtest: ');
     const tapeSubTest = subTestPrinter();
     const assertPrinter = (diagnostic) => (message) => {
         const { data, offset } = message;
@@ -323,20 +389,44 @@
         }
     };
     const tapeAssert = assertPrinter(val => val);
+    const mochaTapAssert = assertPrinter(({ expected, actual, operator, at }) => ({
+        wanted: expected,
+        found: actual,
+        at,
+        operator
+    }));
     const testPrinter = (lengthProp) => (message) => {
         const length = message.data[lengthProp];
         const { offset } = message;
-        if (offset === 0) {
+        const isRoot = offset === 0;
+        if (isRoot) {
             print('');
         }
         print(`1..${length}`, offset);
-        if (offset === 0) {
+        if (isRoot) {
             comment(message.data.pass ? 'ok' : 'not ok', 0);
         }
     };
+    const mochaTapTest = testPrinter('length');
     const tapeTest = testPrinter('fullLength');
     const printBailout = (message) => {
         print('Bail out! Unhandled error.');
+    };
+    const reportAsMochaTap = (message) => {
+        switch (message.type) {
+            case "TEST_START" /* TEST_START */:
+                mochaTapSubTest(message);
+                break;
+            case "ASSERTION" /* ASSERTION */:
+                mochaTapAssert(message);
+                break;
+            case "TEST_END" /* TEST_END */:
+                mochaTapTest(message);
+                break;
+            case "BAIL_OUT" /* BAIL_OUT */:
+                printBailout(message);
+                throw message.data;
+        }
     };
     const reportAsTapeTap = (message) => {
         switch (message.type) {
@@ -352,6 +442,12 @@
             case "BAIL_OUT" /* BAIL_OUT */:
                 printBailout(message);
                 throw message.data;
+        }
+    };
+    const mochaTapLike = async (stream$$1) => {
+        print('TAP version 13');
+        for await (const message of stream$$1) {
+            reportAsMochaTap(message);
         }
     };
     const flatFilter = filter((message) => {
@@ -378,7 +474,7 @@
         }
     };
 
-    const harnessFactory = () => {
+    const harnessFactory = (opts) => {
         const tests = [];
         const rootOffset = 0;
         let pass = true;
@@ -407,6 +503,10 @@
                         // Sub test
                         yield startTestMessage({ description: t.description }, rootOffset);
                         yield* t;
+                        if (t.error !== null) {
+                            pass = false;
+                            return;
+                        }
                     }
                     yield assertionMessage(t, rootOffset);
                     pass = pass && t.pass;
@@ -420,20 +520,42 @@
     };
 
     let autoStart = true;
+    let indent = false;
     const defaultTestHarness = harnessFactory();
-    const test = defaultTestHarness.test.bind(defaultTestHarness);
+    const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
+    rootTest.indent = () => indent = true;
+    const test = rootTest;
     const equal = defaultTestHarness.equal.bind(defaultTestHarness);
+    const equals = equal;
+    const eq = equal;
+    const deepEqual = equal;
     const notEqual = defaultTestHarness.notEqual.bind(defaultTestHarness);
+    const notEquals = notEqual;
+    const notEq = notEqual;
+    const notDeepEqual = notEqual;
     const is = defaultTestHarness.is.bind(defaultTestHarness);
+    const same = is;
     const isNot = defaultTestHarness.isNot.bind(defaultTestHarness);
+    const notSame = isNot;
     const ok = defaultTestHarness.ok.bind(defaultTestHarness);
+    const truthy = ok;
     const notOk = defaultTestHarness.notOk.bind(defaultTestHarness);
+    const falsy = notOk;
     const fail = defaultTestHarness.fail.bind(defaultTestHarness);
     const throws = defaultTestHarness.throws.bind(defaultTestHarness);
     const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
+    /**
+     * If you create a test harness manually, report won't start automatically and you will
+     * have to call the report method yourself. This can be handy if you wish to use another reporter
+     * @returns {TestHarness}
+     */
+    const createHarness = (opts) => {
+        autoStart = false;
+        return harnessFactory();
+    };
     const start = () => {
         if (autoStart) {
-            defaultTestHarness.report();
+            defaultTestHarness.report(indent ? mochaTapLike : tapeTapLike);
         }
     };
     // on next tick start reporting
@@ -445,4 +567,34 @@
         // @ts-ignore
         window.addEventListener('load', start);
     }
-}());
+
+    exports.test = test;
+    exports.equal = equal;
+    exports.equals = equals;
+    exports.eq = eq;
+    exports.deepEqual = deepEqual;
+    exports.notEqual = notEqual;
+    exports.notEquals = notEquals;
+    exports.notEq = notEq;
+    exports.notDeepEqual = notDeepEqual;
+    exports.is = is;
+    exports.same = same;
+    exports.isNot = isNot;
+    exports.notSame = notSame;
+    exports.ok = ok;
+    exports.truthy = truthy;
+    exports.notOk = notOk;
+    exports.falsy = falsy;
+    exports.fail = fail;
+    exports.throws = throws;
+    exports.doesNotThrow = doesNotThrow;
+    exports.createHarness = createHarness;
+    exports.tapeTapLike = tapeTapLike;
+    exports.mochaTapLike = mochaTapLike;
+    exports.AssertPrototype = AssertPrototype;
+    exports.assert = assert;
+
+    return exports;
+
+}({}));
+//# sourceMappingURL=zora.js.map

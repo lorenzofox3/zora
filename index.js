@@ -1,20 +1,24 @@
-const test = require('tape');
+const {test} = require('./dist/bundle/index.js');
+// import {test} from './dist/bundle/module.js';
+// test.indent();
 
 test('main one', t => {
     t.ok(true);
 
     t.test('inside', t => {
+
         t.test('deep inside', t => {
             // throw new Error('hey hey');
-            t.equal('insidessr', 'insider');
-            t.end();
+            t.eq({foo: 'bar'}, {foo: 'br', bim: 2});
         });
-        t.end();
     });
 
     t.test('nested', t => {
         t.ok(true, 'woot hey');
-        t.end();
     });
-    t.end();
+});
+
+test('another one', t => {
+    t.ok(true);
+    t.eq(true, 'true');
 });

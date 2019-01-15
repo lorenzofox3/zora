@@ -10,6 +10,7 @@ export interface Test extends AsyncIterable<Message<any>>, TestResult {
     readonly routine: Promise<any>;
     readonly length: number;
     readonly fullLength: number;
+    readonly error?: any;
 }
 export declare const defaultTestOptions: Readonly<{
     offset: number;

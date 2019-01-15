@@ -12,7 +12,7 @@ export interface TestHarness extends Assert {
     report: (reporter?: Reporter) => Promise<void>;
 }
 
-export const harnessFactory = (): TestHarness => {
+export const harnessFactory = (opts?: any): TestHarness => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -43,6 +43,10 @@ export const harnessFactory = (): TestHarness => {
                     // Sub test
                     yield startTestMessage({description: t.description}, rootOffset);
                     yield* t;
+                    if (t.error !== null) {
+                        pass = false;
+                        return;
+                    }
                 }
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;

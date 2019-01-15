@@ -1,5 +1,3 @@
-import { filter, map } from '@lorenzofox3/for-await';
-
 /**
  * Emitted when a new sub test has started
  * @param {{description}} test - A Test
@@ -77,12 +75,17 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
                     // Sub test
                     yield startTestMessage({ description: assertion.description }, offset);
                     yield* assertion;
+                    if (assertion.error !== null) {
+                        error = assertion.error;
+                        pass = false;
+                        return;
+                    }
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
             if (error !== null) {
-                return yield bailout(error, 0);
+                return yield bailout(error, offset);
             }
             yield endTestMessage(this, offset);
         }
@@ -117,8 +120,68 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
             get() {
                 return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
+        },
+        error: {
+            enumerable: true,
+            get() {
+                return error;
+            }
         }
     });
+};
+
+var isArray = Array.isArray;
+var keyList = Object.keys;
+var hasProp = Object.prototype.hasOwnProperty;
+
+var fastDeepEqual = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    var arrA = isArray(a)
+      , arrB = isArray(b)
+      , i
+      , length
+      , key;
+
+    if (arrA && arrB) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+    if (arrA != arrB) return false;
+
+    var dateA = a instanceof Date
+      , dateB = b instanceof Date;
+    if (dateA != dateB) return false;
+    if (dateA && dateB) return a.getTime() == b.getTime();
+
+    var regexpA = a instanceof RegExp
+      , regexpB = b instanceof RegExp;
+    if (regexpA != regexpB) return false;
+    if (regexpA && regexpB) return a.toString() == b.toString();
+
+    var keys = keyList(a);
+    length = keys.length;
+
+    if (length !== keyList(b).length)
+      return false;
+
+    for (i = length; i-- !== 0;)
+      if (!hasProp.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      key = keys[i];
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  }
+
+  return a!==a && b!==b;
 };
 
 const isAssertionResult = (result) => {
@@ -143,7 +206,7 @@ const aliasMethodHook = (methodName) => function (...args) {
 };
 const AssertPrototype = {
     equal: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
-        pass: Object.is(actual, expected),
+        pass: fastDeepEqual(actual, expected),
         actual,
         expected,
         description,
@@ -153,7 +216,7 @@ const AssertPrototype = {
     eq: aliasMethodHook('equal'),
     deepEqual: aliasMethodHook('equal'),
     notEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
-        pass: Object.is(actual, expected),
+        pass: !fastDeepEqual(actual, expected),
         actual,
         expected,
         description,
@@ -162,7 +225,7 @@ const AssertPrototype = {
     notEquals: aliasMethodHook('notEqual'),
     notEq: aliasMethodHook('notEqual'),
     notDeepEqual: aliasMethodHook('notEqual'),
-    is: assertMethodHook((actual, expected, description = 'should be the same value') => ({
+    is: assertMethodHook((actual, expected, description = 'should be the same') => ({
         pass: Object.is(actual, expected),
         actual,
         expected,
@@ -170,7 +233,7 @@ const AssertPrototype = {
         operator: "is" /* IS */
     })),
     same: aliasMethodHook('is'),
-    isNot: assertMethodHook((actual, expected, description = 'should not be the same value') => ({
+    isNot: assertMethodHook((actual, expected, description = 'should not be the same') => ({
         pass: !Object.is(actual, expected),
         actual,
         expected,
@@ -178,18 +241,18 @@ const AssertPrototype = {
         operator: "isNot" /* IS_NOT */
     })),
     notSame: aliasMethodHook('isNot'),
-    ok: assertMethodHook((actual, description = 'should be the truthy') => ({
+    ok: assertMethodHook((actual, description = 'should be truthy') => ({
         pass: Boolean(actual),
         actual,
-        expected: true,
+        expected: 'truthy value',
         description,
         operator: "ok" /* OK */
     })),
     truthy: aliasMethodHook('ok'),
-    notOk: assertMethodHook((actual, description = 'should be the falsy') => ({
+    notOk: assertMethodHook((actual, description = 'should be falsy') => ({
         pass: !Boolean(actual),
         actual,
-        expected: true,
+        expected: 'falsy value',
         description,
         operator: "notOk" /* NOT_OK */
     })),
@@ -261,6 +324,32 @@ const assert = (collect, offset) => Object.assign(Object.create(AssertPrototype,
     }
 });
 
+// with two arguments
+const curry = (fn) => (a, b) => b === void 0 ? b => fn(a, b) : fn(a, b);
+const toCurriedIterable = gen => curry((a, b) => ({
+    [Symbol.asyncIterator]() {
+        return gen(a, b);
+    }
+}));
+
+const map = toCurriedIterable(async function* (fn, asyncIterable) {
+    let index = 0;
+    for await (const i of asyncIterable) {
+        yield fn(i, index, asyncIterable);
+        index++;
+    }
+});
+
+const filter = toCurriedIterable(async function* (fn, asyncIterable) {
+    let index = 0;
+    for await (const i of asyncIterable) {
+        if (fn(i, index, asyncIterable) === true) {
+            yield i;
+        }
+        index++;
+    }
+});
+
 const print = (message, offset = 0) => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
 };
@@ -306,11 +395,12 @@ const mochaTapAssert = assertPrinter(({ expected, actual, operator, at }) => ({
 const testPrinter = (lengthProp) => (message) => {
     const length = message.data[lengthProp];
     const { offset } = message;
-    if (offset === 0) {
+    const isRoot = offset === 0;
+    if (isRoot) {
         print('');
     }
     print(`1..${length}`, offset);
-    if (offset === 0) {
+    if (isRoot) {
         comment(message.data.pass ? 'ok' : 'not ok', 0);
     }
 };
@@ -351,9 +441,9 @@ const reportAsTapeTap = (message) => {
             throw message.data;
     }
 };
-const mochaTapLike = async (stream) => {
+const mochaTapLike = async (stream$$1) => {
     print('TAP version 13');
-    for await (const message of stream) {
+    for await (const message of stream$$1) {
         reportAsMochaTap(message);
     }
 };
@@ -363,7 +453,7 @@ const flatFilter = filter((message) => {
         || (message.type === "ASSERTION" /* ASSERTION */ && isAssertionResult(message.data))
         || (message.type === "TEST_END" /* TEST_END */ && message.offset === 0);
 });
-const flattenStream = (stream) => {
+const flattenStream = (stream$$1) => {
     let id = 0;
     const mapper = map(message => {
         if (message.type === "ASSERTION" /* ASSERTION */) {
@@ -372,16 +462,16 @@ const flattenStream = (stream) => {
         }
         return Object.assign({}, message, { offset: 0 });
     });
-    return mapper(flatFilter(stream));
+    return mapper(flatFilter(stream$$1));
 };
-const tapeTapLike = async (stream) => {
+const tapeTapLike = async (stream$$1) => {
     print('TAP version 13');
-    for await (const message of flattenStream(stream)) {
+    for await (const message of flattenStream(stream$$1)) {
         reportAsTapeTap(message);
     }
 };
 
-const harnessFactory = () => {
+const harnessFactory = (opts) => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -410,6 +500,10 @@ const harnessFactory = () => {
                     // Sub test
                     yield startTestMessage({ description: t.description }, rootOffset);
                     yield* t;
+                    if (t.error !== null) {
+                        pass = false;
+                        return;
+                    }
                 }
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
@@ -423,8 +517,11 @@ const harnessFactory = () => {
 };
 
 let autoStart = true;
+let indent = false;
 const defaultTestHarness = harnessFactory();
-const test = defaultTestHarness.test.bind(defaultTestHarness);
+const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
+rootTest.indent = () => indent = true;
+const test = rootTest;
 const equal = defaultTestHarness.equal.bind(defaultTestHarness);
 const equals = equal;
 const eq = equal;
@@ -449,13 +546,13 @@ const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
  * have to call the report method yourself. This can be handy if you wish to use another reporter
  * @returns {TestHarness}
  */
-const createHarness = () => {
+const createHarness = (opts) => {
     autoStart = false;
     return harnessFactory();
 };
 const start = () => {
     if (autoStart) {
-        defaultTestHarness.report();
+        defaultTestHarness.report(indent ? mochaTapLike : tapeTapLike);
     }
 };
 // on next tick start reporting
@@ -468,4 +565,4 @@ else {
     window.addEventListener('load', start);
 }
 
-export { test, equal, equals, eq, deepEqual, notEqual, notEquals, notEq, notDeepEqual, is, same, isNot, notSame, ok, truthy, notOk, falsy, fail, throws, doesNotThrow, createHarness, tapeTapLike, mochaTapLike };
+export { test, equal, equals, eq, deepEqual, notEqual, notEquals, notEq, notDeepEqual, is, same, isNot, notSame, ok, truthy, notOk, falsy, fail, throws, doesNotThrow, createHarness, tapeTapLike, mochaTapLike, AssertPrototype, assert };

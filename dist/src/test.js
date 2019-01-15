@@ -32,12 +32,17 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
                     // Sub test
                     yield startTestMessage({ description: assertion.description }, offset);
                     yield* assertion;
+                    if (assertion.error !== null) {
+                        error = assertion.error;
+                        pass = false;
+                        return;
+                    }
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
             if (error !== null) {
-                return yield bailout(error, 0);
+                return yield bailout(error, offset);
             }
             yield endTestMessage(this, offset);
         }
@@ -71,6 +76,12 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
             enumerable: true,
             get() {
                 return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
+            }
+        },
+        error: {
+            enumerable: true,
+            get() {
+                return error;
             }
         }
     });

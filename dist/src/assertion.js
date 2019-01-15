@@ -1,4 +1,7 @@
 import { defaultTestOptions, tester } from './test';
+//@ts-ignore
+// (todo check what is wrong here, either with rollup if I use typescript namespace either with typescript as no default import)
+import equal from 'fast-deep-equal';
 export const isAssertionResult = (result) => {
     return 'operator' in result;
 };
@@ -21,7 +24,7 @@ const aliasMethodHook = (methodName) => function (...args) {
 };
 export const AssertPrototype = {
     equal: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
-        pass: Object.is(actual, expected),
+        pass: equal(actual, expected),
         actual,
         expected,
         description,
@@ -31,7 +34,7 @@ export const AssertPrototype = {
     eq: aliasMethodHook('equal'),
     deepEqual: aliasMethodHook('equal'),
     notEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
-        pass: Object.is(actual, expected),
+        pass: !equal(actual, expected),
         actual,
         expected,
         description,
@@ -40,7 +43,7 @@ export const AssertPrototype = {
     notEquals: aliasMethodHook('notEqual'),
     notEq: aliasMethodHook('notEqual'),
     notDeepEqual: aliasMethodHook('notEqual'),
-    is: assertMethodHook((actual, expected, description = 'should be the same value') => ({
+    is: assertMethodHook((actual, expected, description = 'should be the same') => ({
         pass: Object.is(actual, expected),
         actual,
         expected,
@@ -48,7 +51,7 @@ export const AssertPrototype = {
         operator: "is" /* IS */
     })),
     same: aliasMethodHook('is'),
-    isNot: assertMethodHook((actual, expected, description = 'should not be the same value') => ({
+    isNot: assertMethodHook((actual, expected, description = 'should not be the same') => ({
         pass: !Object.is(actual, expected),
         actual,
         expected,
@@ -56,18 +59,18 @@ export const AssertPrototype = {
         operator: "isNot" /* IS_NOT */
     })),
     notSame: aliasMethodHook('isNot'),
-    ok: assertMethodHook((actual, description = 'should be the truthy') => ({
+    ok: assertMethodHook((actual, description = 'should be truthy') => ({
         pass: Boolean(actual),
         actual,
-        expected: true,
+        expected: 'truthy value',
         description,
         operator: "ok" /* OK */
     })),
     truthy: aliasMethodHook('ok'),
-    notOk: assertMethodHook((actual, description = 'should be the falsy') => ({
+    notOk: assertMethodHook((actual, description = 'should be falsy') => ({
         pass: !Boolean(actual),
         actual,
-        expected: true,
+        expected: 'falsy value',
         description,
         operator: "notOk" /* NOT_OK */
     })),

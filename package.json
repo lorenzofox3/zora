@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "2.0.1",
+  "version": "3.0.0-0",
   "description": "tap test harness for nodejs and browsers",
   "keywords": [
     "tap",
@@ -22,16 +22,16 @@
   "scripts": {
     "build:clean": "rm -rf ./dist && mkdir -p ./dist/bundle ./dist/declarations && cp -r ./src ./dist/src",
     "build:compile": "tsc",
-    "build:bundle": "rollup -c ./rollup/build.js && rollup -c ./rollup/cdn.js",
+    "build:bundle": "rollup -c ./rollup/build.js",
     "build": "npm run build:clean && npm run build:compile && npm run build:bundle",
-    "clean:benchmark": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
-    "build:benchmark": "npm run clean:benchmark && node ./scripts/generate.js",
-    "bench:zora": "time (node ./benchmarks/zora/index.js)",
+    "bench:clean": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
+    "bench:build": "npm run bench:clean && node ./scripts/generate.js",
+    "bench:zora": "time node ./benchmarks/zora/index.js",
     "bench:ava": "time ava ./benchmarks/ava/test/",
     "bench:mocha": "time mocha ./benchmarks/mocha/test/",
-    "bench:tape": "time (node ./benchmarks/tape/index)",
+    "bench:tape": "time node ./benchmarks/tape/index",
     "bench:jest": "time jest",
-    "test:unit": "rollup -c ./rollup/test.js | node",
+    "test:unit": "node ./test/unit/index.js",
     "test": "npm run test:unit && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec"
   },
   "author": {
@@ -39,27 +39,20 @@
     "email": "laurent34azerty@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-    "deep-equal": "^1.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@lorenzofox3/for-await": "^0.2.0",
     "ava": "^0.25.0",
     "fast-deep-equal": "^2.0.1",
-    "faucet": "0.0.1",
     "jest": "^23.6.0",
     "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
-    "rollup": "^0.67.3",
+    "rollup": "^1.1.0",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "tap": "^12.1.1",
     "tap-diff": "^0.1.1",
-    "tap-mocha-reporter": "^3.0.7",
-    "tap-summary": "^4.0.0",
     "tape": "^4.9.1",
-    "typescript": "^3.2.2",
-    "xo": "^0.23.0"
+    "typescript": "^3.2.2"
   },
   "jest": {
     "testRegex": ".*.js",

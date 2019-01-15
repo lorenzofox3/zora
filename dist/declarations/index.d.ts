@@ -1,7 +1,11 @@
 import { TestHarness } from './harness';
 import { BooleanAssertionFunction, ComparatorAssertionFunction, ErrorAssertionFunction, MessageAssertionFunction, TestFunction } from './assertion';
 export { tapeTapLike, mochaTapLike } from './reporter';
-export declare const test: TestFunction;
+export { AssertPrototype, assert } from './assertion';
+interface RootTest extends TestFunction {
+    indent: () => void;
+}
+export declare const test: RootTest;
 export declare const equal: ComparatorAssertionFunction;
 export declare const equals: ComparatorAssertionFunction;
 export declare const eq: ComparatorAssertionFunction;
@@ -26,4 +30,4 @@ export declare const doesNotThrow: ErrorAssertionFunction;
  * have to call the report method yourself. This can be handy if you wish to use another reporter
  * @returns {TestHarness}
  */
-export declare const createHarness: () => TestHarness;
+export declare const createHarness: (opts?: any) => TestHarness;

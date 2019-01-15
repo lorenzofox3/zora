@@ -1,8 +1,13 @@
 import { harnessFactory } from './harness';
+import { mochaTapLike, tapeTapLike } from './reporter';
 let autoStart = true;
+let indent = false;
 const defaultTestHarness = harnessFactory();
 export { tapeTapLike, mochaTapLike } from './reporter';
-export const test = defaultTestHarness.test.bind(defaultTestHarness);
+export { AssertPrototype, assert } from './assertion';
+const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
+rootTest.indent = () => indent = true;
+export const test = rootTest;
 export const equal = defaultTestHarness.equal.bind(defaultTestHarness);
 export const equals = equal;
 export const eq = equal;
@@ -27,13 +32,13 @@ export const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarn
  * have to call the report method yourself. This can be handy if you wish to use another reporter
  * @returns {TestHarness}
  */
-export const createHarness = () => {
+export const createHarness = (opts) => {
     autoStart = false;
     return harnessFactory();
 };
 const start = () => {
     if (autoStart) {
-        defaultTestHarness.report();
+        defaultTestHarness.report(indent ? mochaTapLike : tapeTapLike);
     }
 };
 // on next tick start reporting

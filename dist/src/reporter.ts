@@ -65,11 +65,12 @@ const mochaTapAssert = assertPrinter(({expected, actual, operator, at}) => ({
 const testPrinter = (lengthProp: string) => (message: TestEndMessage): void => {
     const length = message.data[lengthProp];
     const {offset} = message;
-    if (offset === 0) {
+    const isRoot = offset === 0;
+    if (isRoot) {
         print('');
     }
     print(`1..${length}`, offset);
-    if (offset === 0) {
+    if (isRoot) {
         comment(message.data.pass ? 'ok' : 'not ok', 0);
     }
 };

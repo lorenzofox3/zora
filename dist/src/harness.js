@@ -1,7 +1,7 @@
 import { assert } from './assertion';
 import { assertionMessage, endTestMessage, startTestMessage } from './protocol';
 import { tapeTapLike as tap } from './reporter';
-export const harnessFactory = () => {
+export const harnessFactory = (opts) => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -30,6 +30,10 @@ export const harnessFactory = () => {
                     // Sub test
                     yield startTestMessage({ description: t.description }, rootOffset);
                     yield* t;
+                    if (t.error !== null) {
+                        pass = false;
+                        return;
+                    }
                 }
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
