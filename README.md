@@ -138,7 +138,6 @@ However, you'll be able to group your tests if you wish to conserve some state b
 The sequence is simply controlled by AsyncFunction (and await keyboard)
 
 ```Javascript
-
 let state = 0;
 
 test('test 1', t => {
@@ -197,6 +196,8 @@ test('grouped', async t => {
     });
 });
 ```
+
+> NOTE: the wait() function can be handy to wait for dom-updates e.g. : `const wait = (time = 200) => new Promise(resolve =>setTimeout(resolve, time))`
 
 ### BDD style
 
