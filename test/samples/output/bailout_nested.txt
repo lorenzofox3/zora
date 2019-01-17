@@ -1,0 +1,6 @@
+TAP version 13
+# will not go to the end
+ok 1 - okay
+# some sub tester
+ok 2 - before the end ...
+Bail out! Unhandled error.

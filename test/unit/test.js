@@ -1,9 +1,11 @@
 const test = require('tape');
 const {createHarness} = require('../../dist/bundle/index.js');
+
 const wait = (time = 0) => new Promise(resolve => {
     setTimeout(() => resolve(), time);
 });
-const check = async (t, harness, expected) => {
+
+const checkMessageStream = async (t, harness, expectedMessageStream) => {
     const messages = [];
     for await (const m of harness) {
         // remove moving part -> execution time
@@ -14,11 +16,13 @@ const check = async (t, harness, expected) => {
         if (m.type === 'TEST_END' /* TEST_END */ && m.offset === 0) {
             m.data = {length: m.data.length, fullLength: m.data.fullLength, executionTime: '{TIME}'};
         }
+
         messages.push(m);
     }
-    t.deepEqual(messages, expected, 'should have the list of messages');
+    t.deepEqual(messages, expectedMessageStream, 'should have the list of messages');
 };
-test('simple case', async (t) => {
+
+test('test harness with basic sub tests', async (t) => {
     const harness = createHarness();
     const {test} = harness;
     test('some tester', t => {
@@ -29,7 +33,7 @@ test('simple case', async (t) => {
         t.equal(2, 2, 'equality in second tester');
         t.ok(true, 'and another one');
     });
-    await check(t, harness, [{type: 'TEST_START', data: {description: 'some tester'}, offset: 0}, {
+    await checkMessageStream(t, harness, [{type: 'TEST_START', data: {description: 'some tester'}, offset: 0}, {
         type: 'ASSERTION',
         data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal', id: 1},
         offset: 1
@@ -52,7 +56,6 @@ test('simple case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 1
@@ -64,7 +67,6 @@ test('simple case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 0
@@ -91,7 +93,6 @@ test('simple case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 1
@@ -103,14 +104,14 @@ test('simple case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 0
     }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
-test('async case', async (t) => {
+
+test('test harness with async sub tests: should stream in the declared order', async (t) => {
     const harness = createHarness();
     const {test} = harness;
     test('some longer tester first', async (t) => {
@@ -123,7 +124,7 @@ test('async case', async (t) => {
         await wait(50);
         t.ok(true, 'and another one');
     });
-    await check(t, harness, [{
+    await checkMessageStream(t, harness, [{
         type: 'TEST_START',
         data: {description: 'some longer tester first'},
         offset: 0
@@ -150,7 +151,6 @@ test('async case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 1
@@ -162,7 +162,6 @@ test('async case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 0
@@ -189,7 +188,6 @@ test('async case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 1
@@ -201,14 +199,14 @@ test('async case', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 0
     }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
-test('nested', async (t) => {
+
+test('test harness with nested sub tests', async (t) => {
     const harness = createHarness();
     const {test} = harness;
     test('some first root', t => {
@@ -225,7 +223,7 @@ test('nested', async (t) => {
     test('some other tester', async (t) => {
         t.ok(true, 'just to check');
     });
-    await check(t, harness, [{
+    await checkMessageStream(t, harness, [{
         type: 'TEST_START',
         data: {description: 'some first root'},
         offset: 0
@@ -243,11 +241,11 @@ test('nested', async (t) => {
         offset: 3
     }, {
         type: 'TEST_END',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, error: null, id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, id: 2},
         offset: 3
     }, {
         type: 'ASSERTION',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, error: null, id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, id: 2},
         offset: 2
     }, {
         type: 'ASSERTION',
@@ -268,7 +266,6 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 3,
             fullLength: 3,
-            error: null,
             id: 2
         },
         offset: 2
@@ -280,7 +277,6 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 3,
             fullLength: 3,
-            error: null,
             id: 2
         },
         offset: 1
@@ -296,7 +292,6 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 3,
             fullLength: 5,
-            error: null,
             id: 1
         },
         offset: 1
@@ -308,7 +303,6 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 3,
             fullLength: 5,
-            error: null,
             id: 1
         },
         offset: 0
@@ -324,7 +318,6 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 1
@@ -336,14 +329,14 @@ test('nested', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 0
     }, {type: 'TEST_END', data: {length: 2, fullLength: 6, executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
-test('nested async', async (t) => {
+
+test('test haness with nested async sub test: should stream in the declared order', async (t) => {
     const harness = createHarness();
     const {test} = harness;
     test('keep parallel', async (t) => {
@@ -368,7 +361,7 @@ test('nested async', async (t) => {
             t.equal(counter, 1, 'should have the updated value');
         });
     });
-    await check(t, harness, [{type: 'TEST_START', data: {description: 'keep parallel'}, offset: 0}, {
+    await checkMessageStream(t, harness, [{type: 'TEST_START', data: {description: 'keep parallel'}, offset: 0}, {
         type: 'TEST_START',
         data: {description: 'a first tester'},
         offset: 1
@@ -384,7 +377,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 1
         },
         offset: 2
@@ -396,7 +388,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 1
         },
         offset: 1
@@ -419,7 +410,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 2
@@ -431,7 +421,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 1
@@ -443,7 +432,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 1
@@ -455,7 +443,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 1
         },
         offset: 0
@@ -475,7 +462,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 1
         },
         offset: 2
@@ -487,7 +473,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 1
         },
         offset: 1
@@ -510,7 +495,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 2
@@ -522,7 +506,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 1,
             fullLength: 1,
-            error: null,
             id: 2
         },
         offset: 1
@@ -534,7 +517,6 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 1
@@ -546,14 +528,14 @@ test('nested async', async (t) => {
             executionTime: '{TIME}',
             length: 2,
             fullLength: 2,
-            error: null,
             id: 2
         },
         offset: 0
     }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
-test('bailout', async (t) => {
+
+test('test harness in bailout: should end the stream', async (t) => {
     let error = null;
     const harness = createHarness();
     const {test} = harness;
@@ -562,7 +544,7 @@ test('bailout', async (t) => {
         error = new Error('Oh no!');
         throw error;
     });
-    await check(t, harness, [
+    await checkMessageStream(t, harness, [
         {type: 'TEST_START', data: {description: 'will throw'}, offset: 0},
         {
             type: 'ASSERTION',
@@ -581,7 +563,8 @@ test('bailout', async (t) => {
     t.ok(error, 'error should be defined');
     t.end();
 });
-test('nested bailout', async (t) => {
+
+test('test harness with a nested bailout: should end the stream', async (t) => {
     let error = null;
     const harness = createHarness();
     const {test} = harness;
@@ -593,7 +576,7 @@ test('nested bailout', async (t) => {
             throw error;
         });
     });
-    await check(t, harness, [{type: 'TEST_START', data: {description: 'will throw'}, offset: 0}, {
+    await checkMessageStream(t, harness, [{type: 'TEST_START', data: {description: 'will throw'}, offset: 0}, {
         type: 'ASSERTION',
         data: {
             pass: true,

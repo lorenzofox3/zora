@@ -1,0 +1,6 @@
+TAP version 13
+# Subtest: will not go to the end
+    ok 1 - okay
+    # Subtest: some sub tester
+        ok 1 - before the end ...
+Bail out! Unhandled error.

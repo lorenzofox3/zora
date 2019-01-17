@@ -79,6 +79,7 @@ var zora = (function (exports) {
                         yield startTestMessage({ description: assertion.description }, offset);
                         yield* assertion;
                         if (assertion.error !== null) {
+                            // Bubble up the error and return
                             error = assertion.error;
                             pass = false;
                             return;
@@ -87,10 +88,7 @@ var zora = (function (exports) {
                     yield assertionMessage(assertion, offset);
                     pass = pass && assertion.pass;
                 }
-                if (error !== null) {
-                    return yield bailout(error, offset);
-                }
-                yield endTestMessage(this, offset);
+                return error !== null ? yield bailout(error, offset) : yield endTestMessage(this, offset);
             }
         }, {
             routine: {
@@ -125,7 +123,6 @@ var zora = (function (exports) {
                 }
             },
             error: {
-                enumerable: true,
                 get() {
                     return error;
                 }
@@ -474,7 +471,7 @@ var zora = (function (exports) {
         }
     };
 
-    const harnessFactory = (opts) => {
+    const harnessFactory = () => {
         const tests = [];
         const rootOffset = 0;
         let pass = true;
@@ -483,15 +480,18 @@ var zora = (function (exports) {
         const api = assert(collect, rootOffset);
         const instance = Object.create(api, {
             length: {
-                enumerable: true,
                 get() {
                     return tests.length;
                 },
             },
             fullLength: {
-                enumerable: true,
                 get() {
                     return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
+                }
+            },
+            pass: {
+                get() {
+                    return pass;
                 }
             }
         });
@@ -549,7 +549,7 @@ var zora = (function (exports) {
      * have to call the report method yourself. This can be handy if you wish to use another reporter
      * @returns {TestHarness}
      */
-    const createHarness = (opts) => {
+    const createHarness = () => {
         autoStart = false;
         return harnessFactory();
     };

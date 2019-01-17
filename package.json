@@ -32,7 +32,8 @@
     "bench:tape": "time node ./benchmarks/tape/index",
     "bench:jest": "time jest",
     "test:unit": "node ./test/unit/index.js",
-    "test": "npm run test:unit && node ./test/samples/index.js | tap-diff && node ./test/samples/bsd/index | tap-mocha-reporter spec"
+    "test:sample": "node ./test/samples/index.js",
+    "test": "npm run test:unit && npm run test:sample"
   },
   "author": {
     "name": "Laurent Renard",
@@ -42,7 +43,7 @@
   "dependencies": {},
   "devDependencies": {
     "@lorenzofox3/for-await": "^0.2.0",
-    "ava": "^0.25.0",
+    "ava": "^1.1.0",
     "fast-deep-equal": "^2.0.1",
     "jest": "^23.6.0",
     "mkdirp": "^0.5.1",
@@ -51,7 +52,7 @@
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "tap-diff": "^0.1.1",
-    "tape": "^4.9.1",
+    "tape": "^4.9.2",
     "typescript": "^3.2.2"
   },
   "jest": {

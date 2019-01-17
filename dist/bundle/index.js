@@ -80,6 +80,7 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
                     yield startTestMessage({ description: assertion.description }, offset);
                     yield* assertion;
                     if (assertion.error !== null) {
+                        // Bubble up the error and return
                         error = assertion.error;
                         pass = false;
                         return;
@@ -88,10 +89,7 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
-            if (error !== null) {
-                return yield bailout(error, offset);
-            }
-            yield endTestMessage(this, offset);
+            return error !== null ? yield bailout(error, offset) : yield endTestMessage(this, offset);
         }
     }, {
         routine: {
@@ -126,7 +124,6 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
             }
         },
         error: {
-            enumerable: true,
             get() {
                 return error;
             }
@@ -475,7 +472,7 @@ const tapeTapLike = async (stream$$1) => {
     }
 };
 
-const harnessFactory = (opts) => {
+const harnessFactory = () => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -484,15 +481,18 @@ const harnessFactory = (opts) => {
     const api = assert(collect, rootOffset);
     const instance = Object.create(api, {
         length: {
-            enumerable: true,
             get() {
                 return tests.length;
             },
         },
         fullLength: {
-            enumerable: true,
             get() {
                 return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
+            }
+        },
+        pass: {
+            get() {
+                return pass;
             }
         }
     });
@@ -550,7 +550,7 @@ const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
  * have to call the report method yourself. This can be handy if you wish to use another reporter
  * @returns {TestHarness}
  */
-const createHarness = (opts) => {
+const createHarness = () => {
     autoStart = false;
     return harnessFactory();
 };

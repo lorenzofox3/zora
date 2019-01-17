@@ -1,24 +1,27 @@
 const {assert} = require('../../dist/bundle/index.js');
 const test = require('tape');
 
-const equalPassingCases = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {woot: 'bim', foo: {bar: null}}]];
-const equalPassingCasesExpectations = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {
-    woot: 'bim',
-    foo: {bar: null}
-}]];
-const equalAliases = ['equal', 'equals', 'eq', 'deepEqual'];
 const createAssert = () => {
     const result = [];
     return assert(item => result.push(item), 0);
 };
+
+const equalPassingCasesInput = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {woot: 'bim', foo: {bar: null}}]];
+const equalPassingCasesExpectations = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {
+    woot: 'bim',
+    foo: {bar: null}
+}]];
+
+const equalAliases = ['equal', 'equals', 'eq', 'deepEqual'];
+
 for (const alias of equalAliases) {
     test(`${alias} operator: passing cases`, t => {
-        t.plan(equalPassingCases.length);
+        t.plan(equalPassingCasesInput.length);
         const a = createAssert();
-        for (let i = 0; i < equalPassingCases.length; i++) {
-            t.deepEqual(a[alias](equalPassingCases[i], equalPassingCasesExpectations[i]), {
+        for (let i = 0; i < equalPassingCasesInput.length; i++) {
+            t.deepEqual(a[alias](equalPassingCasesInput[i], equalPassingCasesExpectations[i]), {
                 pass: true,
-                actual: equalPassingCases[i],
+                actual: equalPassingCasesInput[i],
                 expected: equalPassingCasesExpectations[i],
                 description: 'should be equivalent',
                 operator: 'equal' /* EQUAL */
@@ -40,20 +43,25 @@ for (const alias of equalAliases) {
         t.end();
     });
 }
-const notEqualPassingCases = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {woot: 'bim', foo: {bar: null}}]];
+
+const notEqualPassingCasesInput = ['foo', 4, {woot: 'bim', foo: {bar: null}}, ['foo', 4, {
+    woot: 'bim',
+    foo: {bar: null}
+}]];
 const notEqualPassingCasesExpectations = ['foov', '4', {woot: 'bim', foo: {bar: undefined}}, ['foo', {
     woot: 'bim',
     foo: {bar: null}
 }]];
 const notEqualAliases = ['notEqual', 'notEquals', 'notEq', 'notDeepEqual'];
+
 for (const alias of notEqualAliases) {
     test(`${alias} operator: passing cases`, t => {
-        t.plan(notEqualPassingCases.length);
+        t.plan(notEqualPassingCasesInput.length);
         const a = createAssert();
-        for (let i = 0; i < notEqualPassingCases.length; i++) {
-            t.deepEqual(a[alias](notEqualPassingCases[i], notEqualPassingCasesExpectations[i]), {
+        for (let i = 0; i < notEqualPassingCasesInput.length; i++) {
+            t.deepEqual(a[alias](notEqualPassingCasesInput[i], notEqualPassingCasesExpectations[i]), {
                 pass: true,
-                actual: notEqualPassingCases[i],
+                actual: notEqualPassingCasesInput[i],
                 expected: notEqualPassingCasesExpectations[i],
                 description: 'should not be equivalent',
                 operator: 'notEqual' /* NOT_EQUAL */
@@ -73,7 +81,9 @@ for (const alias of notEqualAliases) {
         t.end();
     });
 }
+
 const isAliases = ['is', 'same'];
+
 for (const alias of isAliases) {
     test(`${alias} operator: should pass on same value`, t => {
         const a = createAssert();
@@ -111,7 +121,9 @@ for (const alias of isAliases) {
         t.end();
     });
 }
+
 const isNot = ['isNot', 'notSame'];
+
 for (const alias of isNot) {
     test(`${alias} operator: should pass on different value`, t => {
         const a = createAssert();
@@ -181,6 +193,7 @@ for (const alias of truthyAliases) {
         t.end();
     });
 }
+
 const falsyAliases = ['notOk', 'falsy'];
 for (const alias of falsyAliases) {
     test(`${alias} operator: pass on falsy value`, t => {
@@ -213,6 +226,7 @@ for (const alias of falsyAliases) {
         t.end();
     });
 }
+
 test('fail operator', t => {
     const a = createAssert();
     const res = a.fail();
@@ -224,12 +238,14 @@ test('fail operator', t => {
     t.ok(res.at, 'should have a stacktrace');
     t.end();
 });
+
 test('fail operator: custom message assertion', t => {
     const a = createAssert();
     const res = a.fail('oh noooo');
     t.equal(res.description, 'oh noooo');
     t.end();
 });
+
 test('throws operator', t => {
     const a = createAssert();
     const {operator, description, pass} = a.throws(() => {
@@ -240,6 +256,7 @@ test('throws operator', t => {
     t.equal(pass, true, 'should have passed');
     t.end();
 });
+
 test('throws operator: change default description', t => {
     const a = createAssert();
     const {operator, description, pass} = a.throws(() => {
@@ -250,6 +267,7 @@ test('throws operator: change default description', t => {
     t.equal(pass, true, 'should have passed');
     t.end();
 });
+
 test('throws operator: failure', t => {
     const a = createAssert();
     const {operator, description, pass} = a.throws(() => {
@@ -259,6 +277,7 @@ test('throws operator: failure', t => {
     t.equal(pass, false, 'should not have passed');
     t.end();
 });
+
 test('throws operator: expected (RegExp)', t => {
     const a = createAssert();
     const error = new Error('Totally expected error');
@@ -273,6 +292,7 @@ test('throws operator: expected (RegExp)', t => {
     t.equal(actual, error.message);
     t.end();
 });
+
 test('throws operator: expected (RegExp, failed)', t => {
     const a = createAssert();
     const error = new Error('Not the expected error');
@@ -287,6 +307,7 @@ test('throws operator: expected (RegExp, failed)', t => {
     t.equal(actual, error.message);
     t.end();
 });
+
 test('throws operator: expected (constructor)', t => {
     const a = createAssert();
 
@@ -304,6 +325,7 @@ test('throws operator: expected (constructor)', t => {
     t.equal(actual, CustomError);
     t.end();
 });
+
 test('throws operator: expected (constructor, failed)', t => {
     const a = createAssert();
 
@@ -321,6 +343,7 @@ test('throws operator: expected (constructor, failed)', t => {
     t.equal(actual, Error);
     t.end();
 });
+
 test('doesNotThrow operator', t => {
     const a = createAssert();
     const {operator, description, pass, expected, actual} = a.doesNotThrow(() => {
@@ -332,6 +355,7 @@ test('doesNotThrow operator', t => {
     t.equal(actual, undefined);
     t.end();
 });
+
 test('doesNotThrow operator: change default description', t => {
     const a = createAssert();
     const {operator, description, pass} = a.doesNotThrow(function () {
@@ -341,6 +365,7 @@ test('doesNotThrow operator: change default description', t => {
     t.equal(pass, true, 'should have passed');
     t.end();
 });
+
 test('doesNotThrow operator: failure', t => {
     const a = createAssert();
     const {operator, description, pass} = a.doesNotThrow(() => {
@@ -351,6 +376,7 @@ test('doesNotThrow operator: failure', t => {
     t.equal(pass, false, 'should have passed');
     t.end();
 });
+
 test('doesNotThrow operator: expected (ignored)', t => {
     const a = createAssert();
 

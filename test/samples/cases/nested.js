@@ -1,4 +1,4 @@
-const {test} = require('../../dist/bundle/index.js');
+const {test} = require('../../../dist/bundle/index.js');
 
 test('tester 1', t => {
 

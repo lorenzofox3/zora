@@ -11,9 +11,6 @@ let autoStart = true;
 let indent = false;
 const defaultTestHarness = harnessFactory();
 
-export {tapeTapLike, mochaTapLike} from './reporter';
-export {AssertPrototype, assert} from './assertion';
-
 interface RootTest extends TestFunction {
     indent: () => void;
 }
@@ -21,6 +18,8 @@ interface RootTest extends TestFunction {
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
 rootTest.indent = () => indent = true;
 
+export {tapeTapLike, mochaTapLike} from './reporter';
+export {AssertPrototype, assert} from './assertion';
 export const test: RootTest = rootTest;
 export const equal: ComparatorAssertionFunction = defaultTestHarness.equal.bind(defaultTestHarness);
 export const equals = equal;
@@ -54,7 +53,7 @@ export const doesNotThrow: ErrorAssertionFunction = defaultTestHarness.doesNotTh
  * have to call the report method yourself. This can be handy if you wish to use another reporter
  * @returns {TestHarness}
  */
-export const createHarness = (opts?: any): TestHarness => {
+export const createHarness = (): TestHarness => {
     autoStart = false;
     return harnessFactory();
 };

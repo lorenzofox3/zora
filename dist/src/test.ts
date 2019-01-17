@@ -50,6 +50,7 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
                     yield startTestMessage({description: assertion.description}, offset);
                     yield* assertion;
                     if (assertion.error !== null) {
+                        // Bubble up the error and return
                         error = assertion.error;
                         pass = false;
                         return;
@@ -58,10 +59,8 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
             }
-            if (error !== null) {
-                return yield bailout(error, offset);
-            }
-            yield endTestMessage(this, offset);
+
+            return error !== null ? yield bailout(error, offset) : yield endTestMessage(this, offset);
         }
     }, {
         routine: {
@@ -96,7 +95,6 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
             }
         },
         error: {
-            enumerable: true,
             get() {
                 return error;
             }

@@ -1,0 +1,18 @@
+TAP version 13
+# tester 1
+ok 1 - assert1
+# inside
+ok 2 - correct
+not ok 3 - should fail with coercion
+  ---
+  pass: false
+  actual: 4
+  expected: "4"
+  description: "should fail with coercion"
+  operator: "equal"
+  at:{STACK}
+  id: 3
+  ...
+
+1..3
+# not ok

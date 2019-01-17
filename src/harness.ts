@@ -12,7 +12,7 @@ export interface TestHarness extends Assert {
     report: (reporter?: Reporter) => Promise<void>;
 }
 
-export const harnessFactory = (opts?: any): TestHarness => {
+export const harnessFactory = (): TestHarness => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -22,15 +22,18 @@ export const harnessFactory = (opts?: any): TestHarness => {
 
     const instance = Object.create(api, {
         length: {
-            enumerable: true,
             get() {
                 return tests.length;
             },
         },
         fullLength: {
-            enumerable: true,
             get() {
                 return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
+            }
+        },
+        pass: {
+            get() {
+                return pass;
             }
         }
     });

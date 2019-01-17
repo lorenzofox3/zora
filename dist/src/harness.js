@@ -1,7 +1,7 @@
 import { assert } from './assertion';
 import { assertionMessage, endTestMessage, startTestMessage } from './protocol';
 import { tapeTapLike as tap } from './reporter';
-export const harnessFactory = (opts) => {
+export const harnessFactory = () => {
     const tests = [];
     const rootOffset = 0;
     let pass = true;
@@ -10,15 +10,18 @@ export const harnessFactory = (opts) => {
     const api = assert(collect, rootOffset);
     const instance = Object.create(api, {
         length: {
-            enumerable: true,
             get() {
                 return tests.length;
             },
         },
         fullLength: {
-            enumerable: true,
             get() {
                 return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
+            }
+        },
+        pass: {
+            get() {
+                return pass;
             }
         }
     });

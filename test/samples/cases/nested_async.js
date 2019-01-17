@@ -1,5 +1,4 @@
-const {test} = require('../../dist/bundle/index.js');
-test.indent();
+const {test} = require('../../../dist/bundle/index.js');
 
 const wait = time => new Promise(resolve => {
     setTimeout(() => resolve(), time);

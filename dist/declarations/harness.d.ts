@@ -9,4 +9,4 @@ import { Reporter } from './reporter';
 export interface TestHarness extends Assert {
     report: (reporter?: Reporter) => Promise<void>;
 }
-export declare const harnessFactory: (opts?: any) => TestHarness;
+export declare const harnessFactory: () => TestHarness;
