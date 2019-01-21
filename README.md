@@ -7,7 +7,10 @@ Fast javascript test runner for **nodejs** and **browsers**
 [![install size](https://badgen.net/packagephobia/install/zora)](https://packagephobia.now.sh/result?p=zora)
 
 ## installation
-``npm install --save-dev zora``
+
+**Note this documentation still refers to v2 which is still considerated as the latest table version**
+
+``npm install --save-dev zora@2``
 
 ## (Un)Opinions and Design
 
