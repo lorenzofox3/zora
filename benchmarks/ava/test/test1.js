@@ -5,6 +5,6 @@ for (let i = 0; i < 10; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),100);
     });
-    assert.truthy(Math.random() * 100 > 10);
+    assert.truthy(Math.random() * 100 > 5);
   });
 }

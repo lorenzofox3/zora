@@ -9,6 +9,9 @@ Fast javascript test runner for **nodejs** and **browsers**
 ## installation
 ``npm install --save-dev zora``
 
+Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await*. Both
+are supported by Node (> ) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch]().
+
 ## (Un)Opinions and Design
 
 These are the following rules and ideas I have followed while developing zora. Whether they are right or not is an entire different topic ! :D
@@ -16,10 +19,10 @@ Note I have decided to develop zora specially because I was not able to find a t
 
 ### Tests are regular Javascript programs.
 
-You don't need a specific test runner, a specific platform or any build step to run your `zora` tests. They are only regular valid EcmaScript 2017 programs.
+You don't need a specific test runner, a specific platform or any build step to run your `zora` tests. They are only regular valid EcmaScript 2018 programs.
 If you have the following test.
 ```Javascript
-import test from 'path/to/zora';
+import {test} from 'path/to/zora';
 
 test('should result to the answer', t => {
     const answer = 42
@@ -34,31 +37,31 @@ You can run your test with
 Moreover zora does not use specific platform API which should make it transparent to most of your tools such module bundlers or transpilers.
 
 In few words:
-> Zora is only Javascript, no less, no more.
+> Zora is Ecmascript, no less, no more.
 
 ### Tests are fast
 
 Tests are part of our daily routine as software developers. Performance is part of the user experience and there is no reason you should wait seconds for your tests to run.
 Zora is by far the **fastest** Javascript test runner in the ecosystem.
 
-### Benchmark
+#### Benchmark
 
-This repository includes a benchmark which consists on running N test files, with M tests in each and where one tests lasts T milliseconds.
-About 10% of tests should fail.
+This repository includes a benchmark which consists on running N test files, with M tests in each and where one test lasts T milliseconds.
+About 5% of tests should fail.
 
 1. profile library: N = 5, M = 8, T = 25ms
 2. profile web app: N = 10, M = 8, T = 40ms
 3. profile api: N =12, M = 10, T = 100ms
 
-Each framework runs with its default settings
+Each framework runs with its default settings.
 
-Here are the result of different test frameworks on my developer machine with node 9.3.0 :
+Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 10.11.0 :
 
-|        |  zora@2.0.0  |  tape@4.8.0 |  Jest@22.2.2  |  AvA@0.25.0  |  Mocha@5.0.0|
+|        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Library |  118ms       |  1239ms     |  1872ms       |  1703ms      |  1351ms     |
-|Web app |  142ms       |  3597ms     |  4356ms       |  2441ms      |  3757ms     |
-|API     |  203ms       |  12637ms    |  13385ms      |  2966ms      | 12751ms     |
+|Library |  123ms       |  1251ms     |  2397ms       |  2100ms      |  1406ms     |
+|Web app |  146ms       |  3572ms     |  5048ms       |  2930ms      |  3765ms     |
+|API     |  226ms       |  12563ms    |  14928ms      |  3431ms      | 12742ms     |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion
 
@@ -73,72 +76,119 @@ In my opinions:
 4. File serving should be handled by a specific tool.
 5. Coffee should me made by a specific tool.
 
-As a result zora is only **1Kb** of code whereas it lets you use whatever better tool you want for any other specific task you may need within your workflow.
+As a result zora is way more smaller to install according to [https://packagephobia.now.sh] than all the others test frameworks
 
-### Control flow is managed the way you want with regular Javascript idioms
+|        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
+|--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
+|Install size |  140kb  |  895kb     |  34.6mb       |  14.2mb      |  1.86mb     |
 
-Lately Ecmascript specification has improved a lot (and its various implementation) in term of asynchronous code.
-There is no reason you could not benefit from it while writing your tests.
-In zora, asynchronous code is as simple as async function, you do not need to manage a plan or to notify the test framework the end of a test
-
-```Javascript
-import test from 'zora';
-
-test('should handle async operation', async t => {
-    const user = await getUserAsync();
-    t.deepEqual(user, {name:'John doe'});
-});
-```
-
-### Reporter is handled with other process (TAP)
+### Reporter is handled with other process (TAP aware)
 
 When you run a test you usually want to know whether there is any failure, where and why in order to debug and solve the issue as fast as possible.
 Whether you want it to be printed in red, yellow etc is a matter of preference.
 
 For this reason, zora output [TAP](http://testanything.org/) (Test Anything Protocol) by default. This protocol is widely used and [there are plenty of tools](https://github.com/sindresorhus/awesome-tap) to parse and deal with it the way **you** want.
 
-You are not stuck into a specific reporting format, you'll be using a *standard* instead.
-
 ## Usage
 
-Zora API is very straightforward: you have only **1** function and the assertion library is pretty standard and obvious.
-The tests will start by themselves with no extra effort.
+### Basics
+
+You can use the top level assertion methods
 
 ```Javascript
-import test from 'zora';
+import {equal, ok, isNot} from 'zora';
 
-test('some independent test', t => {
-    t.equal(1 + 1, 2, 'one plus one should equal 2');
-});
+ok(true,'true is truthy');
 
-test('other independent test', t => {
-    t.equal(1 + 2, 3, 'one plus two should equal 3');
+equal('bar','bar', 'that both string are equivalent');
+
+isNot({},{},'those are not the same reference');
+
+//etc
+```
+
+If you run the previous program, test report will start on its own by default with the following console output:
+
+```TAP
+TAP version 13
+ok 1 - true is truthy
+ok 2 - that both string are equivalent
+ok 3 - those are not the same reference
+
+1..3
+# ok
+```
+
+However one will usually want to group assertions within a sub test: the ``test`` method can be used.
+
+```Javascript
+import {test} from 'zora';
+
+test('some grouped assertions', t => {
+    t.ok(true, 'true is truthy');
+    t.equal('bar', 'bar', 'that both string are equivalent');
+    t.isNot({}, {}, 'those are not the same reference');
 });
 ```
 
-### Assertions API
+with the following result
 
-The assertion api you can use within your test is pretty simple and highly inspired by [tape](https://github.com/substack/tape)
-* ok
-* notOk
-* equal
-* notEqual
-* deepEqual
-* notDeepEqual
-* throws
-* doesNotThrow
-* fail
+```TAP
+TAP version 13
+# some grouped assertions
+ok 1 - true is truthy
+ok 2 - that both string are equivalent
+ok 3 - those are not the same reference
 
-### Control flow
+1..3
+# ok
+```
 
-Notice that each test runs in its own micro task in parallel (for performance). It implies your tests should not depend on each other.
-It is often a good practice.
-However, you'll be able to group your tests if you wish to conserve some state between them or wait one to finish before you start another one (ideal with tests running against real database).
-
-The sequence is simply controlled by AsyncFunction (and await keyboard)
+You can also group tests within a parent test:
 
 ```Javascript
+import {test} from 'zora';
 
+test('some grouped assertions', t => {
+    t.ok(true, 'true is truthy');
+
+    t.test('a group inside another one', t=>{
+        t.equal('bar', 'bar', 'that both string are equivalent');
+        t.isNot({}, {}, 'those are not the same reference');
+    });
+});
+```
+
+```TAP
+TAP version 13
+# some grouped assertions
+ok 1 - true is truthy
+# a group inside another one
+ok 2 - that both string are equivalent
+ok 3 - those are not the same reference
+
+1..3
+# ok
+```
+
+### Asynchronous tests and control flow
+
+Asynchronous tests are simply handled with async function:
+
+```Javascript
+test('with getUsers an asynchronous function returning a Promise',async t => {
+    const users = await getUsers();
+    t.eq(users.length, 2,'we should have 2 users');
+});
+```
+
+Notice that each test runs in its own micro task in parallel (for performance). It implies your tests should not depend on each other.
+It is often a good practice!
+However, you'll be able to group your tests if you wish to conserve some state between them or wait one to finish before you start another one (ideal with tests running against real database).
+
+The sequence is simply controlled by AsyncFunction (and await keyboard), the ``test`` function return the result of its spec function argument, so you can control whether you want a specific test to complete before moving on
+
+```Javascript
 let state = 0;
 
 test('test 1', t => {
@@ -198,27 +248,27 @@ test('grouped', async t => {
 });
 ```
 
-### BDD style
+### Changing TAP format
 
-zora also allows you to nest tests in each other in a [BDD style](https://en.wikipedia.org/wiki/Behavior-driven_development).
-You just need to call the `test` property of zora at root level.
+TAP protocol is loosely defined in the sense that diagnostic is quite a free space and there is no well defined format to explicit a sub tests.
+In Javascript community most of the TAP parsers and tools were designed for [tape](https://github.com/substack/tape) which implies a TAP comment for a sub test header and every assertion is on the same level.
+In the same way these aforementioned tools expect diagnostics with a ``expected``, ``actual``, etc properties
+It is the one we have used in our previous examples.
 
-```js
-import zora from 'zora';
-const describe = zora.test;
+If you run the following program
+```Javascript
+import {test} from 'zora';
 
-// and write you tests
-describe('test 1', t => {
+test('tester 1', t => {
 
     t.ok(true, 'assert1');
 
-    // inside simply call t.test for nested test
-    t.test('some nested test', t => {
+    t.test('some nested tester', t => {
         t.ok(true, 'nested 1');
         t.ok(true, 'nested 2');
     });
 
-    t.test('some nested test bis', t => {
+    t.test('some nested tester bis', t => {
         t.ok(true, 'nested 1');
 
         t.test('deeply nested', t => {
@@ -226,13 +276,13 @@ describe('test 1', t => {
             t.ok(true, 'deeply nested again');
         });
 
-        t.ok(true, 'nested 2');
+        t.notOk(true, 'nested 2'); // This one will fail
     });
 
     t.ok(true, 'assert2');
 });
 
-describe('test 2', t => {
+test('tester 2', t => {
     t.ok(true, 'assert3');
 
     t.test('nested in two', t => {
@@ -243,63 +293,183 @@ describe('test 2', t => {
 });
 ```
 
-The output is a valid tap output where sub plans are indented
-```
+You will see in the console
+```TAP
 TAP version 13
-    # Subtest: test 1
-    ok 1 - assert1
-        # Subtest: some nested test
-        ok 1 - nested 1
-        ok 2 - nested 2
-        1..2
-        # time=1ms
-    ok 2 - some nested test # time=1ms
-        # Subtest: some nested test bis
-        ok 1 - nested 1
-            # Subtest: deeply nested
-            ok 1 - deeply nested really
-            ok 2 - deeply nested again
-            1..2
-            # time=1ms
-        ok 2 - deeply nested # time=1ms
-        ok 3 - nested 2
-        1..3
-        # time=1ms
-    ok 3 - some nested test bis # time=1ms
-    ok 4 - assert2
-    1..4
-    # time=1ms
-ok 1 - test 1 # time=1ms
-    # Subtest: test 2
-    ok 1 - assert3
-        # Subtest: nested in two
-        ok 1 - still happy
-        1..1
-        # time=1ms
-    ok 2 - nested in two # time=1ms
-    ok 3 - assert4
-    1..3
-    # time=1ms
-ok 2 - test 2 # time=1ms
-1..2
-# ok
+# tester 1
+ok 1 - assert1
+# some nested tester
+ok 2 - nested 1
+ok 3 - nested 2
+# some nested tester bis
+ok 4 - nested 1
+# deeply nested
+ok 5 - deeply nested really
+ok 6 - deeply nested again
+not ok 7 - nested 2
+  ---
+  pass: false
+  actual: true
+  expected: "falsy value"
+  description: "nested 2"
+  operator: "notOk"
+  at: " t.test.t (/Volumes/Data/code/zora/test/samples/cases/nested.js:20:11)"
+  id: 7
+  ...
+ok 8 - assert2
+# tester 2
+ok 9 - assert3
+# nested in two
+ok 10 - still happy
+ok 11 - assert4
+
+1..11
+# not ok
 ```
 
-The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
+Another common structure is the one used by [node-tap](). The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
 do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter](https://www.npmjs.com/package/tap-mocha-reporter)) aware of this specific structure to get the whole benefit
 of the format.
 
 ![tap output in a BDD format](./media/bsd.png)
 
+If you call the ``indent`` method on the ``test`` function anywhere in your test the output stream will indent sub tests and use other properties for diagnostic:
+
+```Javascript
+const {test} = require('../../../dist/bundle/index.js');
+
+test.indent(); // INDENT
+
+test('tester 1', t => {
+
+    t.ok(true, 'assert1');
+
+    t.test('some nested tester', t => {
+        t.ok(true, 'nested 1');
+        t.ok(true, 'nested 2');
+    });
+
+    t.test('some nested tester bis', t => {
+        t.ok(true, 'nested 1');
+
+        t.test('deeply nested', t => {
+            t.ok(true, 'deeply nested really');
+            t.ok(true, 'deeply nested again');
+        });
+
+        t.notOk(true, 'nested 2'); // This one will fail
+    });
+
+    t.ok(true, 'assert2');
+});
+
+test('tester 2', t => {
+    t.ok(true, 'assert3');
+
+    t.test('nested in two', t => {
+        t.ok(true, 'still happy');
+    });
+
+    t.ok(true, 'assert4');
+});
+```
+
+will give you the following result
+```TAP
+TAP version 13
+# Subtest: tester 1
+    ok 1 - assert1
+    # Subtest: some nested tester
+        ok 1 - nested 1
+        ok 2 - nested 2
+        1..2
+    ok 2 - some nested tester # 1ms
+    # Subtest: some nested tester bis
+        ok 1 - nested 1
+        # Subtest: deeply nested
+            ok 1 - deeply nested really
+            ok 2 - deeply nested again
+            1..2
+        ok 2 - deeply nested # 1ms
+        not ok 3 - nested 2
+          ---
+          wanted: "falsy value"
+          found: true
+          at: " t.test.t (/Volumes/Data/code/zora/test/samples/cases/nested.js:22:11)"
+          operator: "notOk"
+          ...
+        1..3
+    not ok 3 - some nested tester bis # 1ms
+    ok 4 - assert2
+    1..4
+not ok 1 - tester 1 # 1ms
+# Subtest: tester 2
+    ok 1 - assert3
+    # Subtest: nested in two
+        ok 1 - still happy
+        1..1
+    ok 2 - nested in two # 0ms
+    ok 3 - assert4
+    1..3
+ok 2 - tester 2 # 0ms
+
+1..2
+# not ok
+```
+
+### Assertion API
+
+//todo
+
+### Create manually a test harness
+
+You can discard the default test harness and create your own. This has various effect:
+- the reporting won't start automatically, you will have to trigger it yourself but it also lets you know when the reporting is over
+- you can pass a custom reporter. Zora produces a stream of messages which are then transformed into a TAP stream. If you create the test harness yourself
+you can directly pass your custom reporter to transform the raw messages stream.
+
+```Javascript
+const {createHarness, mochaTapLike} = require('./dist/bundle/index.js');
+
+const harness = createHarness();
+const {test} = harness;
+
+test('a first sub test', t => {
+    t.ok(true);
+
+    t.test('inside', t => {
+        t.ok(true);
+    });
+});
+
+test('a first sub test', t => {
+    t.ok(true);
+
+    t.test('inside', t => {
+        t.ok(false, 'oh no!');
+    });
+});
+
+harness
+    .report(mochaTapLike) // we have passed the mochaTapLike (with indention but here you can pass whatever you want
+    .then(() => {
+        // reporting is over: we can release some pending resources
+        console.log('DONE !');
+        // or in this case, our test program is for node so we want to set the exit code ourselves
+        const exitCode = harness.pass === true ? 0 : 1;
+        process.exit(exitCode);
+    });
+```
+
+In practice you won't use this method unless you have specific requirements or want to build your own test runner on top of zora
+
 ### In the browser
 
 Zora itself does not depend on native nodejs modules (such file system, processes, etc) so the code you will get is regular EcmaScript.
 
-// todo add some more recipe (WIP) karma, dependencies, transpilations etc
-
 #### drop in file
 You can simply drop the dist file in the browser and write your script below (or load it).
-You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112)
+You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112) //todo update
 
 ```Html
 <!-- some content -->
@@ -329,10 +499,10 @@ assuming you have your entry point as follow :
 //./test/index.js
 import test1 from './test1.js'; // some tests here
 import test2 from './test2.js'; // some more tests there
-import test3 from './test3.js'; // another test plan 
+import test3 from './test3.js'; // another test plan
 ```
 
-where for example ./test/test1.js is 
+where for example ./test/test1.js is
 ```Javascript
 import test from 'zora';
 
@@ -367,23 +537,23 @@ And read with your browser (from an html document for example).
 
 ![tap output in the browser console](./media/console-sc.png)
 
-Even better, you can use tap reporter browser friendly such [tape-run](https://www.npmjs.com/package/tape-run) so you'll have a proper exit code depending on the result of your tests. 
+Even better, you can use tap reporter browser friendly such [tape-run](https://www.npmjs.com/package/tape-run) so you'll have a proper exit code depending on the result of your tests.
 
 so all together, in your package.json you can have something like that
 ```Javascript
 {
 // ...
   "scripts": {
-    "test": "rollup -c path/to/conf | tape-run"
+    "test:ci": "rollup -c path/to/conf | tape-run"
   }
 // ...
 }
 ```
 
-#### On exit codes
+### On exit codes
 
-Whether you have failing tests or not, unless you have an unexpected error, the process will return an exit code 0. Often CI platforms require an exit code of 1
-to mark a build as failed. That is not an issue, there are plenty of TAP reporters which when parsing a TAP stream will exit the process with code 1 if they encounter a failing test.
+Whether you have failing tests or not, unless you have an unexpected error, the process will return an exit code 0: zora considers its duty is to run the program to its end whether there is failing test or no.
+Often CI platforms require an exit code of 1 to mark a build as failed. That is not an issue, there are plenty of TAP reporters which when parsing a TAP stream will exit the process with code 1 if they encounter a failing test.
 Hence you'll need to pipe zora output into one of those reporters to avoid false positive on your CI platform.
 
 For example, one of package.json script can be

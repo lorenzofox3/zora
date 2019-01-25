@@ -12,7 +12,7 @@ for (let i = 0; i < ${testCount}; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.ok(Math.random() * 100 > 10);
+    assert.ok(Math.random() * 100 > 5);
   });
 }
 `;
@@ -24,7 +24,7 @@ for (let i = 0; i < ${testCount}; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.truthy(Math.random() * 100 > 10);
+    assert.truthy(Math.random() * 100 > 5);
   });
 }
 `;
@@ -35,7 +35,7 @@ describe('test file', function() {
   for(let i=0; i < ${testCount};i++){
     it('test ' + i, function(done) {
       setTimeout(()=>{
-        assert.ok(Math.random() * 100 > 10);
+        assert.ok(Math.random() * 100 > 5);
         done();
       },${waitTime});
     });
@@ -48,7 +48,7 @@ const test = require('tape');
 for (let i = 0; i < ${testCount}; i++) {
   test('test ' + i, function  (assert) {
     setTimeout(()=>{
-      assert.ok(Math.random() * 100 > 10);
+      assert.ok(Math.random() * 100 > 5);
       assert.end();
     },${waitTime});
   });
@@ -62,7 +62,7 @@ describe('add', function () {
       await new Promise(resolve => {
         setTimeout(()=>resolve(),${waitTime});
       });
-      expect(Math.random() * 100 > 10).toBeTruthy();
+      expect(Math.random() * 100 > 5).toBeTruthy();
     });
   }
 });

@@ -5,7 +5,7 @@ describe('add', function () {
       await new Promise(resolve => {
         setTimeout(()=>resolve(),100);
       });
-      expect(Math.random() * 100 > 10).toBeTruthy();
+      expect(Math.random() * 100 > 5).toBeTruthy();
     });
   }
 });
