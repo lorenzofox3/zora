@@ -390,4 +390,4 @@ to mark a build as failed. That is not an issue, there are plenty of TAP reporte
 Hence you'll need to pipe zora output into one of those reporters to avoid false positive on your CI platform.
 
 For example, one of package.json script can be
-``"test:ci": npm test | tap-diff``
+``"test:ci": npm test | faucet``
