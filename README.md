@@ -10,7 +10,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 ``npm install --save-dev zora``
 
 Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
-are supported by Node (>= 10) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch]().
+are supported by Node (>= 10 or >= with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
 
 ## (Un)Opinions and Design
 
@@ -76,7 +76,7 @@ In my opinions:
 4. File serving should be handled by a specific tool.
 5. Coffee should me made by a specific tool.
 
-As a result zora is way more smaller to install according to [https://packagephobia.now.sh] than all the others test frameworks
+As a result zora is way more smaller to install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
 |        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
@@ -327,7 +327,7 @@ ok 11 - assert4
 # not ok
 ```
 
-Another common structure is the one used by [node-tap](http://node-tap.org/). The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
+Another common structure is the one used by [node-tap](http://node-tap.org/). The structure can be parsed with common tap parser (such as [tap-parser](https://github.com/tapjs/tap-parser)) And will be parsed as well by tap parser which
 do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter](https://www.npmjs.com/package/tap-mocha-reporter)) aware of this specific structure to get the whole benefit
 of the format.
 
