@@ -9,8 +9,8 @@ Fast javascript test runner for **nodejs** and **browsers**
 ## installation
 ``npm install --save-dev zora``
 
-Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await*. Both
-are supported by Node (> ) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch]().
+Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
+are supported by Node (>= 10) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch]().
 
 ## (Un)Opinions and Design
 
@@ -63,7 +63,7 @@ Here are the result of different test frameworks on my developer machine (MacBoo
 |Web app |  146ms       |  3572ms     |  5048ms       |  2930ms      |  3765ms     |
 |API     |  226ms       |  12563ms    |  14928ms      |  3431ms      | 12742ms     |
 
-Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion
+Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 
 ### Focus on tests only
 
@@ -71,7 +71,7 @@ zora does one thing but hopefully does it well: **test**.
 
 In my opinions:
 1. Pretty reporting (I have not said *efficient reporting*) should be handled by a specific tool.
-2. Transipilation and other code transformation should be handled by a specific tool.
+2. Transpilation and other code transformation should be handled by a specific tool.
 3. File watching and caching should be handled by a specific tool.
 4. File serving should be handled by a specific tool.
 5. Coffee should me made by a specific tool.
@@ -80,14 +80,14 @@ As a result zora is way more smaller to install according to [https://packagepho
 
 |        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Install size |  140kb  |  895kb     |  34.6mb       |  14.2mb      |  1.86mb     |
+|Install size |  [140kb](https://packagephobia.now.sh/result?p=zora)  |  [895kb](https://packagephobia.now.sh/result?p=tape)  |  [34.6mb](https://packagephobia.now.sh/result?p=jest) |  [14.2mb](https://packagephobia.now.sh/result?p=ava)  |  [1.86mb](https://packagephobia.now.sh/result?p=mocha)|
 
 ### Reporter is handled with other process (TAP aware)
 
 When you run a test you usually want to know whether there is any failure, where and why in order to debug and solve the issue as fast as possible.
 Whether you want it to be printed in red, yellow etc is a matter of preference.
 
-For this reason, zora output [TAP](http://testanything.org/) (Test Anything Protocol) by default. This protocol is widely used and [there are plenty of tools](https://github.com/sindresorhus/awesome-tap) to parse and deal with it the way **you** want.
+For this reason, zora output [TAP](http://testanything.org/) (Test Anything Protocol) by default. This protocol is "machine friendly" and widely used: [there are plenty of tools](https://github.com/sindresorhus/awesome-tap) to parse and deal with it the way **you** want.
 
 ## Usage
 
@@ -327,7 +327,7 @@ ok 11 - assert4
 # not ok
 ```
 
-Another common structure is the one used by [node-tap](). The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
+Another common structure is the one used by [node-tap](http://node-tap.org/). The structure can be parsed with common tap parser (such as [tap-parser]()) And will be parsed as well by tap parser which
 do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter](https://www.npmjs.com/package/tap-mocha-reporter)) aware of this specific structure to get the whole benefit
 of the format.
 
@@ -336,7 +336,7 @@ of the format.
 If you call the ``indent`` method on the ``test`` function anywhere in your test the output stream will indent sub tests and use other properties for diagnostic:
 
 ```Javascript
-const {test} = require('../../../dist/bundle/index.js');
+const {test} = require('zora.js');
 
 test.indent(); // INDENT
 
@@ -419,7 +419,21 @@ ok 2 - tester 2 # 0ms
 
 ### Assertion API
 
-//todo
+- equal<T>(actual: T, expected: T, message?: string) verify if two values/instances are equivalent. It is often described as *deepEqual* in assertion libraries.
+aliases: eq, equals, deepEqual
+- notEqual<T>(actual: T, expected: T, message?: string) opposite of equal.
+aliases: notEquals, notEq, notDeepEqual
+- is<T>(actual: T, expected: T, message ?: string) verify whether two instances are the same (basically it is Object.is)
+aliases: same
+- isNot<T>(actual: T, expected: T, message ?: string)
+aliases: notSame
+- ok<T>(actual: T, message?: string) verify whether a value is truthy
+aliases: truthy
+- notOk<T>(actual: T, message?:string) verify whether a value is falsy
+aliases: falsy
+- fail(message?:string) an always failing test, usually when you want a branch of code not to be traversed
+- throws(fn: Function, expected?: string | RegExp | Function, description ?: string) expect an error to be thrown, you check the expected error by Regexp, Constructor or name
+- doesNotThrow(fn: Function, expected?: string | RegExp | Function, description ?: string) expect an error not to be thrown, you check the expected error by Regexp, Constructor or name
 
 ### Create manually a test harness
 
@@ -429,7 +443,7 @@ You can discard the default test harness and create your own. This has various e
 you can directly pass your custom reporter to transform the raw messages stream.
 
 ```Javascript
-const {createHarness, mochaTapLike} = require('./dist/bundle/index.js');
+const {createHarness, mochaTapLike} = require('zora');
 
 const harness = createHarness();
 const {test} = harness;
@@ -455,21 +469,21 @@ harness
     .then(() => {
         // reporting is over: we can release some pending resources
         console.log('DONE !');
-        // or in this case, our test program is for node so we want to set the exit code ourselves
+        // or in this case, our test program is for node so we want to set the exit code ourselves in case of failing test.
         const exitCode = harness.pass === true ? 0 : 1;
         process.exit(exitCode);
     });
 ```
 
-In practice you won't use this method unless you have specific requirements or want to build your own test runner on top of zora
+In practice you won't use this method unless you have specific requirements or want to build your own test runner on top of zora.
 
 ### In the browser
 
-Zora itself does not depend on native nodejs modules (such file system, processes, etc) so the code you will get is regular EcmaScript.
+Zora itself does not depend on native Nodejs modules (such file system, processes, etc) so the code you will get is regular EcmaScript.
 
 #### drop in file
 You can simply drop the dist file in the browser and write your script below (or load it).
-You can for example play with this [codepen](http://codepen.io/lorenzofox3/pen/zoejxv?editors=1112) //todo update
+You can for example play with this [codepen](https://codepen.io/lorenzofox3/pen/YBWJrJ)
 
 ```Html
 <!-- some content -->
@@ -514,7 +528,7 @@ test('mytest', (assertions) => {
     assertions.ok(true);
 });
 ```
-you can then bundle your test as single app.
+you can then bundle your test as single program.
 
 ```Javascript
 const node = require('rollup-plugin-node-resolve');
@@ -557,4 +571,4 @@ Often CI platforms require an exit code of 1 to mark a build as failed. That is 
 Hence you'll need to pipe zora output into one of those reporters to avoid false positive on your CI platform.
 
 For example, one of package.json script can be
-``"test:ci": npm test | tap-diff``
+``"test:ci": npm test | tap-set-exit``
