@@ -1,4 +1,4 @@
-import { AssertionResult, TestResult } from './assertion';
+import { AssertionResult } from './assertion';
 import { Test } from './test';
 /**
  * A test harness will produce a stream of messages.
@@ -29,14 +29,14 @@ export declare const startTestMessage: (test: {
 }, offset: number) => Message<{
     description: string;
 }>;
-export declare type AssertionMessage = Message<TestResult | AssertionResult>;
+export declare type AssertionMessage = Message<Test | AssertionResult>;
 /**
  * Emitted when an assertion result is produced. Note than when a sub test finishes, it also emits an assertion result in the parent sub test stream
  * @param {TestResult | AssertionResult} assertion
  * @param {number} offset - give the nested level
  * @returns {AssertionMessage}
  */
-export declare const assertionMessage: (assertion: TestResult | AssertionResult, offset: number) => Message<TestResult | AssertionResult>;
+export declare const assertionMessage: (assertion: Test | AssertionResult, offset: number) => Message<Test | AssertionResult>;
 export declare type TestEndMessage = Message<Test>;
 /**
  * Emitted when a sub tests finishes

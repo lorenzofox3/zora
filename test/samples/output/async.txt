@@ -5,6 +5,9 @@ ok 2 - assert2
 # tester 2
 ok 3 - assert3
 ok 4 - assert4
-
 1..4
+
 # ok
+# success: 4
+# skipped: 0
+# failure: 0

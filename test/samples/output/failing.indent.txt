@@ -10,6 +10,9 @@ TAP version 13
       ...
     1..2
 not ok 1 - tester 1 # {TIME}
-
 1..1
+
 # not ok
+# success: 1
+# skipped: 0
+# failure: 1

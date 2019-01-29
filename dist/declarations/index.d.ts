@@ -2,10 +2,12 @@ import { TestHarness } from './harness';
 import { BooleanAssertionFunction, ComparatorAssertionFunction, ErrorAssertionFunction, MessageAssertionFunction, TestFunction } from './assertion';
 interface RootTest extends TestFunction {
     indent: () => void;
+    skip: TestFunction;
 }
 export { tapeTapLike, mochaTapLike } from './reporter';
 export { AssertPrototype, assert } from './assertion';
 export declare const test: RootTest;
+export declare const skip: TestFunction;
 export declare const equal: ComparatorAssertionFunction;
 export declare const equals: ComparatorAssertionFunction;
 export declare const eq: ComparatorAssertionFunction;

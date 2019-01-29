@@ -1,5 +1,12 @@
-import {assert, TestResult} from './assertion';
+import {assert, AssertionResult, isAssertionResult, Result, TestResult} from './assertion';
 import {assertionMessage, bailout, endTestMessage, Message, startTestMessage} from './protocol';
+
+export interface TestGroup {
+    successCount: number;
+    failureCount: number;
+    skipCount: number;
+    count: number;
+}
 
 /**
  * A Test is defined by test function collecting assertion results: it runs eagerly in its own micro task as soon as it is created.
@@ -7,10 +14,9 @@ import {assertionMessage, bailout, endTestMessage, Message, startTestMessage} fr
  * The Test produces a stream of messages defined by the protocol in @link(./protocol.ts)
  * A Test is also a Result and may be used to emit an assertion result message in the parent context.
  */
-export interface Test extends AsyncIterable<Message<any>>, TestResult {
+export interface Test extends AsyncIterable<Message<any>>, TestResult, TestGroup {
     readonly routine: Promise<any>;
     readonly length: number;
-    readonly fullLength: number;
     readonly error?: any;
 }
 
@@ -19,20 +25,42 @@ export const defaultTestOptions = Object.freeze({
     skip: false
 });
 
-// todo directive (todo & skip)
+const noop = () => {
+};
+
 export const tester = (description, spec, {offset = 0, skip = false} = defaultTestOptions): Test => {
     let id = 0;
+    let successCount = 0;
+    let failureCount = 0;
+    let skipCount = 0;
     let pass = true;
     let executionTime = 0;
     let error = null;
 
+    const specFunction = skip === true ? noop : spec;
     const assertions = [];
     const collect = item => assertions.push(item);
+    const updateCount = (assertion: AssertionResult | Test): void => {
+        const {pass, skip} = assertion;
+        if (!isAssertionResult(assertion)) {
+            skipCount += assertion.skipCount;
+            successCount += assertion.successCount;
+            failureCount += assertion.failureCount;
+        } else if (pass) {
+            if (skip === true) {
+                skipCount++;
+            } else {
+                successCount++;
+            }
+        } else {
+            failureCount++;
+        }
+    };
 
     const testRoutine = (async function () {
         try {
             const start = Date.now();
-            const result = await spec(assert(collect, offset));
+            const result = await specFunction(assert(collect, offset));
             executionTime = Date.now() - start;
             return result;
         } catch (e) {
@@ -58,14 +86,14 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
+                updateCount(assertion);
             }
 
-            return error !== null ? yield bailout(error, offset) : yield endTestMessage(this, offset);
+            return error !== null ?
+                yield bailout(error, offset) :
+                yield endTestMessage(this, offset);
         }
     }, {
-        routine: {
-            value: testRoutine
-        },
         description: {
             value: description,
             enumerable: true
@@ -83,21 +111,40 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
             }
         },
         length: {
-            enumerable: true,
             get() {
                 return assertions.length;
-            }
-        },
-        fullLength: {
-            enumerable: true,
-            get() {
-                return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         },
         error: {
             get() {
                 return error;
             }
+        },
+        skipCount: {
+            get() {
+                return skipCount;
+            },
+        },
+        failureCount: {
+            get() {
+                return failureCount;
+            }
+        },
+        successCount: {
+            get() {
+                return successCount;
+            }
+        },
+        count: {
+            get() {
+                return skipCount + successCount + failureCount;
+            }
+        },
+        routine: {
+            value: testRoutine
+        },
+        skip: {
+            value: skip
         }
     });
 };

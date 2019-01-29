@@ -139,5 +139,8 @@ export const assert = (collect, offset) => Object.assign(Object.create(AssertPro
         const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
         collect(subTest);
         return subTest.routine;
+    },
+    skip(description, spec, opts = defaultTestOptions) {
+        return this.test(description, spec, Object.assign({}, opts, { skip: true }));
     }
 });

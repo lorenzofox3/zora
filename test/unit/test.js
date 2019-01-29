@@ -14,7 +14,7 @@ const checkMessageStream = async (t, harness, expectedMessageStream) => {
         }
         // test harness finished
         if (m.type === 'TEST_END' /* TEST_END */ && m.offset === 0) {
-            m.data = {length: m.data.length, fullLength: m.data.fullLength, executionTime: '{TIME}'};
+            m.data = {executionTime: '{TIME}'};
         }
 
         messages.push(m);
@@ -54,8 +54,6 @@ test('test harness with basic sub tests', async (t) => {
             description: 'some tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 1
@@ -65,8 +63,6 @@ test('test harness with basic sub tests', async (t) => {
             description: 'some tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 0
@@ -91,8 +87,6 @@ test('test harness with basic sub tests', async (t) => {
             description: 'some second tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 1
@@ -102,12 +96,10 @@ test('test harness with basic sub tests', async (t) => {
             description: 'some second tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 0
-    }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
+    }, {type: 'TEST_END', data: { executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
 
@@ -149,8 +141,6 @@ test('test harness with async sub tests: should stream in the declared order', a
             description: 'some longer tester first',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 1
@@ -160,8 +150,6 @@ test('test harness with async sub tests: should stream in the declared order', a
             description: 'some longer tester first',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 0
@@ -186,8 +174,6 @@ test('test harness with async sub tests: should stream in the declared order', a
             description: 'some faster tester second',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 1
@@ -197,12 +183,10 @@ test('test harness with async sub tests: should stream in the declared order', a
             description: 'some faster tester second',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 0
-    }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
+    }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
 
@@ -241,11 +225,11 @@ test('test harness with nested sub tests', async (t) => {
         offset: 3
     }, {
         type: 'TEST_END',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}', id: 2},
         offset: 3
     }, {
         type: 'ASSERTION',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', length: 1, fullLength: 1, id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}', id: 2},
         offset: 2
     }, {
         type: 'ASSERTION',
@@ -264,8 +248,6 @@ test('test harness with nested sub tests', async (t) => {
             description: 'inside',
             pass: true,
             executionTime: '{TIME}',
-            length: 3,
-            fullLength: 3,
             id: 2
         },
         offset: 2
@@ -275,8 +257,6 @@ test('test harness with nested sub tests', async (t) => {
             description: 'inside',
             pass: true,
             executionTime: '{TIME}',
-            length: 3,
-            fullLength: 3,
             id: 2
         },
         offset: 1
@@ -290,8 +270,6 @@ test('test harness with nested sub tests', async (t) => {
             description: 'some first root',
             pass: true,
             executionTime: '{TIME}',
-            length: 3,
-            fullLength: 5,
             id: 1
         },
         offset: 1
@@ -301,8 +279,6 @@ test('test harness with nested sub tests', async (t) => {
             description: 'some first root',
             pass: true,
             executionTime: '{TIME}',
-            length: 3,
-            fullLength: 5,
             id: 1
         },
         offset: 0
@@ -316,8 +292,6 @@ test('test harness with nested sub tests', async (t) => {
             description: 'some other tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 1
@@ -327,12 +301,10 @@ test('test harness with nested sub tests', async (t) => {
             description: 'some other tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 0
-    }, {type: 'TEST_END', data: {length: 2, fullLength: 6, executionTime: '{TIME}'}, offset: 0}]);
+    }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
 
@@ -375,8 +347,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'a first tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 1
         },
         offset: 2
@@ -386,8 +356,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'a first tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 1
         },
         offset: 1
@@ -408,8 +376,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'check counter',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 2
@@ -419,8 +385,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'check counter',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 1
@@ -430,8 +394,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'keep parallel',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 1
@@ -441,8 +403,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'keep parallel',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 1
         },
         offset: 0
@@ -460,8 +420,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'a first tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 1
         },
         offset: 2
@@ -471,8 +429,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'a first tester',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 1
         },
         offset: 1
@@ -493,8 +449,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'check counter',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 2
@@ -504,8 +458,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'check counter',
             pass: true,
             executionTime: '{TIME}',
-            length: 1,
-            fullLength: 1,
             id: 2
         },
         offset: 1
@@ -515,8 +467,6 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'control flow',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 1
@@ -526,12 +476,10 @@ test('test haness with nested async sub test: should stream in the declared orde
             description: 'control flow',
             pass: true,
             executionTime: '{TIME}',
-            length: 2,
-            fullLength: 2,
             id: 2
         },
         offset: 0
-    }, {type: 'TEST_END', data: {length: 2, fullLength: 4, executionTime: '{TIME}'}, offset: 0}]);
+    }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
 

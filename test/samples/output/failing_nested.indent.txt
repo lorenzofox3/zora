@@ -14,6 +14,9 @@ TAP version 13
     not ok 2 - inside # {TIME}
     1..2
 not ok 1 - tester 1 # {TIME}
-
 1..1
+
 # not ok
+# success: 2
+# skipped: 0
+# failure: 1

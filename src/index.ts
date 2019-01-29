@@ -2,7 +2,7 @@ import {harnessFactory, TestHarness} from './harness';
 import {
     BooleanAssertionFunction,
     ComparatorAssertionFunction, ErrorAssertionFunction,
-    MessageAssertionFunction,
+    MessageAssertionFunction, SpecFunction,
     TestFunction
 } from './assertion';
 import {mochaTapLike, tapeTapLike} from './reporter';
@@ -13,6 +13,7 @@ const defaultTestHarness = harnessFactory();
 
 interface RootTest extends TestFunction {
     indent: () => void;
+    skip: TestFunction;
 }
 
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
@@ -21,6 +22,8 @@ rootTest.indent = () => indent = true;
 export {tapeTapLike, mochaTapLike} from './reporter';
 export {AssertPrototype, assert} from './assertion';
 export const test: RootTest = rootTest;
+export const skip: TestFunction = (description: string, spec: SpecFunction, options = {}) => rootTest(description, spec, Object.assign({}, options, {skip: true}));
+rootTest.skip = skip;
 export const equal: ComparatorAssertionFunction = defaultTestHarness.equal.bind(defaultTestHarness);
 export const equals = equal;
 export const eq = equal;

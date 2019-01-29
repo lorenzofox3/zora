@@ -14,15 +14,30 @@ export const harnessFactory = () => {
                 return tests.length;
             },
         },
-        fullLength: {
-            get() {
-                return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
-            }
-        },
         pass: {
             get() {
                 return pass;
             }
+        },
+        count: {
+            get() {
+                return this.successCount + this.failureCount + this.skipCount;
+            }
+        },
+        successCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.successCount, 0);
+            },
+        },
+        failureCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.failureCount, 0);
+            },
+        },
+        skipCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.skipCount, 0);
+            },
         }
     });
     return Object.assign(instance, {
@@ -41,7 +56,7 @@ export const harnessFactory = () => {
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
             }
-            yield endTestMessage(instance, rootOffset);
+            yield endTestMessage(this, 0);
         },
         report: async (reporter = tap) => {
             return reporter(instance);

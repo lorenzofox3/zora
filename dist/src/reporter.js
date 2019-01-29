@@ -33,30 +33,23 @@ const assertPrinter = (diagnostic) => (message) => {
         }
     }
     else {
-        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${data.executionTime}ms`, message.offset);
+        const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
+        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${comment}`, message.offset);
     }
 };
-const tapeAssert = assertPrinter(val => val);
-const mochaTapAssert = assertPrinter(({ expected, actual, operator, at }) => ({
+const tapeAssert = assertPrinter(({ id, pass, description, ...rest }) => rest);
+const mochaTapAssert = assertPrinter(({ expected, id, pass, description, actual, operator, at, ...rest }) => ({
     wanted: expected,
     found: actual,
     at,
-    operator
+    operator,
+    ...rest
 }));
-const testPrinter = (lengthProp) => (message) => {
-    const length = message.data[lengthProp];
+const testEnd = (message) => {
+    const length = message.data.length;
     const { offset } = message;
-    const isRoot = offset === 0;
-    if (isRoot) {
-        print('');
-    }
     print(`1..${length}`, offset);
-    if (isRoot) {
-        comment(message.data.pass ? 'ok' : 'not ok', 0);
-    }
 };
-const mochaTapTest = testPrinter('length');
-const tapeTest = testPrinter('fullLength');
 const printBailout = (message) => {
     print('Bail out! Unhandled error.');
 };
@@ -69,7 +62,7 @@ export const reportAsMochaTap = (message) => {
             mochaTapAssert(message);
             break;
         case "TEST_END" /* TEST_END */:
-            mochaTapTest(message);
+            testEnd(message);
             break;
         case "BAIL_OUT" /* BAIL_OUT */:
             printBailout(message);
@@ -84,40 +77,47 @@ export const reportAsTapeTap = (message) => {
         case "ASSERTION" /* ASSERTION */:
             tapeAssert(message);
             break;
-        case "TEST_END" /* TEST_END */:
-            tapeTest(message);
-            break;
         case "BAIL_OUT" /* BAIL_OUT */:
             printBailout(message);
             throw message.data;
     }
 };
-export const mochaTapLike = async (stream) => {
-    print('TAP version 13');
-    for await (const message of stream) {
-        reportAsMochaTap(message);
-    }
-};
 const flatFilter = filter((message) => {
     return message.type === "TEST_START" /* TEST_START */
         || message.type === "BAIL_OUT" /* BAIL_OUT */
-        || (message.type === "ASSERTION" /* ASSERTION */ && isAssertionResult(message.data))
-        || (message.type === "TEST_END" /* TEST_END */ && message.offset === 0);
+        || (message.type === "ASSERTION" /* ASSERTION */ && (isAssertionResult(message.data) || message.data.skip === true));
 });
 const flattenStream = (stream) => {
     let id = 0;
     const mapper = map(message => {
         if (message.type === "ASSERTION" /* ASSERTION */) {
-            const mappedData = Object.assign({}, message.data, { id: ++id });
+            const mappedData = Object.assign(message.data, { id: ++id });
             return assertionMessage(mappedData, 0);
         }
         return Object.assign({}, message, { offset: 0 });
     });
     return mapper(flatFilter(stream));
 };
+const printSummary = (harness) => {
+    print('', 0);
+    comment(harness.pass ? 'ok' : 'not ok', 0);
+    comment(`success: ${harness.successCount}`, 0);
+    comment(`skipped: ${harness.skipCount}`, 0);
+    comment(`failure: ${harness.failureCount}`, 0);
+};
 export const tapeTapLike = async (stream) => {
     print('TAP version 13');
-    for await (const message of flattenStream(stream)) {
+    const streamInstance = flattenStream(stream);
+    for await (const message of streamInstance) {
         reportAsTapeTap(message);
     }
+    print(`1..${stream.count}`, 0);
+    printSummary(stream);
+};
+export const mochaTapLike = async (stream) => {
+    print('TAP version 13');
+    for await (const message of stream) {
+        reportAsMochaTap(message);
+    }
+    printSummary(stream);
 };

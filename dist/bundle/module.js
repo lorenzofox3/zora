@@ -47,18 +47,42 @@ const defaultTestOptions = Object.freeze({
     offset: 0,
     skip: false
 });
-// todo directive (todo & skip)
+const noop = () => {
+};
 const tester = (description, spec, { offset = 0, skip = false } = defaultTestOptions) => {
     let id = 0;
+    let successCount = 0;
+    let failureCount = 0;
+    let skipCount = 0;
     let pass = true;
     let executionTime = 0;
     let error = null;
+    const specFunction = skip === true ? noop : spec;
     const assertions = [];
     const collect = item => assertions.push(item);
+    const updateCount = (assertion) => {
+        const { pass, skip } = assertion;
+        if (!isAssertionResult(assertion)) {
+            skipCount += assertion.skipCount;
+            successCount += assertion.successCount;
+            failureCount += assertion.failureCount;
+        }
+        else if (pass) {
+            if (skip === true) {
+                skipCount++;
+            }
+            else {
+                successCount++;
+            }
+        }
+        else {
+            failureCount++;
+        }
+    };
     const testRoutine = (async function () {
         try {
             const start = Date.now();
-            const result = await spec(assert(collect, offset));
+            const result = await specFunction(assert(collect, offset));
             executionTime = Date.now() - start;
             return result;
         }
@@ -84,13 +108,13 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
+                updateCount(assertion);
             }
-            return error !== null ? yield bailout(error, offset) : yield endTestMessage(this, offset);
+            return error !== null ?
+                yield bailout(error, offset) :
+                yield endTestMessage(this, offset);
         }
     }, {
-        routine: {
-            value: testRoutine
-        },
         description: {
             value: description,
             enumerable: true
@@ -108,21 +132,40 @@ const tester = (description, spec, { offset = 0, skip = false } = defaultTestOpt
             }
         },
         length: {
-            enumerable: true,
             get() {
                 return assertions.length;
-            }
-        },
-        fullLength: {
-            enumerable: true,
-            get() {
-                return assertions.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
             }
         },
         error: {
             get() {
                 return error;
             }
+        },
+        skipCount: {
+            get() {
+                return skipCount;
+            },
+        },
+        failureCount: {
+            get() {
+                return failureCount;
+            }
+        },
+        successCount: {
+            get() {
+                return successCount;
+            }
+        },
+        count: {
+            get() {
+                return skipCount + successCount + failureCount;
+            }
+        },
+        routine: {
+            value: testRoutine
+        },
+        skip: {
+            value: skip
         }
     });
 };
@@ -318,6 +361,9 @@ const assert = (collect, offset) => Object.assign(Object.create(AssertPrototype,
         const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, { offset: offset + 1 }));
         collect(subTest);
         return subTest.routine;
+    },
+    skip(description, spec, opts = defaultTestOptions) {
+        return this.test(description, spec, Object.assign({}, opts, { skip: true }));
     }
 });
 
@@ -379,30 +425,23 @@ const assertPrinter = (diagnostic) => (message) => {
         }
     }
     else {
-        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${data.executionTime}ms`, message.offset);
+        const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
+        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${comment}`, message.offset);
     }
 };
-const tapeAssert = assertPrinter(val => val);
-const mochaTapAssert = assertPrinter(({ expected, actual, operator, at }) => ({
+const tapeAssert = assertPrinter(({ id, pass, description, ...rest }) => rest);
+const mochaTapAssert = assertPrinter(({ expected, id, pass, description, actual, operator, at, ...rest }) => ({
     wanted: expected,
     found: actual,
     at,
-    operator
+    operator,
+    ...rest
 }));
-const testPrinter = (lengthProp) => (message) => {
-    const length = message.data[lengthProp];
+const testEnd = (message) => {
+    const length = message.data.length;
     const { offset } = message;
-    const isRoot = offset === 0;
-    if (isRoot) {
-        print('');
-    }
     print(`1..${length}`, offset);
-    if (isRoot) {
-        comment(message.data.pass ? 'ok' : 'not ok', 0);
-    }
 };
-const mochaTapTest = testPrinter('length');
-const tapeTest = testPrinter('fullLength');
 const printBailout = (message) => {
     print('Bail out! Unhandled error.');
 };
@@ -415,7 +454,7 @@ const reportAsMochaTap = (message) => {
             mochaTapAssert(message);
             break;
         case "TEST_END" /* TEST_END */:
-            mochaTapTest(message);
+            testEnd(message);
             break;
         case "BAIL_OUT" /* BAIL_OUT */:
             printBailout(message);
@@ -430,42 +469,49 @@ const reportAsTapeTap = (message) => {
         case "ASSERTION" /* ASSERTION */:
             tapeAssert(message);
             break;
-        case "TEST_END" /* TEST_END */:
-            tapeTest(message);
-            break;
         case "BAIL_OUT" /* BAIL_OUT */:
             printBailout(message);
             throw message.data;
     }
 };
-const mochaTapLike = async (stream$$1) => {
-    print('TAP version 13');
-    for await (const message of stream$$1) {
-        reportAsMochaTap(message);
-    }
-};
 const flatFilter = filter((message) => {
     return message.type === "TEST_START" /* TEST_START */
         || message.type === "BAIL_OUT" /* BAIL_OUT */
-        || (message.type === "ASSERTION" /* ASSERTION */ && isAssertionResult(message.data))
-        || (message.type === "TEST_END" /* TEST_END */ && message.offset === 0);
+        || (message.type === "ASSERTION" /* ASSERTION */ && (isAssertionResult(message.data) || message.data.skip === true));
 });
 const flattenStream = (stream$$1) => {
     let id = 0;
     const mapper = map(message => {
         if (message.type === "ASSERTION" /* ASSERTION */) {
-            const mappedData = Object.assign({}, message.data, { id: ++id });
+            const mappedData = Object.assign(message.data, { id: ++id });
             return assertionMessage(mappedData, 0);
         }
         return Object.assign({}, message, { offset: 0 });
     });
     return mapper(flatFilter(stream$$1));
 };
+const printSummary = (harness) => {
+    print('', 0);
+    comment(harness.pass ? 'ok' : 'not ok', 0);
+    comment(`success: ${harness.successCount}`, 0);
+    comment(`skipped: ${harness.skipCount}`, 0);
+    comment(`failure: ${harness.failureCount}`, 0);
+};
 const tapeTapLike = async (stream$$1) => {
     print('TAP version 13');
-    for await (const message of flattenStream(stream$$1)) {
+    const streamInstance = flattenStream(stream$$1);
+    for await (const message of streamInstance) {
         reportAsTapeTap(message);
     }
+    print(`1..${stream$$1.count}`, 0);
+    printSummary(stream$$1);
+};
+const mochaTapLike = async (stream$$1) => {
+    print('TAP version 13');
+    for await (const message of stream$$1) {
+        reportAsMochaTap(message);
+    }
+    printSummary(stream$$1);
 };
 
 const harnessFactory = () => {
@@ -481,15 +527,30 @@ const harnessFactory = () => {
                 return tests.length;
             },
         },
-        fullLength: {
-            get() {
-                return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
-            }
-        },
         pass: {
             get() {
                 return pass;
             }
+        },
+        count: {
+            get() {
+                return this.successCount + this.failureCount + this.skipCount;
+            }
+        },
+        successCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.successCount, 0);
+            },
+        },
+        failureCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.failureCount, 0);
+            },
+        },
+        skipCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.skipCount, 0);
+            },
         }
     });
     return Object.assign(instance, {
@@ -508,7 +569,7 @@ const harnessFactory = () => {
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
             }
-            yield endTestMessage(instance, rootOffset);
+            yield endTestMessage(this, 0);
         },
         report: async (reporter = tapeTapLike) => {
             return reporter(instance);
@@ -522,6 +583,8 @@ const defaultTestHarness = harnessFactory();
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
 rootTest.indent = () => indent = true;
 const test = rootTest;
+const skip$1 = (description, spec, options = {}) => rootTest(description, spec, Object.assign({}, options, { skip: true }));
+rootTest.skip = skip$1;
 const equal = defaultTestHarness.equal.bind(defaultTestHarness);
 const equals = equal;
 const eq = equal;
@@ -565,4 +628,4 @@ else {
     window.addEventListener('load', start);
 }
 
-export { test, equal, equals, eq, deepEqual, notEqual, notEquals, notEq, notDeepEqual, is, same, isNot, notSame, ok, truthy, notOk, falsy, fail, throws, doesNotThrow, createHarness, tapeTapLike, mochaTapLike, AssertPrototype, assert };
+export { test, skip$1 as skip, equal, equals, eq, deepEqual, notEqual, notEquals, notEq, notDeepEqual, is, same, isNot, notSame, ok, truthy, notOk, falsy, fail, throws, doesNotThrow, createHarness, tapeTapLike, mochaTapLike, AssertPrototype, assert };

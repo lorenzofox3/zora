@@ -1,6 +1,7 @@
-import {Assert, assert, SpecFunction} from './assertion';
-import {assertionMessage, endTestMessage, startTestMessage} from './protocol';
+import {Assert, assert} from './assertion';
+import {assertionMessage, endTestMessage, Message, startTestMessage} from './protocol';
 import {Reporter, tapeTapLike as tap} from './reporter';
+import {TestGroup, Test} from './test';
 
 /**
  * A test harness create a root context for sub tests.
@@ -8,12 +9,13 @@ import {Reporter, tapeTapLike as tap} from './reporter';
  * When the report method is called, the messages stream is handed to a @link('./reporter.ts').
  * The default reporter is a tap reporter using the same conventions used by @link('https://github/substack/tape')
  */
-export interface TestHarness extends Assert {
+export interface TestHarness extends Assert, AsyncIterable<Message<any>>, TestGroup {
     report: (reporter?: Reporter) => Promise<void>;
+    pass: boolean;
 }
 
 export const harnessFactory = (): TestHarness => {
-    const tests = [];
+    const tests: Test[] = [];
     const rootOffset = 0;
     let pass = true;
     let id = 0;
@@ -26,15 +28,31 @@ export const harnessFactory = (): TestHarness => {
                 return tests.length;
             },
         },
-        fullLength: {
-            get() {
-                return tests.reduce((acc, curr) => acc + (curr.fullLength !== void 0 ? curr.fullLength : 1), 0);
-            }
-        },
         pass: {
             get() {
                 return pass;
             }
+        },
+        count: {
+            get() {
+                return this.successCount + this.failureCount + this.skipCount;
+            }
+        },
+        successCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.successCount, 0);
+            },
+        },
+        failureCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.failureCount, 0);
+            },
+        },
+        skipCount: {
+            get() {
+                return tests.reduce((acc, curr) => acc + curr.skipCount, 0);
+
+            },
         }
     });
 
@@ -54,7 +72,7 @@ export const harnessFactory = (): TestHarness => {
                 yield assertionMessage(t, rootOffset);
                 pass = pass && t.pass;
             }
-            yield endTestMessage(instance, rootOffset);
+            yield endTestMessage(this, 0);
         },
         report: async (reporter = tap) => {
             return reporter(instance);

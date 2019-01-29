@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 12;
-const testCount = 10;
-const waitTime = 100;
+const filesCount = 3;
+const testCount = 4;
+const waitTime = 20;
 
 const zoraCode = `
 const {test} = require('../../../dist/bundle/index.js');

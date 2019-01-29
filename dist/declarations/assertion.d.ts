@@ -1,3 +1,4 @@
+import { Test } from './test';
 export declare const enum Operator {
     EQUAL = "equal",
     NOT_EQUAL = "notEqual",
@@ -13,6 +14,7 @@ export interface Result {
     pass: boolean;
     description: string;
     id?: number;
+    skip?: boolean;
 }
 export interface TestResult extends Result {
     executionTime: number;
@@ -26,7 +28,7 @@ export interface AssertionResult extends Result {
     actual: any;
     at?: string;
 }
-export declare const isAssertionResult: (result: TestResult | AssertionResult) => result is AssertionResult;
+export declare const isAssertionResult: (result: Test | AssertionResult) => result is AssertionResult;
 export interface SpecFunction {
     (t: Assert): any;
 }
@@ -72,6 +74,7 @@ export interface Assert {
     throws: ErrorAssertionFunction;
     doesNotThrow: ErrorAssertionFunction;
     test: TestFunction;
+    skip: TestFunction;
 }
 export declare const AssertPrototype: {
     equal: AssertionFunction;

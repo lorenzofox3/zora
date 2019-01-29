@@ -16,6 +16,9 @@ ok 9 - assert3
 # nested in two
 ok 10 - still happy
 ok 11 - assert4
-
 1..11
+
 # ok
+# success: 11
+# skipped: 0
+# failure: 0

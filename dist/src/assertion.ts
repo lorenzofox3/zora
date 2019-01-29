@@ -1,4 +1,4 @@
-import {defaultTestOptions, tester} from './test';
+import {defaultTestOptions, Test, tester} from './test';
 //@ts-ignore
 // (todo check what is wrong here, either with rollup if I use typescript namespace either with typescript as no default import)
 import equal from 'fast-deep-equal';
@@ -19,6 +19,7 @@ export interface Result {
     pass: boolean;
     description: string;
     id?: number;
+    skip?: boolean;
 }
 
 export interface TestResult extends Result {
@@ -35,7 +36,7 @@ export interface AssertionResult extends Result {
     at?: string;
 }
 
-export const isAssertionResult = (result: TestResult | AssertionResult): result is AssertionResult => {
+export const isAssertionResult = (result: Test | AssertionResult): result is AssertionResult => {
     return 'operator' in result;
 };
 
@@ -114,6 +115,8 @@ export interface Assert {
     doesNotThrow: ErrorAssertionFunction;
 
     test: TestFunction;
+
+    skip: TestFunction;
 }
 
 const getAssertionLocation = (): string => {
@@ -256,6 +259,9 @@ export const assert = (collect, offset: number): Assert => Object.assign(
             const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
             collect(subTest);
             return subTest.routine;
+        },
+        skip(description: string, spec, opts = defaultTestOptions) {
+            return this.test(description, spec, Object.assign({}, opts, {skip: true}));
         }
     }
 );

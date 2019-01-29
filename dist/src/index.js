@@ -8,6 +8,8 @@ rootTest.indent = () => indent = true;
 export { tapeTapLike, mochaTapLike } from './reporter';
 export { AssertPrototype, assert } from './assertion';
 export const test = rootTest;
+export const skip = (description, spec, options = {}) => rootTest(description, spec, Object.assign({}, options, { skip: true }));
+rootTest.skip = skip;
 export const equal = defaultTestHarness.equal.bind(defaultTestHarness);
 export const equals = equal;
 export const eq = equal;

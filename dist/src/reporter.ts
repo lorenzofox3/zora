@@ -8,6 +8,7 @@ import {
 } from './protocol';
 import {AssertionResult, isAssertionResult} from './assertion';
 import {filter, map} from '@lorenzofox3/for-await';
+import {TestHarness} from './harness';
 
 /**
  * A Reporter is a function which uses a Message stream to output meaningfully formatted data into an IO target (likely the console)
@@ -51,31 +52,25 @@ const assertPrinter = (diagnostic: (assertionResult: AssertionResult) => Object)
             printYAML(diagnostic(data), offset);
         }
     } else {
-        print(`${pass ? 'ok' : 'not ok' } ${id} - ${description} # ${data.executionTime}ms`, message.offset);
+        const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
+        print(`${pass ? 'ok' : 'not ok' } ${id} - ${description} # ${comment}`, message.offset);
     }
+
 };
-const tapeAssert = assertPrinter(val => val);
-const mochaTapAssert = assertPrinter(({expected, actual, operator, at}) => ({
+const tapeAssert = assertPrinter(({id, pass, description, ...rest}) => rest);
+const mochaTapAssert = assertPrinter(({expected, id, pass, description, actual, operator, at, ...rest}) => ({
     wanted: expected,
     found: actual,
     at,
-    operator
+    operator,
+    ...rest
 }));
 
-const testPrinter = (lengthProp: string) => (message: TestEndMessage): void => {
-    const length = message.data[lengthProp];
+const testEnd = (message: TestEndMessage): void => {
+    const length = message.data.length;
     const {offset} = message;
-    const isRoot = offset === 0;
-    if (isRoot) {
-        print('');
-    }
     print(`1..${length}`, offset);
-    if (isRoot) {
-        comment(message.data.pass ? 'ok' : 'not ok', 0);
-    }
 };
-const mochaTapTest = testPrinter('length');
-const tapeTest = testPrinter('fullLength');
 
 const printBailout = (message: BailoutMessage) => {
     print('Bail out! Unhandled error.');
@@ -90,7 +85,7 @@ export const reportAsMochaTap = (message: Message<any>): void => {
             mochaTapAssert(message);
             break;
         case  MessageType.TEST_END:
-            mochaTapTest(message);
+            testEnd(message);
             break;
         case MessageType.BAIL_OUT:
             printBailout(message);
@@ -106,45 +101,53 @@ export const reportAsTapeTap = (message: Message<any>): void => {
         case MessageType.ASSERTION:
             tapeAssert(message);
             break;
-        case  MessageType.TEST_END:
-            tapeTest(message);
-            break;
         case MessageType.BAIL_OUT:
             printBailout(message);
             throw message.data;
     }
 };
 
-export const mochaTapLike = async (stream: AsyncIterable<Message<any>>): Promise<void> => {
-    print('TAP version 13');
-    for await (const message of stream) {
-        reportAsMochaTap(message);
-    }
-};
-
 const flatFilter = filter<Message<any>>((message) => {
     return message.type === MessageType.TEST_START
         || message.type === MessageType.BAIL_OUT
-        || (message.type === MessageType.ASSERTION && isAssertionResult(message.data))
-        || (message.type === MessageType.TEST_END && message.offset === 0);
+        || (message.type === MessageType.ASSERTION && (isAssertionResult(message.data) || message.data.skip === true));
 });
 const flattenStream = (stream: AsyncIterable<Message<any>>) => {
     let id = 0;
     const mapper = map<Message<any>>(message => {
         if (message.type === MessageType.ASSERTION) {
-            const mappedData = <AssertionResult>Object.assign({}, message.data, {id: ++id});
-            return assertionMessage(
-                mappedData
-                , 0);
+            const mappedData = <AssertionResult>Object.assign(message.data, {id: ++id});
+            return assertionMessage(mappedData, 0);
         }
         return Object.assign({}, message, {offset: 0});
     });
 
     return mapper(flatFilter(stream));
 };
-export const tapeTapLike = async (stream: AsyncIterable<Message<any>>): Promise<void> => {
+
+const printSummary = (harness: TestHarness): void => {
+    print('', 0);
+    comment(harness.pass ? 'ok' : 'not ok', 0);
+    comment(`success: ${harness.successCount}`, 0);
+    comment(`skipped: ${harness.skipCount}`, 0);
+    comment(`failure: ${harness.failureCount}`, 0);
+};
+
+export const tapeTapLike = async (stream: TestHarness): Promise<void> => {
     print('TAP version 13');
-    for await (const message of flattenStream(stream)) {
+    const streamInstance = flattenStream(stream);
+    for await (const message of streamInstance) {
         reportAsTapeTap(message);
     }
+    print(`1..${stream.count}`, 0);
+    printSummary(stream);
 };
+
+export const mochaTapLike = async (stream: TestHarness): Promise<void> => {
+    print('TAP version 13');
+    for await (const message of stream) {
+        reportAsMochaTap(message);
+    }
+    printSummary(stream);
+};
+

@@ -33,7 +33,7 @@ export const startTestMessage = (test: { description }, offset: number): StartTe
     offset
 });
 
-export type AssertionMessage = Message<TestResult | AssertionResult>;
+export type AssertionMessage = Message<Test | AssertionResult>;
 
 /**
  * Emitted when an assertion result is produced. Note than when a sub test finishes, it also emits an assertion result in the parent sub test stream
@@ -41,7 +41,7 @@ export type AssertionMessage = Message<TestResult | AssertionResult>;
  * @param {number} offset - give the nested level
  * @returns {AssertionMessage}
  */
-export const assertionMessage = (assertion: TestResult | AssertionResult, offset: number): AssertionMessage => ({
+export const assertionMessage = (assertion: Test | AssertionResult, offset: number): AssertionMessage => ({
     type: MessageType.ASSERTION,
     data: assertion,
     offset
