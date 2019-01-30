@@ -1,41 +1,22 @@
-import { assert, isAssertionResult } from './assertion';
+import { assert } from './assertion';
 import { assertionMessage, bailout, endTestMessage, startTestMessage } from './protocol';
+import { counter, delegateToCounter } from './counter';
 export const defaultTestOptions = Object.freeze({
     offset: 0,
     skip: false
 });
-const noop = () => {
+export const noop = () => {
 };
 export const tester = (description, spec, { offset = 0, skip = false } = defaultTestOptions) => {
     let id = 0;
-    let successCount = 0;
-    let failureCount = 0;
-    let skipCount = 0;
     let pass = true;
     let executionTime = 0;
     let error = null;
+    const testCounter = counter();
+    const withTestCounter = delegateToCounter(testCounter);
     const specFunction = skip === true ? noop : spec;
     const assertions = [];
     const collect = item => assertions.push(item);
-    const updateCount = (assertion) => {
-        const { pass, skip } = assertion;
-        if (!isAssertionResult(assertion)) {
-            skipCount += assertion.skipCount;
-            successCount += assertion.successCount;
-            failureCount += assertion.failureCount;
-        }
-        else if (pass) {
-            if (skip === true) {
-                skipCount++;
-            }
-            else {
-                successCount++;
-            }
-        }
-        else {
-            failureCount++;
-        }
-    };
     const testRoutine = (async function () {
         try {
             const start = Date.now();
@@ -47,7 +28,7 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
             error = e;
         }
     })();
-    return Object.defineProperties({
+    return Object.defineProperties(withTestCounter({
         [Symbol.asyncIterator]: async function* () {
             await testRoutine;
             for (const assertion of assertions) {
@@ -65,16 +46,16 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
                 }
                 yield assertionMessage(assertion, offset);
                 pass = pass && assertion.pass;
-                updateCount(assertion);
+                testCounter.update(assertion);
             }
             return error !== null ?
                 yield bailout(error, offset) :
                 yield endTestMessage(this, offset);
         }
-    }, {
+    }), {
         description: {
-            value: description,
-            enumerable: true
+            enumerable: true,
+            value: description
         },
         pass: {
             enumerable: true,
@@ -96,26 +77,6 @@ export const tester = (description, spec, { offset = 0, skip = false } = default
         error: {
             get() {
                 return error;
-            }
-        },
-        skipCount: {
-            get() {
-                return skipCount;
-            },
-        },
-        failureCount: {
-            get() {
-                return failureCount;
-            }
-        },
-        successCount: {
-            get() {
-                return successCount;
-            }
-        },
-        count: {
-            get() {
-                return skipCount + successCount + failureCount;
             }
         },
         routine: {

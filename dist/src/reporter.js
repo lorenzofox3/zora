@@ -1,6 +1,6 @@
-import { assertionMessage } from './protocol';
 import { isAssertionResult } from './assertion';
 import { filter, map } from '@lorenzofox3/for-await';
+import { assertionMessage } from './protocol';
 const print = (message, offset = 0) => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
 };
@@ -8,7 +8,7 @@ const printYAML = (obj, offset = 0) => {
     const YAMLOffset = offset + 0.5;
     print('---', YAMLOffset);
     for (const [prop, value] of Object.entries(obj)) {
-        print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset);
+        print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset + 0.5);
     }
     print('...', YAMLOffset);
 };

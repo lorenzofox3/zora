@@ -1,15 +1,11 @@
-const {ok} = require('./dist/bundle/index');
-
-ok(true, 'hey hey');
+const {ok, skip, test} = require('./dist/bundle/index');
+ok(false, 'hey hey');
 ok(true, 'hey hey bis');
 
-// test('hello world', t => {
-//     t.ok(true);
-//     t.skip('blah', t=>{
-//         t.ok(false);
-//     })
-// });
+// const test = require('tape');
 //
-// skip('failing text', t => {
+// test('foo', t=>{
 //     t.ok(false);
+//     t.ok(true);
+//     t.end();
 // });

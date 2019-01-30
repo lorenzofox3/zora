@@ -1,5 +1,6 @@
+import {harnessFactory as createHarness} from '../../dist/src/harness.js';
+
 const test = require('tape');
-const {createHarness} = require('../../dist/bundle/index.js');
 
 const wait = (time = 0) => new Promise(resolve => {
     setTimeout(() => resolve(), time);
@@ -99,7 +100,7 @@ test('test harness with basic sub tests', async (t) => {
             id: 2
         },
         offset: 0
-    }, {type: 'TEST_END', data: { executionTime: '{TIME}'}, offset: 0}]);
+    }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
     t.end();
 });
 

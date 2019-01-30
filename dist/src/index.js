@@ -6,7 +6,7 @@ const defaultTestHarness = harnessFactory();
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
 rootTest.indent = () => indent = true;
 export { tapeTapLike, mochaTapLike } from './reporter';
-export { AssertPrototype, assert } from './assertion';
+export { AssertPrototype } from './assertion';
 export const test = rootTest;
 export const skip = (description, spec, options = {}) => rootTest(description, spec, Object.assign({}, options, { skip: true }));
 rootTest.skip = skip;
@@ -29,11 +29,6 @@ export const falsy = notOk;
 export const fail = defaultTestHarness.fail.bind(defaultTestHarness);
 export const throws = defaultTestHarness.throws.bind(defaultTestHarness);
 export const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
-/**
- * If you create a test harness manually, report won't start automatically and you will
- * have to call the report method yourself. This can be handy if you wish to use another reporter
- * @returns {TestHarness}
- */
 export const createHarness = () => {
     autoStart = false;
     return harnessFactory();

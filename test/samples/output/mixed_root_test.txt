@@ -1,0 +1,12 @@
+TAP version 13
+ok 1 - true is truthy
+# a sub test
+ok 2 - empty object
+ok 3 - another assertion
+ok 4 - foo bar
+1..4
+
+# ok
+# success: 4
+# skipped: 0
+# failure: 0

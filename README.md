@@ -114,9 +114,12 @@ TAP version 13
 ok 1 - true is truthy
 ok 2 - that both string are equivalent
 ok 3 - those are not the same reference
-
 1..3
+
 # ok
+# success: 3
+# skipped: 0
+# failure: 0
 ```
 
 However one will usually want to group assertions within a sub test: the ``test`` method can be used.
@@ -139,9 +142,12 @@ TAP version 13
 ok 1 - true is truthy
 ok 2 - that both string are equivalent
 ok 3 - those are not the same reference
-
 1..3
+
 # ok
+# success: 3
+# skipped: 0
+# failure: 0
 ```
 
 You can also group tests within a parent test:
@@ -166,9 +172,12 @@ ok 1 - true is truthy
 # a group inside another one
 ok 2 - that both string are equivalent
 ok 3 - those are not the same reference
-
 1..3
+
 # ok
+# success: 3
+# skipped: 0
+# failure: 0
 ```
 
 ### Asynchronous tests and control flow
@@ -322,9 +331,12 @@ ok 9 - assert3
 # nested in two
 ok 10 - still happy
 ok 11 - assert4
-
 1..11
+
 # not ok
+# success: 10
+# skipped: 0
+# failure: 1
 ```
 
 Another common structure is the one used by [node-tap](http://node-tap.org/). The structure can be parsed with common tap parser (such as [tap-parser](https://github.com/tapjs/tap-parser)) And will be parsed as well by tap parser which
@@ -412,9 +424,56 @@ not ok 1 - tester 1 # 1ms
     ok 3 - assert4
     1..3
 ok 2 - tester 2 # 0ms
-
 1..2
+
 # not ok
+# success: 10
+# skipped: 0
+# failure: 1
+```
+
+### Skip a test
+
+You can decide to skip some tests if you wish not to run them, in that case they will be considered as _passing_. However the assertion summary at the end will tell you that some tests have been skipped
+and each skipped test will have a tap skip directive.
+
+```Javascript
+import {ok, skip, test} from 'zora';
+
+ok(true, 'hey hey');
+ok(true, 'hey hey bis');
+
+test('hello world', t => {
+    t.ok(true);
+    t.skip('blah', t => {
+        t.ok(false);
+    });
+    t.skip('for some reason');
+});
+
+skip('failing text', t => {
+    t.ok(false);
+});
+```
+
+```TAP
+TAP version 13
+ok 1 - hey hey
+ok 2 - hey hey bis
+# hello world
+ok 3 - should be truthy
+# blah
+ok 4 - blah # SKIP
+# for some reason
+ok 5 - for some reason # SKIP
+# failing text
+ok 6 - failing text # SKIP
+1..6
+
+# ok
+# success: 3
+# skipped: 3
+# failure: 0
 ```
 
 ### Assertion API

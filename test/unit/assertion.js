@@ -1,4 +1,5 @@
-const {assert} = require('../../dist/bundle/index.js');
+import {assert} from '../../dist/src/assertion.js';
+
 const test = require('tape');
 
 const createAssert = () => {

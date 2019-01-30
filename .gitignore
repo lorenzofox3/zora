@@ -39,3 +39,4 @@ jspm_packages
 .idea
 test/dist
 benchmarks
+dist

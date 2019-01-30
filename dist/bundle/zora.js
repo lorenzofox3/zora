@@ -1,50 +1,94 @@
 var zora = (function (exports) {
     'use strict';
 
-    /**
-     * Emitted when a new sub test has started
-     * @param {{description}} test - A Test
-     * @param {number} offset - give the nested level
-     * @returns {StartTestMessage}
-     */
     const startTestMessage = (test, offset) => ({
         type: "TEST_START" /* TEST_START */,
         data: test,
         offset
     });
-    /**
-     * Emitted when an assertion result is produced. Note than when a sub test finishes, it also emits an assertion result in the parent sub test stream
-     * @param {TestResult | AssertionResult} assertion
-     * @param {number} offset - give the nested level
-     * @returns {AssertionMessage}
-     */
     const assertionMessage = (assertion, offset) => ({
         type: "ASSERTION" /* ASSERTION */,
         data: assertion,
         offset
     });
-    /**
-     * Emitted when a sub tests finishes
-     * @param {Test} test - The Sub test
-     * @param {number} offset - the nested level
-     * @returns {TestEndMessage}
-     */
     const endTestMessage = (test, offset) => ({
         type: "TEST_END" /* TEST_END */,
         data: test,
         offset
     });
-    /**
-     * Emitted when an error is not handled
-     * @param {Error} error
-     * @param {number} offset
-     * @returns {BailoutMessage}
-     */
     const bailout = (error, offset) => ({
         type: "BAIL_OUT" /* BAIL_OUT */,
         data: error,
         offset
     });
+
+    const delegateToCounter = (counter) => (target) => Object.defineProperties(target, {
+        skipCount: {
+            get() {
+                return counter.skipCount;
+            },
+        },
+        failureCount: {
+            get() {
+                return counter.failureCount;
+            }
+        },
+        successCount: {
+            get() {
+                return counter.successCount;
+            }
+        },
+        count: {
+            get() {
+                return counter.count;
+            }
+        }
+    });
+    const counter = () => {
+        let success = 0;
+        let failure = 0;
+        let skip = 0;
+        return Object.defineProperties({
+            update(assertion) {
+                const { pass, skip: isSkipped } = assertion;
+                if (isSkipped) {
+                    skip++;
+                }
+                else if (!isAssertionResult(assertion)) {
+                    skip += assertion.skipCount;
+                    success += assertion.successCount;
+                    failure += assertion.failureCount;
+                }
+                else if (pass) {
+                    success++;
+                }
+                else {
+                    failure++;
+                }
+            }
+        }, {
+            successCount: {
+                get() {
+                    return success;
+                }
+            },
+            failureCount: {
+                get() {
+                    return failure;
+                }
+            },
+            skipCount: {
+                get() {
+                    return skip;
+                }
+            },
+            count: {
+                get() {
+                    return skip + success + failure;
+                }
+            }
+        });
+    };
 
     const defaultTestOptions = Object.freeze({
         offset: 0,
@@ -54,34 +98,14 @@ var zora = (function (exports) {
     };
     const tester = (description, spec, { offset = 0, skip = false } = defaultTestOptions) => {
         let id = 0;
-        let successCount = 0;
-        let failureCount = 0;
-        let skipCount = 0;
         let pass = true;
         let executionTime = 0;
         let error = null;
+        const testCounter = counter();
+        const withTestCounter = delegateToCounter(testCounter);
         const specFunction = skip === true ? noop : spec;
         const assertions = [];
         const collect = item => assertions.push(item);
-        const updateCount = (assertion) => {
-            const { pass, skip } = assertion;
-            if (!isAssertionResult(assertion)) {
-                skipCount += assertion.skipCount;
-                successCount += assertion.successCount;
-                failureCount += assertion.failureCount;
-            }
-            else if (pass) {
-                if (skip === true) {
-                    skipCount++;
-                }
-                else {
-                    successCount++;
-                }
-            }
-            else {
-                failureCount++;
-            }
-        };
         const testRoutine = (async function () {
             try {
                 const start = Date.now();
@@ -93,7 +117,7 @@ var zora = (function (exports) {
                 error = e;
             }
         })();
-        return Object.defineProperties({
+        return Object.defineProperties(withTestCounter({
             [Symbol.asyncIterator]: async function* () {
                 await testRoutine;
                 for (const assertion of assertions) {
@@ -111,16 +135,16 @@ var zora = (function (exports) {
                     }
                     yield assertionMessage(assertion, offset);
                     pass = pass && assertion.pass;
-                    updateCount(assertion);
+                    testCounter.update(assertion);
                 }
                 return error !== null ?
                     yield bailout(error, offset) :
                     yield endTestMessage(this, offset);
             }
-        }, {
+        }), {
             description: {
-                value: description,
-                enumerable: true
+                enumerable: true,
+                value: description
             },
             pass: {
                 enumerable: true,
@@ -142,26 +166,6 @@ var zora = (function (exports) {
             error: {
                 get() {
                     return error;
-                }
-            },
-            skipCount: {
-                get() {
-                    return skipCount;
-                },
-            },
-            failureCount: {
-                get() {
-                    return failureCount;
-                }
-            },
-            successCount: {
-                get() {
-                    return successCount;
-                }
-            },
-            count: {
-                get() {
-                    return skipCount + successCount + failureCount;
                 }
             },
             routine: {
@@ -365,7 +369,7 @@ var zora = (function (exports) {
             collect(subTest);
             return subTest.routine;
         },
-        skip(description, spec, opts = defaultTestOptions) {
+        skip(description, spec = noop, opts = defaultTestOptions) {
             return this.test(description, spec, Object.assign({}, opts, { skip: true }));
         }
     });
@@ -403,7 +407,7 @@ var zora = (function (exports) {
         const YAMLOffset = offset + 0.5;
         print('---', YAMLOffset);
         for (const [prop, value] of Object.entries(obj)) {
-            print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset);
+            print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset + 0.5);
         }
         print('...', YAMLOffset);
     };
@@ -519,44 +523,26 @@ var zora = (function (exports) {
 
     const harnessFactory = () => {
         const tests = [];
+        const testCounter = counter();
+        const withTestCounter = delegateToCounter(testCounter);
         const rootOffset = 0;
-        let pass = true;
-        let id = 0;
         const collect = item => tests.push(item);
         const api = assert(collect, rootOffset);
+        let pass = true;
+        let id = 0;
         const instance = Object.create(api, {
             length: {
                 get() {
                     return tests.length;
-                },
+                }
             },
             pass: {
                 get() {
                     return pass;
                 }
-            },
-            count: {
-                get() {
-                    return this.successCount + this.failureCount + this.skipCount;
-                }
-            },
-            successCount: {
-                get() {
-                    return tests.reduce((acc, curr) => acc + curr.successCount, 0);
-                },
-            },
-            failureCount: {
-                get() {
-                    return tests.reduce((acc, curr) => acc + curr.failureCount, 0);
-                },
-            },
-            skipCount: {
-                get() {
-                    return tests.reduce((acc, curr) => acc + curr.skipCount, 0);
-                },
             }
         });
-        return Object.assign(instance, {
+        return withTestCounter(Object.assign(instance, {
             [Symbol.asyncIterator]: async function* () {
                 for (const t of tests) {
                     t.id = ++id;
@@ -571,13 +557,14 @@ var zora = (function (exports) {
                     }
                     yield assertionMessage(t, rootOffset);
                     pass = pass && t.pass;
+                    testCounter.update(t);
                 }
                 yield endTestMessage(this, 0);
             },
             report: async (reporter = tapeTapLike) => {
                 return reporter(instance);
             }
-        });
+        }));
     };
 
     let autoStart = true;
@@ -607,11 +594,6 @@ var zora = (function (exports) {
     const fail = defaultTestHarness.fail.bind(defaultTestHarness);
     const throws = defaultTestHarness.throws.bind(defaultTestHarness);
     const doesNotThrow = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
-    /**
-     * If you create a test harness manually, report won't start automatically and you will
-     * have to call the report method yourself. This can be handy if you wish to use another reporter
-     * @returns {TestHarness}
-     */
     const createHarness = () => {
         autoStart = false;
         return harnessFactory();
@@ -656,7 +638,6 @@ var zora = (function (exports) {
     exports.tapeTapLike = tapeTapLike;
     exports.mochaTapLike = mochaTapLike;
     exports.AssertPrototype = AssertPrototype;
-    exports.assert = assert;
 
     return exports;
 

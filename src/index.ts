@@ -1,26 +1,25 @@
-import {harnessFactory, TestHarness} from './harness';
-import {
-    BooleanAssertionFunction,
-    ComparatorAssertionFunction, ErrorAssertionFunction,
-    MessageAssertionFunction, SpecFunction,
-    TestFunction
-} from './assertion';
+import {harnessFactory} from './harness';
 import {mochaTapLike, tapeTapLike} from './reporter';
+import {
+    RootTest,
+    TestFunction,
+    SpecFunction,
+    ComparatorAssertionFunction,
+    BooleanAssertionFunction,
+    MessageAssertionFunction,
+    ErrorAssertionFunction,
+    TestHarness
+} from './interfaces';
 
 let autoStart = true;
 let indent = false;
 const defaultTestHarness = harnessFactory();
 
-interface RootTest extends TestFunction {
-    indent: () => void;
-    skip: TestFunction;
-}
-
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
 rootTest.indent = () => indent = true;
 
 export {tapeTapLike, mochaTapLike} from './reporter';
-export {AssertPrototype, assert} from './assertion';
+export {AssertPrototype} from './assertion';
 export const test: RootTest = rootTest;
 export const skip: TestFunction = (description: string, spec: SpecFunction, options = {}) => rootTest(description, spec, Object.assign({}, options, {skip: true}));
 rootTest.skip = skip;
@@ -51,11 +50,6 @@ export const fail: MessageAssertionFunction = defaultTestHarness.fail.bind(defau
 export const throws: ErrorAssertionFunction = defaultTestHarness.throws.bind(defaultTestHarness);
 export const doesNotThrow: ErrorAssertionFunction = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
 
-/**
- * If you create a test harness manually, report won't start automatically and you will
- * have to call the report method yourself. This can be handy if you wish to use another reporter
- * @returns {TestHarness}
- */
 export const createHarness = (): TestHarness => {
     autoStart = false;
     return harnessFactory();

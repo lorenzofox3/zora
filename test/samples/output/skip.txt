@@ -1,0 +1,17 @@
+TAP version 13
+ok 1 - hey hey
+ok 2 - hey hey bis
+# hello world
+ok 3 - should be truthy
+# blah
+ok 4 - blah # SKIP
+# for some reason
+ok 5 - for some reason # SKIP
+# failing text
+ok 6 - failing text # SKIP
+1..6
+
+# ok
+# success: 3
+# skipped: 3
+# failure: 0

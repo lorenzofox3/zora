@@ -31,7 +31,7 @@
     "bench:mocha": "time mocha ./benchmarks/mocha/test/",
     "bench:tape": "time node ./benchmarks/tape/index",
     "bench:jest": "time jest",
-    "test:unit": "node ./test/unit/index.js",
+    "test:unit": "rollup -c ./rollup/test.js | node",
     "test:sample": "node ./test/samples/index.js",
     "test": "npm run test:unit && npm run test:sample"
   },

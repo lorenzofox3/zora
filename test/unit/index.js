@@ -1,6 +1,3 @@
-// hack to avoid the autostart of zora;
-const {createHarness} = require('../../dist/bundle/index.js');
-createHarness();
-
-require('./assertion');
-require('./test');
+import assertion from './assertion';
+import test from './test';
+import counter from './counter';

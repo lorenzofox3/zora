@@ -1,21 +1,14 @@
-import {
-    assertionMessage,
-    AssertionMessage, BailoutMessage,
-    Message,
-    MessageType,
-    StartTestMessage,
-    TestEndMessage
-} from './protocol';
-import {AssertionResult, isAssertionResult} from './assertion';
+import {isAssertionResult} from './assertion';
 import {filter, map} from '@lorenzofox3/for-await';
-import {TestHarness} from './harness';
-
-/**
- * A Reporter is a function which uses a Message stream to output meaningfully formatted data into an IO target (likely the console)
- */
-export interface Reporter {
-    (stream: AsyncIterable<Message<any>>): Promise<void>;
-}
+import {
+    AssertionResult,
+    StartTestMessage,
+    AssertionMessage,
+    TestEndMessage,
+    BailoutMessage,
+    Message, MessageType, TestHarness
+} from './interfaces';
+import {assertionMessage} from './protocol';
 
 const print = (message: string, offset = 0): void => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
@@ -25,7 +18,7 @@ const printYAML = (obj: object, offset = 0): void => {
     const YAMLOffset = offset + 0.5;
     print('---', YAMLOffset);
     for (const [prop, value] of Object.entries(obj)) {
-        print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset);
+        print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset + 0.5);
     }
     print('...', YAMLOffset);
 };

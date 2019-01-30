@@ -1,4 +1,4 @@
-import { defaultTestOptions, tester } from './test';
+import { defaultTestOptions, noop, tester } from './test';
 //@ts-ignore
 // (todo check what is wrong here, either with rollup if I use typescript namespace either with typescript as no default import)
 import equal from 'fast-deep-equal';
@@ -140,7 +140,7 @@ export const assert = (collect, offset) => Object.assign(Object.create(AssertPro
         collect(subTest);
         return subTest.routine;
     },
-    skip(description, spec, opts = defaultTestOptions) {
+    skip(description, spec = noop, opts = defaultTestOptions) {
         return this.test(description, spec, Object.assign({}, opts, { skip: true }));
     }
 });

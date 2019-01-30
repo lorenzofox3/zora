@@ -1,11 +1,6 @@
-import { TestHarness } from './harness';
-import { BooleanAssertionFunction, ComparatorAssertionFunction, ErrorAssertionFunction, MessageAssertionFunction, TestFunction } from './assertion';
-interface RootTest extends TestFunction {
-    indent: () => void;
-    skip: TestFunction;
-}
+import { RootTest, TestFunction, ComparatorAssertionFunction, BooleanAssertionFunction, MessageAssertionFunction, ErrorAssertionFunction, TestHarness } from './interfaces';
 export { tapeTapLike, mochaTapLike } from './reporter';
-export { AssertPrototype, assert } from './assertion';
+export { AssertPrototype } from './assertion';
 export declare const test: RootTest;
 export declare const skip: TestFunction;
 export declare const equal: ComparatorAssertionFunction;
@@ -27,9 +22,4 @@ export declare const falsy: BooleanAssertionFunction;
 export declare const fail: MessageAssertionFunction;
 export declare const throws: ErrorAssertionFunction;
 export declare const doesNotThrow: ErrorAssertionFunction;
-/**
- * If you create a test harness manually, report won't start automatically and you will
- * have to call the report method yourself. This can be handy if you wish to use another reporter
- * @returns {TestHarness}
- */
 export declare const createHarness: () => TestHarness;
