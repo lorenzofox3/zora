@@ -10,7 +10,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 ``npm install --save-dev zora``
 
 Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
-are supported by Node (>= 10 or >= with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
+are supported by Node (>= 10 or >= 8 with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
 
 ## (Un)Opinions and Design
 
@@ -536,11 +536,11 @@ harness
 
 In practice you won't use this method unless you have specific requirements or want to build your own test runner on top of zora.
 
-### In the browser
+## In the browser
 
 Zora itself does not depend on native Nodejs modules (such file system, processes, etc) so the code you will get is regular EcmaScript.
 
-#### drop in file
+### drop in file
 You can simply drop the dist file in the browser and write your script below (or load it).
 You can for example play with this [codepen](https://codepen.io/lorenzofox3/pen/YBWJrJ)
 
@@ -563,7 +563,7 @@ test('some failing test', (assert) => {
 <!-- some content -->
 ```
 
-#### As part of CI (example with rollup)
+### As part of CI (example with rollup)
 
 I will use [rollup](http://rollupjs.org/) for this example, but you should not have any problem with [webpack](https://webpack.github.io/) or [browserify](http://browserify.org/). The idea is simply to create a test file your testing browsers will be able to run.
 
@@ -623,7 +623,7 @@ so all together, in your package.json you can have something like that
 }
 ```
 
-### On exit codes
+## On exit codes
 
 Whether you have failing tests or not, unless you have an unexpected error, the process will return an exit code 0: zora considers its duty is to run the program to its end whether there is failing test or no.
 Often CI platforms require an exit code of 1 to mark a build as failed. That is not an issue, there are plenty of TAP reporters which when parsing a TAP stream will exit the process with code 1 if they encounter a failing test.
