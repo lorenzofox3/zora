@@ -16,15 +16,7 @@ const getAssertionLocation = (): string => {
 
 const assertMethodHook = (fn: AssertionFunction): AssertionFunction => function (...args) {
     // @ts-ignore
-    const assertResult = fn(...args);
-
-    if (assertResult.pass === false) {
-        assertResult.at = getAssertionLocation();
-    }
-
-    this.collect(assertResult);
-
-    return assertResult;
+    return this.collect(fn(...args));
 };
 
 const aliasMethodHook = (methodName: string) => function (...args) {
@@ -141,16 +133,25 @@ export const AssertPrototype = {
     })
 };
 
-export const assert = (collect, offset: number): Assert => Object.assign(
-    Object.create(AssertPrototype, {collect: {value: collect}}),
-    {
-        test(description, spec, opts = defaultTestOptions) {
-            const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
-            collect(subTest);
-            return subTest.routine;
-        },
-        skip(description: string, spec = noop, opts = defaultTestOptions) {
-            return this.test(description, spec, Object.assign({}, opts, {skip: true}));
+export const assert = (collect, offset: number): Assert => {
+    const actualCollect = item => {
+        if (!item.pass) {
+            item.at = getAssertionLocation();
         }
-    }
-);
+        collect(item);
+        return item;
+    };
+    return Object.assign(
+        Object.create(AssertPrototype, {collect: {value: actualCollect}}),
+        {
+            test(description, spec, opts = defaultTestOptions) {
+                const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
+                collect(subTest);
+                return subTest.routine;
+            },
+            skip(description: string, spec = noop, opts = defaultTestOptions) {
+                return this.test(description, spec, Object.assign({}, opts, {skip: true}));
+            }
+        }
+    );
+};

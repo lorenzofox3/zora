@@ -5,10 +5,10 @@ ok 1 - assert1
 ok 2 - correct
 not ok 3 - should fail with coercion
   ---
-  actual: 4
-  expected: "4"
-  operator: "equal"
-  at:{STACK}
+    actual: 4
+    expected: "4"
+    operator: "equal"
+    at:{STACK}
   ...
 1..3
 

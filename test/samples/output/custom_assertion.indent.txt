@@ -1,12 +1,13 @@
 TAP version 13
 # Subtest: tester 1
-    ok 1 - assert1
-    not ok 2 - foo should equal bar
+    ok 1 - foo should equal foo
+    not ok 2 - should be "foo"
       ---
-        wanted: "bar"
-        found: "foo"
+        wanted: "foo"
+        found: "blah"
         at:{STACK}
-        operator: "equal"
+        operator: "isFoo"
+        other: "property"
       ...
     1..2
 not ok 1 - tester 1 # {TIME}

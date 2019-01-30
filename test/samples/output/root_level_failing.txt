@@ -2,10 +2,10 @@ TAP version 13
 ok 1 - true is truthy
 not ok 2 - unhappy arrays
   ---
-  actual: []
-  expected: [2]
-  operator: "equal"
-  at:{STACK}
+    actual: []
+    expected: [2]
+    operator: "equal"
+    at:{STACK}
   ...
 ok 3 - foo bar
 1..3

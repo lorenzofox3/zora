@@ -1,4 +1,4 @@
-import {assert} from '../../dist/src/assertion.js';
+import {assert, AssertPrototype} from '../../dist/src/assertion.js';
 
 const test = require('tape');
 
@@ -393,3 +393,58 @@ test('doesNotThrow operator: expected (ignored)', t => {
     t.equal(actual, undefined);
     t.end();
 });
+
+test('extend assertion library', t => {
+    const result = [];
+    const a = assert(item => result.push(item), 0);
+
+    AssertPrototype.isFoo = function (value, description = 'should be "foo"') {
+        const result = {
+            pass: value === 'foo',
+            expected: 'foo',
+            actual: value,
+            operator: 'isFoo',
+            description
+        };
+        return this.collect(result);
+    };
+
+    const r = a.isFoo('foo');
+
+    t.equal(result.length, 1, 'should have collected the assertion');
+    t.equal(r.pass, true, 'pass prop should be true');
+    t.equal(r.expected, 'foo', 'expected prop should be "foo"');
+    t.equal(r.actual, 'foo', 'actual prop should be "foo"');
+    t.equal(r.description, 'should be "foo"', 'should have set the description property');
+    t.equal(r.operator, 'isFoo', 'should have set the operator');
+    t.end();
+});
+
+test('extend assertion library with failing assertion: should set the "at" property', t => {
+    const result = [];
+    const a = assert(item => result.push(item), 0);
+
+    AssertPrototype.isFoo = function (value, description = 'should be "foo"') {
+        const result = {
+            pass: value === 'foo',
+            expected: 'foo',
+            actual: value,
+            operator: 'isFoo',
+            description
+        };
+        return this.collect(result);
+    };
+
+    const r = a.isFoo('blah', 'woot');
+
+    t.equal(result.length, 1, 'should have collected the assertion');
+    t.equal(r.pass, false, 'pass prop should be false');
+    t.equal(r.expected, 'foo', 'expected prop should be "foo"');
+    t.equal(r.actual, 'blah', 'actual prop should be "foo"');
+    t.equal(r.description, 'woot', 'should have set the description property');
+    t.equal(r.operator, 'isFoo', 'should have set the operator');
+    t.ok(r.at, 'stack trace should have been set');
+    t.end();
+});
+
+

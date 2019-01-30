@@ -1,0 +1,17 @@
+TAP version 13
+# tester 1
+ok 1 - foo should equal foo
+not ok 2 - should be "foo"
+  ---
+    expected: "foo"
+    actual: "blah"
+    operator: "isFoo"
+    other: "property"
+    at:{STACK}
+  ...
+1..2
+
+# not ok
+# success: 1
+# skipped: 0
+# failure: 1
