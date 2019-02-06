@@ -18,6 +18,8 @@ const defaultTestHarness = harnessFactory();
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
 rootTest.indent = () => indent = true;
 
+export * from './interfaces';
+
 export {tapeTapLike, mochaTapLike} from './reporter';
 export {AssertPrototype} from './assertion';
 export const test: RootTest = rootTest;
