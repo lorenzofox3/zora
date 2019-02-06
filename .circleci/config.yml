@@ -1,4 +1,4 @@
-# Javascript SQLNode CircleCI 2.0 configuration file
+# Javascript CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
@@ -26,5 +26,7 @@ jobs:
         - node_modules
         key: v1-dependencies-{{ checksum "package.json" }}
 
+    - run: npm run build
+
     # run tests!
-    - run: npm test
+    - run: npm run test

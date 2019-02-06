@@ -1,0 +1,11 @@
+TAP version 13
+# Subtest: tester flush
+    ok 1 - assert1
+    1..1
+ok 1 - tester flush # {TIME}
+1..1
+
+# ok
+# success: 1
+# skipped: 0
+# failure: 0

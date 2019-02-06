@@ -1,0 +1,22 @@
+TAP version 13
+# tester 1
+# update counter with delay
+ok 1 - nested 1
+ok 2 - nested 2
+# check counter
+ok 3 - should see the old value of the counter
+ok 4 - assert2
+# tester 2
+ok 5 - assert3
+# update counter with delay but blocking
+ok 6 - nested 1
+ok 7 - nested 2
+# check counter bis
+ok 8 - should see the new value of the counter
+ok 9 - whatever
+1..9
+
+# ok
+# success: 9
+# skipped: 0
+# failure: 0
