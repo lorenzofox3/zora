@@ -8,10 +8,16 @@ export const isAssertionResult = (result: Test | AssertionResult): result is Ass
     return 'operator' in result;
 };
 
+const specFnRegexp = /zora_spec_fn/;
+
 const getAssertionLocation = (): string => {
     const err = new Error();
     const stack = (err.stack || '').split('\n');
-    return (stack[3] || '').trim().replace(/^at/i, '');
+    const userLandIndex = stack.findIndex(l => specFnRegexp.test(l));
+    return userLandIndex >= 1 ?
+        stack[userLandIndex - 1]
+            .trim()
+            .replace(/^at|^@/, '') : 'N/A';
 };
 
 const assertMethodHook = (fn: AssertionFunction): AssertionFunction => function (...args) {
