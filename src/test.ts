@@ -1,7 +1,7 @@
 import {assert} from './assertion';
 import {assertionMessage, bailout, endTestMessage, startTestMessage} from './protocol';
 import {counter, delegateToCounter} from './counter';
-import {Test} from './interfaces';
+import {Assert, Test} from './interfaces';
 
 export const defaultTestOptions = Object.freeze({
     offset: 0,
@@ -19,14 +19,16 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
     const testCounter = counter();
     const withTestCounter = delegateToCounter(testCounter);
 
-    const specFunction = skip === true ? noop : spec;
     const assertions = [];
     const collect = item => assertions.push(item);
+    const specFunction = skip === true ? noop : function zora_spec_fn() {
+        return spec(assert(collect, offset));
+    };
 
     const testRoutine = (async function () {
         try {
             const start = Date.now();
-            const result = await specFunction(assert(collect, offset));
+            const result = await specFunction();
             executionTime = Date.now() - start;
             return result;
         } catch (e) {
