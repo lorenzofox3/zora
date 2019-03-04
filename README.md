@@ -8,8 +8,6 @@ Fast javascript test runner for **nodejs** and **browsers**
 
 ## installation
 
-**Note this documentation still refers to v2 which is still considerated as the latest table version**
-
 ``npm install --save-dev zora@2``
 
 Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
