@@ -9,15 +9,18 @@ export const isAssertionResult = (result: Test | AssertionResult): result is Ass
 };
 
 const specFnRegexp = /zora_spec_fn/;
+const nodeInternal = /node_modules\/.*|\(internal\/.*/;
 
 const getAssertionLocation = (): string => {
     const err = new Error();
-    const stack = (err.stack || '').split('\n');
+    const stack = (err.stack || '')
+        .split('\n')
+        .filter(l => !nodeInternal.test(l) && l !== '');
     const userLandIndex = stack.findIndex(l => specFnRegexp.test(l));
-    return userLandIndex >= 1 ?
-        stack[userLandIndex - 1]
-            .trim()
-            .replace(/^at|^@/, '') : 'N/A';
+    return (userLandIndex >= 1 ?
+        stack[userLandIndex - 1] : (stack[stack.length - 1] || 'N/A'))
+        .trim()
+        .replace(/^at|^@/, '');
 };
 
 const assertMethodHook = (fn: AssertionFunction): AssertionFunction => function (...args) {
