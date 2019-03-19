@@ -8,7 +8,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 
 ## installation
 
-``npm install --save-dev zora@2``
+``npm install --save-dev zora``
 
 Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
 are supported by Node (>= 10 or >= 8 with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
