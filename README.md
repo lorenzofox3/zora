@@ -75,7 +75,7 @@ In my opinions:
 2. Transpilation and other code transformation should be handled by a specific tool.
 3. File watching and caching should be handled by a specific tool.
 4. File serving should be handled by a specific tool.
-5. Coffee should me made by a specific tool.
+5. Coffee should be made by a specific tool.
 
 As a result zora is way more smaller to install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
