@@ -77,7 +77,7 @@ In my opinions:
 4. File serving should be handled by a specific tool.
 5. Coffee should be made by a specific tool.
 
-As a result zora is way more smaller to install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
+As a result zora is much smaller of an install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
 |        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
