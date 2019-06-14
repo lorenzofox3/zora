@@ -56,13 +56,13 @@ About 5% of tests should fail.
 
 Each framework runs with its default settings.
 
-Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 10.11.0 :
+Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 12 :
 
-|        |  zora@3.0.0  |  tape@4.9.2 |  Jest@22.2.2  |  AvA@1.0.0  |  Mocha@5.2.0|
-|--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Library |  123ms       |  1251ms     |  2397ms       |  2100ms      |  1406ms     |
-|Web app |  146ms       |  3572ms     |  5048ms       |  2930ms      |  3765ms     |
-|API     |  226ms       |  12563ms    |  14928ms      |  3431ms      | 12742ms     |
+|        |  zora@3.0.1  |  tape@4.10.2 |  Jest@24.8.0  |  AvA@2.1.0  |  Mocha@6.1.4|
+|--------|:------------:|:-----------: |:-------------:|:------------:|:----------:|
+|Library |  121ms       |  1244ms      |  2580ms       |  1878ms      |  1589ms    |
+|Web app |  132ms       |  3549ms      |  3891ms       |  2635ms      |  3919ms    |
+|API     |  200ms       |  12595ms     |  6674ms       |  3179ms      | 12898ms    |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 
