@@ -34,7 +34,7 @@
     "bench:jest": "time jest",
     "test:unit": "rollup -c ./rollup/test.js | node",
     "test:sample": "node ./test/samples/index.js",
-    "test": "npm run test:unit && npm run test:sample"
+    "test": "npm run build && npm run test:unit && npm run test:sample"
   },
   "author": {
     "name": "Laurent Renard",
