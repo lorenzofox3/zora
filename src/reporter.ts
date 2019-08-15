@@ -14,11 +14,19 @@ const print = (message: string, offset = 0): void => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
 };
 
+const stringifySymbol = (key, value) => {
+    if (typeof value === 'symbol') {
+        return value.toString()
+    }
+
+    return value
+}
+
 const printYAML = (obj: object, offset = 0): void => {
     const YAMLOffset = offset + 0.5;
     print('---', YAMLOffset);
     for (const [prop, value] of Object.entries(obj)) {
-        print(`${prop}: ${JSON.stringify(value)}`, YAMLOffset + 0.5);
+        print(`${prop}: ${JSON.stringify(stringifySymbol(null, value), stringifySymbol)}`, YAMLOffset + 0.5);
     }
     print('...', YAMLOffset);
 };
