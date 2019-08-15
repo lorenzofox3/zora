@@ -46,7 +46,7 @@ const assertPrinter = (diagnostic: (assertionResult: AssertionResult) => Object)
         }
     } else {
         const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
-        print(`${pass ? 'ok' : 'not ok' } ${id} - ${description} # ${comment}`, message.offset);
+        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${comment}`, message.offset);
     }
 
 };

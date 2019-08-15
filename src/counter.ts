@@ -1,4 +1,4 @@
-import { isAssertionResult} from './assertion';
+import {isAssertionResult} from './assertion';
 import {Counter, TestCounter, AssertionResult, Test} from './interfaces';
 
 export const delegateToCounter = (counter: Counter) => <T>(target: T): T & Counter => Object.defineProperties(target, {
