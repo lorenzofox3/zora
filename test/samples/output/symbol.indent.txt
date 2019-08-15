@@ -1,0 +1,24 @@
+TAP version 13
+# Subtest: symbol tester 1
+    not ok 1 - Symbol foo should equal Symbol bar
+      ---
+        wanted: "Symbol(bar)"
+        found: "Symbol(foo)"
+        at:{STACK}
+        operator: "equal"
+      ...
+    not ok 2 - Property Symbol foo should equal Symbol bar
+      ---
+        wanted: {"symbol":"Symbol(bar)"}
+        found: {"symbol":"Symbol(foo)"}
+        at:{STACK}
+        operator: "equal"
+      ...
+    1..2
+not ok 1 - symbol tester 1 # {TIME}
+1..1
+
+# not ok
+# success: 0
+# skipped: 0
+# failure: 2
