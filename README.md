@@ -6,6 +6,8 @@ Fast javascript test runner for **nodejs** and **browsers**
 [![npm](https://badgen.net/npm/v/zora)](https://www.npmjs.com/package/zora)
 [![install size](https://badgen.net/packagephobia/install/zora)](https://packagephobia.now.sh/result?p=zora)
 
+[Gitlab mirror](https://gitlab.com/zora-test/zora)
+
 ## installation
 
 ``npm install --save-dev zora``
