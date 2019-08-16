@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "tap test harness for nodejs and browsers",
   "repository": "github:lorenzofox3/zora",
   "keywords": [
