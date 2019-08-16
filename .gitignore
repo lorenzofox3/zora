@@ -38,7 +38,5 @@ jspm_packages
 
 .idea
 test/dist
-sample.html
-sample.js
 benchmarks
 dist
