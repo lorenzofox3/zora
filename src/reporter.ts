@@ -20,7 +20,7 @@ const stringifySymbol = (key, value) => {
     }
 
     return value
-}
+};
 
 const printYAML = (obj: object, offset = 0): void => {
     const YAMLOffset = offset + 0.5;
