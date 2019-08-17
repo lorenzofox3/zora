@@ -1,12 +1,14 @@
 import {isAssertionResult} from './assertion';
 import {filter, map} from '@lorenzofox3/for-await';
 import {
-    AssertionResult,
-    StartTestMessage,
     AssertionMessage,
-    TestEndMessage,
+    AssertionResult,
     BailoutMessage,
-    Message, MessageType, TestHarness
+    Message,
+    MessageType,
+    StartTestMessage,
+    TestEndMessage,
+    TestHarness
 } from './interfaces';
 import {assertionMessage} from './protocol';
 
