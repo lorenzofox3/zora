@@ -25,7 +25,7 @@ Note I have decided to develop zora specially because I was not able to find a t
 You don't need a specific test runner, a specific platform or any build step to run your `zora` tests. They are only regular valid EcmaScript 2018 programs.
 If you have the following test.
 ```Javascript
-import {test} from 'path/to/zora';
+import { test } from 'zora';
 
 test('should result to the answer', t => {
     const answer = 42
@@ -34,13 +34,17 @@ test('should result to the answer', t => {
 ```
 
 You can run your test with
-1. Node: ``node ./myTestFile.js``
+1. Node: ``node ./myTestFile`
 2. In the browser ``<script type="module" src="./myTestFile.js></script>`` identically
 
 Moreover zora does not use specific platform API which should make it transparent to most of your tools such module bundlers or transpilers.
 
 In few words:
 > Zora is Ecmascript, no less, no more.
+
+### Node config
+
+In Node 12 you should add flags `--experimental-modules --es-module-specifier-resolution=node` and add `"type": "module"` to your project.json. In smaller versions use full path to zora library and .mjs extension in all your files.
 
 ### Tests are fast
 
