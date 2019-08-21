@@ -13,6 +13,7 @@
     "harness",
     "tap-producer"
   ],
+  "type": "module",
   "main": "./dist/bundle/index",
   "module": "./dist/bundle/module.js",
   "types": "./dist/declarations/index.d.ts",
