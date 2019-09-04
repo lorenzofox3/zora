@@ -20,6 +20,8 @@ are supported by Node (>= 10 or >= 8 with flag) and all the major browsers. If y
 These are the following rules and ideas I have followed while developing zora. Whether they are right or not is an entire different topic ! :D
 Note I have decided to develop zora specially because I was not able to find a tool which complies entirely with these ideas.
 
+[read more](https://dev.to/lorenzofox3/tools-and-the-design-of-a-testing-experience-2mdc) on how it fits in the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy)
+
 ### Tests are regular Javascript programs.
 
 You don't need a specific test runner, a specific platform or any build step to run your `zora` tests. They are only regular valid EcmaScript 2018 programs.
