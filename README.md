@@ -636,3 +636,10 @@ Hence you'll need to pipe zora output into one of those reporters to avoid false
 
 For example, one of package.json script can be
 ``"test:ci": npm test | tap-set-exit``
+
+## Contributing
+
+1. Clone the repository with git ``git https://github.com/lorenzofox3/zora.git`` (or from Github/Gitlab UI)
+2. install dependencies ``npm i``
+3. build the source files ``npm run build``. Alternatively, if you are under "heavy" development you can run ``npm run dev`` it will build source files on every change
+4. run the tests ``npm t``
