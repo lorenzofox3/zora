@@ -85,7 +85,7 @@ As a result zora is much smaller of an install according to [packagephobia](http
 
 |        |  zora@3.1.0  |  tape@4.10.2 |  Jest@24.8.2  |  AvA@2.1.0  |  Mocha@6.1.4|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Install size |  [155kb](https://packagephobia.now.sh/result?p=zora)  |  [1.06mb](https://packagephobia.now.sh/result?p=tape)  |  [32mb](https://packagephobia.now.sh/result?p=jest) |  [14.8mb](https://packagephobia.now.sh/result?p=ava)  |  [5.59mb](https://packagephobia.now.sh/result?p=mocha)|
+|Install size |  [209kb](https://packagephobia.now.sh/result?p=zora)  |  [1.06mb](https://packagephobia.now.sh/result?p=tape)  |  [32mb](https://packagephobia.now.sh/result?p=jest) |  [14.8mb](https://packagephobia.now.sh/result?p=ava)  |  [5.59mb](https://packagephobia.now.sh/result?p=mocha)|
 
 ### Reporting is handled with another process (TAP aware)
 
