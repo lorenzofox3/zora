@@ -1,0 +1,13 @@
+TAP version 13
+# Subtest: should not run
+    not ok 1 - I should not run 
+      ---
+        wanted: "fail not called"
+        found: "fail called"
+        at:{STACK}
+        operator: "fail"
+      ...
+    1..1
+not ok 1 - should not run # {TIME}
+# Subtest: should run
+Bail out! Unhandled error.

@@ -1,4 +1,4 @@
-const {spawnSync, spawn} = require('child_process');
+const {spawnSync} = require('child_process');
 const path = require('path');
 const test = require('tape');
 const {readdirSync, readFileSync} = require('fs');
@@ -9,38 +9,34 @@ const files = readdirSync(sampleRoot).filter(f => f.split('.').reverse()[0] === 
 
 for (const f of files) {
     test(`sample output: ${f}`, t => {
-        const cp = spawnSync(node, [path.resolve(sampleRoot, f)], {stdio: ['pipe', 'pipe', 'ignore']});
-        const actualOutput = cp.stdout.toString().replace(/at:.*/g, 'at:{STACK}');
+        const cp = spawnSync(node, ['-r', 'esm', f], {
+            cwd: sampleRoot,
+            stdio: ['pipe', 'pipe', 'ignore'],
+            env: {RUN_ONLY: f.startsWith('only')}
+        });
+        const actualOutput = cp.stdout.toString()
+            .replace(/at:.*/g, 'at:{STACK}');
         const outputFile = `../output/${[f.split('.')[0], 'txt'].join('.')}`;
         const expectedOutput = readFileSync(path.resolve(sampleRoot, outputFile), {encoding: 'utf8'});
         t.equal(actualOutput, expectedOutput);
         t.end();
     });
-}
 
-for (const f of files) {
     test(`sample output indented: ${f}`, t => {
-        const code = readFileSync(path.resolve(sampleRoot, f), {encoding: 'utf8'});
-        const outputFile = path.resolve(sampleRoot, `../output/${[f.split('.')[0], 'indent', 'txt'].join('.')}`);
-        const expectedResult = readFileSync(outputFile, {encoding: 'utf8'});
-
-        const fullcode = `${code};test.indent()`;
-        let tap = '';
-
-        const cp = spawn(node, [], {cwd: sampleRoot, stdio: 'pipe'});
-
-        cp.stdout.on('data', buff => {
-            tap += buff.toString();
+        const cp = spawnSync(node, ['-r', 'esm', f], {
+            cwd: sampleRoot,
+            stdio: ['pipe', 'pipe', 'ignore'],
+            env: {
+                RUN_ONLY: f.startsWith('only'),
+                INDENT: true
+            }
         });
-
-        cp.stdout.on('end', () => {
-            t.equal(tap
-                    .replace(/[0-9]+ms/g, '{TIME}')
-                    .replace(/at:.*/g, 'at:{STACK}'),
-                expectedResult);
-            t.end();
-        });
-        cp.stdin.write(fullcode);
-        cp.stdin.end();
+        const actualOutput = cp.stdout.toString()
+            .replace(/at:.*/g, 'at:{STACK}')
+            .replace(/[0-9]+ms/g, '{TIME}');
+        const outputFile = `../output/${[f.split('.')[0], 'indent', 'txt'].join('.')}`;
+        const expectedOutput = readFileSync(path.resolve(sampleRoot, outputFile), {encoding: 'utf8'});
+        t.equal(actualOutput, expectedOutput);
+        t.end();
     });
 }

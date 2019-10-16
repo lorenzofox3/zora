@@ -10,7 +10,7 @@ Fast javascript test runner for **nodejs** and **browsers**
 
 ## installation
 
-``npm install --save-dev zora``
+``npm i --save-dev zora``
 
 Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
 are supported by Node (>= 10 or >= 8 with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
@@ -42,7 +42,7 @@ You can run your test with
 Moreover zora does not use specific platform API which should make it transparent to most of your tools such module bundlers or transpilers.
 
 In few words:
-> Zora is Ecmascript, no less, no more.
+> Zora is EcmaScript, no less, no more.
 
 ### Tests are fast
 
@@ -62,11 +62,11 @@ Each framework runs with its default settings.
 
 Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 12 :
 
-|        |  zora@3.0.1  |  tape@4.10.2 |  Jest@24.8.0  |  AvA@2.1.0  |  Mocha@6.1.4|
+|        |  zora@3.1.0  |  tape@4.11.2 |  Jest@24.9.0  |  AvA@2.4.0  |  Mocha@6.2.1|
 |--------|:------------:|:-----------: |:-------------:|:------------:|:----------:|
-|Library |  121ms       |  1244ms      |  2580ms       |  1878ms      |  1589ms    |
-|Web app |  132ms       |  3549ms      |  3891ms       |  2635ms      |  3919ms    |
-|API     |  200ms       |  12595ms     |  6674ms       |  3179ms      | 12898ms    |
+|Library |  102ms       |  1240ms      |  2835ms       |  1888ms      |  1349ms    |
+|Web app |  134ms       |  3523ms      |  4084ms       |  2900ms      |  3696ms    |
+|API     |  187ms       |  12586ms     |  7380ms       |  3900ms      | 12766ms    |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 
@@ -83,11 +83,11 @@ In my opinions:
 
 As a result zora is much smaller of an install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
-|        |  zora@3.0.1  |  tape@4.10.2 |  Jest@24.8.2  |  AvA@2.1.0  |  Mocha@6.1.4|
+|        |  zora@3.1.0  |  tape@4.10.2 |  Jest@24.8.2  |  AvA@2.1.0  |  Mocha@6.1.4|
 |--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Install size |  [155kb](https://packagephobia.now.sh/result?p=zora)  |  [1004kb](https://packagephobia.now.sh/result?p=tape)  |  [38.6mb](https://packagephobia.now.sh/result?p=jest) |  [15.8mb](https://packagephobia.now.sh/result?p=ava)  |  [5.79mb](https://packagephobia.now.sh/result?p=mocha)|
+|Install size |  [155kb](https://packagephobia.now.sh/result?p=zora)  |  [1.06mb](https://packagephobia.now.sh/result?p=tape)  |  [32mb](https://packagephobia.now.sh/result?p=jest) |  [14.8mb](https://packagephobia.now.sh/result?p=ava)  |  [5.59mb](https://packagephobia.now.sh/result?p=mocha)|
 
-### Reporter is handled with other process (TAP aware)
+### Reporting is handled with another process (TAP aware)
 
 When you run a test you usually want to know whether there is any failure, where and why in order to debug and solve the issue as fast as possible.
 Whether you want it to be printed in red, yellow etc is a matter of preference.
@@ -322,13 +322,10 @@ ok 5 - deeply nested really
 ok 6 - deeply nested again
 not ok 7 - nested 2
   ---
-  pass: false
   actual: true
   expected: "falsy value"
-  description: "nested 2"
   operator: "notOk"
   at: " t.test.t (/Volumes/Data/code/zora/test/samples/cases/nested.js:20:11)"
-  id: 7
   ...
 ok 8 - assert2
 # tester 2
@@ -350,12 +347,16 @@ of the format.
 
 ![tap output in a BDD format](./media/bsd.png)
 
-If you call the ``indent`` method on the ``test`` function anywhere in your test the output stream will indent sub tests and use other properties for diagnostic:
+You can ask zora to indent sub tests with configuration flag: 
+1. setting node environment variable ``INDENT=true node ./path/to/test/program`` if you run the test program with node
+2. setting a global variable on the window object if you use the browser to run the test program 
+```markup
+<script>INDENT=true;</script>
+<script src="path/to/test/program></script>
+```
 
 ```Javascript
 const {test} = require('zora.js');
-
-test.indent(); // INDENT
 
 test('tester 1', t => {
 
@@ -478,6 +479,68 @@ ok 6 - failing text # SKIP
 # ok
 # success: 3
 # skipped: 3
+# failure: 0
+```
+
+### Run only some tests
+
+While developing, you may want to only run some tests. You can do so by using the ``only`` function. If the test you want to run has
+some sub tests, you will also have to call ``assertion.only`` to make a given sub test run.
+You will also have to set the ``RUN_ONLY`` flag to ``true`` (in the same way as ``INDENT``). ``only`` is a convenience 
+for a developer while working, it has not real meaning for the testing program, so if you use only in the testing program and run it without the RUN_ONLY mode, it will bailout.
+
+```javascript
+test('should not run', t => {
+    t.fail('I should not run ');
+});
+
+only('should run', t => {
+    t.ok(true, 'I ran');
+
+    t.only('keep running', t => {
+        t.only('keeeeeep running', t => {
+            t.ok(true, ' I got there');
+        });
+    });
+
+    t.test('should not run', t => {
+        t.fail('shouldn ot run');
+    });
+});
+
+only('should run but nothing inside', t => {
+    t.test('will not run', t => {
+        t.fail('should not run');
+    });
+    t.test('will not run', t => {
+        t.fail('should not run');
+    });
+});
+```
+
+If you run the following program with node ``RUN_ONLY node ./path/to/program.js``, you will get the following output:
+
+```tap
+TAP version 13
+# should not run
+ok 1 - should not run # SKIP
+# should run
+ok 2 - I ran
+# keep running
+# keeeeeep running
+ok 3 -  I got there
+# should not run
+ok 4 - should not run # SKIP
+# should run but nothing inside
+# will not run
+ok 5 - will not run # SKIP
+# will not run
+ok 6 - will not run # SKIP
+1..6
+
+# ok
+# success: 2
+# skipped: 4
 # failure: 0
 ```
 

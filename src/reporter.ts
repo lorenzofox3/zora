@@ -18,10 +18,10 @@ const print = (message: string, offset = 0): void => {
 
 const stringifySymbol = (key, value) => {
     if (typeof value === 'symbol') {
-        return value.toString()
+        return value.toString();
     }
 
-    return value
+    return value;
 };
 
 const printYAML = (obj: object, offset = 0): void => {

@@ -1,4 +1,4 @@
-const {ok, skip, test} = require('../../../dist/bundle/index.js');
+import {test, ok, skip} from '../../../src/index.js';
 
 ok(true, 'hey hey');
 ok(true, 'hey hey bis');

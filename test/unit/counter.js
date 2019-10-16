@@ -1,6 +1,6 @@
-import {counter} from '../../dist/src/counter.js';
-import {assert} from '../../dist/src/assertion.js';
-import {tester} from '../../dist/src/test.js';
+import {counter} from '../../src/counter.js';
+import {assert} from '../../src/assertion.js';
+import {tester} from '../../src/test.js';
 
 const test = require('tape');
 

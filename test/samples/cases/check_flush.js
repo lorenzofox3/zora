@@ -1,4 +1,4 @@
-const {test} = require('../../../dist/bundle/index.js');
+import {test} from '../../../src/index.js';
 
 const wait = time => new Promise(resolve => {
     setTimeout(() => resolve(), time);

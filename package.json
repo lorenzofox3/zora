@@ -22,11 +22,11 @@
     "dist/declarations"
   ],
   "scripts": {
-    "build:clean": "rm -rf ./dist && mkdir -p ./dist/bundle ./dist/declarations && cp -r ./src ./dist/src",
+    "build:clean": "rm -rf ./dist && mkdir -p ./dist/bundle ./dist/declarations",
     "build:compile": "tsc",
-    "build:bundle": "rollup -c ./rollup/build.js",
+    "build:bundle": "rollup -c ./rollup/build.js && rollup -c ./rollup/cdn.js",
     "build": "npm run build:clean && npm run build:compile && npm run build:bundle",
-    "bench:clean": "rm -r ./benchmarks && mkdirp ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
+    "bench:clean": "rm -r ./benchmarks && mkdir -p ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
     "bench:build": "npm run bench:clean && node ./scripts/generate.js",
     "bench:zora": "time node ./benchmarks/zora/index.js",
     "bench:ava": "time ava ./benchmarks/ava/test/*.js",
@@ -35,27 +35,28 @@
     "bench:jest": "time jest",
     "test:unit": "rollup -c ./rollup/test.js | node",
     "test:sample": "node ./test/samples/index.js",
-    "test": "npm run test:unit && npm run test:sample"
+    "test": "npm run test:unit && npm run test:sample",
+    "dev": "npm run build:compile -- -w"
   },
   "author": {
     "name": "Laurent Renard",
     "email": "laurent34azerty@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "@lorenzofox3/for-await": "^0.2.0",
-    "ava": "^2.2.0",
-    "fast-deep-equal": "^2.0.1",
-    "jest": "^24.8.0",
-    "mkdirp": "^0.5.1",
-    "mocha": "^6.2.0",
-    "rollup": "^1.19.4",
-    "rollup-plugin-commonjs": "^10.0.2",
+    "fast-deep-equal": "^2.0.1"
+  },
+  "devDependencies": {
+    "ava": "^2.4.0",
+    "esm": "^3.2.25",
+    "jest": "^24.9.0",
+    "mocha": "^6.2.1",
+    "rollup": "^1.24.0",
+    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "tap-diff": "^0.1.1",
     "tape": "^4.11.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.4"
   },
   "jest": {
     "testRegex": ".*.js",

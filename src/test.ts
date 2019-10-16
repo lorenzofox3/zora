@@ -1,17 +1,18 @@
 import {assert} from './assertion';
 import {assertionMessage, bailout, endTestMessage, startTestMessage} from './protocol';
 import {counter, delegateToCounter} from './counter';
-import {Assert, Test} from './interfaces';
+import {Test} from './interfaces';
 
 export const defaultTestOptions = Object.freeze({
     offset: 0,
-    skip: false
+    skip: false,
+    runOnly: false
 });
 
 export const noop = () => {
 };
 
-export const tester = (description, spec, {offset = 0, skip = false} = defaultTestOptions): Test => {
+export const tester = (description, spec, {offset = 0, skip = false, runOnly = false} = defaultTestOptions): Test => {
     let id = 0;
     let pass = true;
     let executionTime = 0;
@@ -22,7 +23,7 @@ export const tester = (description, spec, {offset = 0, skip = false} = defaultTe
     const assertions = [];
     const collect = item => assertions.push(item);
     const specFunction = skip === true ? noop : function zora_spec_fn() {
-        return spec(assert(collect, offset));
+        return spec(assert(collect, offset, runOnly));
     };
 
     const testRoutine = (async function () {

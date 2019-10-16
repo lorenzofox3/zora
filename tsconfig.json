@@ -8,10 +8,10 @@
     "noImplicitAny": false,
     "declaration": true,
     "declarationDir": "dist/declarations",
-    "target": "esnext"
+    "target": "esnext",
+    "esModuleInterop": true
   },
   "include": [
-    "./dist/src/**/*",
-    "./dist/src/*"
+    "./src"
   ]
 }

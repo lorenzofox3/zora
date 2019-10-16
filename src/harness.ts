@@ -1,16 +1,19 @@
 import {assert} from './assertion';
 import {assertionMessage, endTestMessage, startTestMessage} from './protocol';
-import {tapeTapLike as tap} from './reporter';
+import {mochaTapLike, tapeTapLike} from './reporter';
 import {counter, delegateToCounter} from './counter';
-import {TestHarness, Test} from './interfaces';
+import {Test, TestHarness, TestHarnessConfiguration} from './interfaces';
 
-export const harnessFactory = (): TestHarness => {
+export const harnessFactory = ({runOnly = false, indent = false}: TestHarnessConfiguration = {
+    runOnly: false,
+    indent: false
+}): TestHarness => {
     const tests: Test[] = [];
     const testCounter = counter();
     const withTestCounter = delegateToCounter(testCounter);
     const rootOffset = 0;
     const collect = item => tests.push(item);
-    const api = assert(collect, rootOffset);
+    const api = assert(collect, rootOffset, runOnly);
 
     let pass = true;
     let id = 0;
@@ -47,8 +50,9 @@ export const harnessFactory = (): TestHarness => {
             }
             yield endTestMessage(this, 0);
         },
-        report: async (reporter = tap) => {
-            return reporter(instance);
+        report: async (reporter) => {
+            const rep = reporter || (indent ? mochaTapLike : tapeTapLike);
+            return rep(instance);
         }
     }));
 };

@@ -1,7 +1,5 @@
 import {defaultTestOptions, noop, tester} from './test';
-import {AssertionResult, AssertionFunction, Operator, Assert, Test} from './interfaces';
-//@ts-ignore
-// (todo check what is wrong here, either with rollup if I use typescript namespace either with typescript as no default import)
+import {Assert, AssertionFunction, AssertionResult, Operator, Test} from './interfaces';
 import equal from 'fast-deep-equal';
 
 export const isAssertionResult = (result: Test | AssertionResult): result is AssertionResult => {
@@ -119,7 +117,7 @@ export const AssertPrototype = {
             actual,
             expected,
             description: description || 'should throw',
-            operator: Operator.THROWS,
+            operator: Operator.THROWS
         };
     }),
     doesNotThrow: assertMethodHook((func, expected, description?: string) => {
@@ -142,7 +140,7 @@ export const AssertPrototype = {
     })
 };
 
-export const assert = (collect, offset: number): Assert => {
+export const assert = (collect, offset: number, runOnly = false): Assert => {
     const actualCollect = item => {
         if (!item.pass) {
             item.at = getAssertionLocation();
@@ -150,16 +148,35 @@ export const assert = (collect, offset: number): Assert => {
         collect(item);
         return item;
     };
+
+    const test = (description, spec, opts) => {
+        const options = Object.assign({}, defaultTestOptions, opts, {offset: offset + 1, runOnly});
+        const subTest = tester(description, spec, options);
+        collect(subTest);
+        return subTest.routine;
+    };
+
+    const skip = (description, spec, opts) => {
+        return test(description, spec, Object.assign({}, opts, {skip: true}));
+    };
+
     return Object.assign(
         Object.create(AssertPrototype, {collect: {value: actualCollect}}),
         {
-            test(description, spec, opts = defaultTestOptions) {
-                const subTest = tester(description, spec, Object.assign({}, defaultTestOptions, opts, {offset: offset + 1}));
-                collect(subTest);
-                return subTest.routine;
+            test(description, spec, opts = {}) {
+                if (runOnly) {
+                    return skip(description, spec, opts);
+                }
+                return test(description, spec, opts);
             },
-            skip(description: string, spec = noop, opts = defaultTestOptions) {
-                return this.test(description, spec, Object.assign({}, opts, {skip: true}));
+            skip(description: string, spec = noop, opts = {}) {
+                return skip(description, spec, opts);
+            },
+            only(description: string, spec, opts = {}) {
+                const specFn = runOnly === false ? _ => {
+                    throw new Error(`Can not use "only" method when not in run only mode`);
+                } : spec;
+                return test(description, specFn, opts);
             }
         }
     );

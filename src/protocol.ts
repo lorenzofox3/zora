@@ -1,11 +1,11 @@
 import {
-    StartTestMessage,
-    AssertionResult,
     AssertionMessage,
-    MessageType,
-    TestEndMessage,
+    AssertionResult,
     BailoutMessage,
-    Test
+    MessageType,
+    StartTestMessage,
+    Test,
+    TestEndMessage
 } from './interfaces';
 
 export const startTestMessage = (test: { description }, offset: number): StartTestMessage => ({
@@ -20,13 +20,11 @@ export const assertionMessage = (assertion: Test | AssertionResult, offset: numb
     offset
 });
 
-
 export const endTestMessage = (test: Test, offset: number): TestEndMessage => ({
     type: MessageType.TEST_END,
     data: test,
     offset
 });
-
 
 export const bailout = (error: Error, offset: number): BailoutMessage => ({
     type: MessageType.BAIL_OUT,

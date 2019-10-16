@@ -94,6 +94,8 @@ export interface Assert {
     test: TestFunction;
 
     skip: TestFunction;
+
+    only: TestFunction;
 }
 
 export type AssertionFunction =
@@ -111,6 +113,11 @@ export interface Counter {
 
 export interface TestCounter extends Counter {
     update(assertion: Test | AssertionResult): void;
+}
+
+export interface TestHarnessConfiguration {
+    runOnly?: boolean;
+    indent?: boolean;
 }
 
 export interface TestHarness extends Assert, AsyncIterable<Message<any>>, Counter {

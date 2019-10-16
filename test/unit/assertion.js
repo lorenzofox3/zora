@@ -1,4 +1,4 @@
-import {assert, AssertPrototype} from '../../dist/src/assertion.js';
+import {assert, AssertPrototype} from '../../src/assertion.js';
 
 const test = require('tape');
 

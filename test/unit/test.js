@@ -1,4 +1,4 @@
-import {harnessFactory as createHarness} from '../../dist/src/harness.js';
+import {harnessFactory as createHarness} from '../../src/harness.js';
 
 const test = require('tape');
 

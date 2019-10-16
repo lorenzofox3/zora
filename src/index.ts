@@ -1,29 +1,46 @@
 import {harnessFactory} from './harness';
 import {mochaTapLike, tapeTapLike} from './reporter';
 import {
+    BooleanAssertionFunction,
+    ComparatorAssertionFunction,
+    ErrorAssertionFunction,
+    MessageAssertionFunction,
     RootTest,
     TestFunction,
-    SpecFunction,
-    ComparatorAssertionFunction,
-    BooleanAssertionFunction,
-    MessageAssertionFunction,
-    ErrorAssertionFunction,
     TestHarness
 } from './interfaces';
 
+const findConfigurationFlag = (name) => {
+    if (typeof process !== 'undefined') {
+        return process.env[name] === 'true';
+        // @ts-ignore
+    } else if (typeof window !== 'undefined') {
+        // @ts-ignore
+        return Boolean(window[name]);
+    }
+    return false;
+};
+
+const defaultTestHarness = harnessFactory({
+    runOnly: findConfigurationFlag('RUN_ONLY')
+});
+
 let autoStart = true;
-let indent = false;
-const defaultTestHarness = harnessFactory();
+let indent = findConfigurationFlag('INDENT');
 
 const rootTest = defaultTestHarness.test.bind(defaultTestHarness);
-rootTest.indent = () => indent = true;
+rootTest.indent = () => {
+    console.warn('indent function is deprecated, use "INDENT" configuration flag instead');
+    indent = true;
+};
 
 export * from './interfaces';
 
 export {tapeTapLike, mochaTapLike} from './reporter';
 export {AssertPrototype} from './assertion';
 export const test: RootTest = rootTest;
-export const skip: TestFunction = (description: string, spec: SpecFunction, options = {}) => rootTest(description, spec, Object.assign({}, options, {skip: true}));
+export const skip: TestFunction = defaultTestHarness.skip.bind(defaultTestHarness);
+export const only: TestFunction = defaultTestHarness.only.bind(defaultTestHarness);
 rootTest.skip = skip;
 export const equal: ComparatorAssertionFunction = defaultTestHarness.equal.bind(defaultTestHarness);
 export const equals = equal;
