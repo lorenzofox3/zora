@@ -1,6 +1,6 @@
 # zora
 
-Fast javascript test runner for **nodejs** and **browsers**
+Fast javascript testing library for **nodejs** and **browsers**
 
 [![CircleCI](https://badgen.net/circleci/github/lorenzofox3/zora)](https://circleci.com/gh/lorenzofox3/zora)
 [![npm](https://badgen.net/npm/v/zora)](https://www.npmjs.com/package/zora)
