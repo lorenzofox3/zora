@@ -69,9 +69,9 @@ export const fail: MessageAssertionFunction = defaultTestHarness.fail.bind(defau
 export const throws: ErrorAssertionFunction = defaultTestHarness.throws.bind(defaultTestHarness);
 export const doesNotThrow: ErrorAssertionFunction = defaultTestHarness.doesNotThrow.bind(defaultTestHarness);
 
-export const createHarness = (): TestHarness => {
+export const createHarness = (opts = {}): TestHarness => {
     autoStart = false;
-    return harnessFactory();
+    return harnessFactory(opts);
 };
 
 const start = () => {
