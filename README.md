@@ -83,9 +83,9 @@ In my opinions:
 
 As a result zora is much smaller of an install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
-|        |  zora@3.1.0  |  tape@4.10.2 |  Jest@24.8.2  |  AvA@2.1.0  |  Mocha@6.1.4|
-|--------|:------------:|:-----------:|:-------------:|:------------:|------------:|
-|Install size |  [209kb](https://packagephobia.now.sh/result?p=zora)  |  [1.06mb](https://packagephobia.now.sh/result?p=tape)  |  [32mb](https://packagephobia.now.sh/result?p=jest) |  [14.8mb](https://packagephobia.now.sh/result?p=ava)  |  [5.59mb](https://packagephobia.now.sh/result?p=mocha)|
+|        |  zora  |  tape |  Jest  |  AvA  |  Mocha|
+|--------|:------------:|:-----------:|:-------------:|:------------:|:------------:|
+|Install size |  [![zora](https://packagephobia.now.sh/badge?p=zora)](https://packagephobia.now.sh/result?p=zora)  |  [![tape](https://packagephobia.now.sh/badge?p=tape)](https://packagephobia.now.sh/result?p=tape)  |  [![jes](https://packagephobia.now.sh/badge?p=jest)](https://packagephobia.now.sh/result?p=jest) |  [![ava](https://packagephobia.now.sh/badge?p=ava)](https://packagephobia.now.sh/result?p=ava) |  [![mocha](https://packagephobia.now.sh/badge?p=mocha)](https://packagephobia.now.sh/result?p=mocha) |
 
 ### Reporting is handled with another process (TAP aware)
 
