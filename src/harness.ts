@@ -1,58 +1,33 @@
 import {assert} from './assertion';
-import {assertionMessage, endTestMessage, startTestMessage} from './protocol';
 import {mochaTapLike, tapeTapLike} from './reporter';
-import {counter, delegateToCounter} from './counter';
-import {Test, TestHarness, TestHarnessConfiguration} from './interfaces';
+import {TestHarness, TestHarnessConfiguration} from './interfaces';
+import {testerLikeProvider, TesterPrototype} from './commons';
 
 export const harnessFactory = ({runOnly = false, indent = false}: TestHarnessConfiguration = {
     runOnly: false,
     indent: false
 }): TestHarness => {
-    const tests: Test[] = [];
-    const testCounter = counter();
-    const withTestCounter = delegateToCounter(testCounter);
+    const tests = [];
     const rootOffset = 0;
     const collect = item => tests.push(item);
     const api = assert(collect, rootOffset, runOnly);
+    let error = null;
 
-    let pass = true;
-    let id = 0;
+    const factory = testerLikeProvider(Object.assign(api, TesterPrototype, {
+        report: async function (reporter) {
+            const rep = reporter || (indent ? mochaTapLike : tapeTapLike);
+            return rep(this);
+        }
+    }));
 
-    const instance = Object.create(api, {
-        length: {
+    return Object.defineProperties(factory(tests, Promise.resolve(), rootOffset), {
+        error: {
             get() {
-                return tests.length;
-            }
-        },
-        pass: {
-            get() {
-                return pass;
+                return error;
+            },
+            set(val) {
+                error = val;
             }
         }
     });
-
-    return withTestCounter(Object.assign(instance, {
-        [Symbol.asyncIterator]: async function* () {
-            for (const t of tests) {
-                t.id = ++id;
-                if (t[Symbol.asyncIterator]) {
-                    // Sub test
-                    yield startTestMessage({description: t.description}, rootOffset);
-                    yield* t;
-                    if (t.error !== null) {
-                        pass = false;
-                        return;
-                    }
-                }
-                yield assertionMessage(t, rootOffset);
-                pass = pass && t.pass;
-                testCounter.update(t);
-            }
-            yield endTestMessage(this, 0);
-        },
-        report: async (reporter) => {
-            const rep = reporter || (indent ? mochaTapLike : tapeTapLike);
-            return rep(instance);
-        }
-    }));
 };

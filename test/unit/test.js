@@ -36,7 +36,7 @@ test('test harness with basic sub tests', async (t) => {
     });
     await checkMessageStream(t, harness, [{type: 'TEST_START', data: {description: 'some tester'}, offset: 0}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal', id: 1},
+        data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal'},
         offset: 1
     }, {
         type: 'ASSERTION',
@@ -45,8 +45,7 @@ test('test harness with basic sub tests', async (t) => {
             actual: true,
             expected: 'truthy value',
             description: 'a second assertion',
-            operator: 'ok',
-            id: 2
+            operator: 'ok'
         },
         offset: 1
     }, {
@@ -54,8 +53,7 @@ test('test harness with basic sub tests', async (t) => {
         data: {
             description: 'some tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
         },
         offset: 1
     }, {
@@ -63,13 +61,12 @@ test('test harness with basic sub tests', async (t) => {
         data: {
             description: 'some tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
         },
         offset: 0
     }, {type: 'TEST_START', data: {description: 'some second tester'}, offset: 0}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal', id: 1},
+        data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal'},
         offset: 1
     }, {
         type: 'ASSERTION',
@@ -78,8 +75,8 @@ test('test harness with basic sub tests', async (t) => {
             actual: true,
             expected: 'truthy value',
             description: 'and another one',
-            operator: 'ok',
-            id: 2
+            operator: 'ok'
+
         },
         offset: 1
     }, {
@@ -87,8 +84,8 @@ test('test harness with basic sub tests', async (t) => {
         data: {
             description: 'some second tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -96,8 +93,8 @@ test('test harness with basic sub tests', async (t) => {
         data: {
             description: 'some second tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
@@ -123,7 +120,7 @@ test('test harness with async sub tests: should stream in the declared order', a
         offset: 0
     }, {
         type: 'ASSERTION',
-        data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal', id: 1},
+        data: {pass: true, actual: 2, expected: 2, description: 'equality', operator: 'equal'},
         offset: 1
     }, {
         type: 'ASSERTION',
@@ -132,8 +129,8 @@ test('test harness with async sub tests: should stream in the declared order', a
             actual: true,
             expected: 'truthy value',
             description: 'a second assertion',
-            operator: 'ok',
-            id: 2
+            operator: 'ok'
+
         },
         offset: 1
     }, {
@@ -141,8 +138,8 @@ test('test harness with async sub tests: should stream in the declared order', a
         data: {
             description: 'some longer tester first',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -150,13 +147,13 @@ test('test harness with async sub tests: should stream in the declared order', a
         data: {
             description: 'some longer tester first',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_START', data: {description: 'some faster tester second'}, offset: 0}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal', id: 1},
+        data: {pass: true, actual: 2, expected: 2, description: 'equality in second tester', operator: 'equal'},
         offset: 1
     }, {
         type: 'ASSERTION',
@@ -165,8 +162,8 @@ test('test harness with async sub tests: should stream in the declared order', a
             actual: true,
             expected: 'truthy value',
             description: 'and another one',
-            operator: 'ok',
-            id: 2
+            operator: 'ok'
+
         },
         offset: 1
     }, {
@@ -174,8 +171,8 @@ test('test harness with async sub tests: should stream in the declared order', a
         data: {
             description: 'some faster tester second',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -183,8 +180,8 @@ test('test harness with async sub tests: should stream in the declared order', a
         data: {
             description: 'some faster tester second',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
@@ -214,23 +211,23 @@ test('test harness with nested sub tests', async (t) => {
         offset: 0
     }, {
         type: 'ASSERTION',
-        data: {pass: true, actual: 2, expected: 2, description: 'before', operator: 'equal', id: 1},
+        data: {pass: true, actual: 2, expected: 2, description: 'before', operator: 'equal'},
         offset: 1
     }, {type: 'TEST_START', data: {description: 'inside'}, offset: 1}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'before inside', operator: 'ok', id: 1},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'before inside', operator: 'ok'},
         offset: 2
     }, {type: 'TEST_START', data: {description: 'deep'}, offset: 2}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'deeply', operator: 'ok', id: 1},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'deeply', operator: 'ok'},
         offset: 3
     }, {
         type: 'TEST_END',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}'},
         offset: 3
     }, {
         type: 'ASSERTION',
-        data: {description: 'deep', pass: true, executionTime: '{TIME}', id: 2},
+        data: {description: 'deep', pass: true, executionTime: '{TIME}'},
         offset: 2
     }, {
         type: 'ASSERTION',
@@ -239,8 +236,8 @@ test('test harness with nested sub tests', async (t) => {
             actual: 'after deep',
             expected: 'truthy value',
             description: 'should be truthy',
-            operator: 'ok',
-            id: 3
+            operator: 'ok'
+
         },
         offset: 2
     }, {
@@ -248,8 +245,8 @@ test('test harness with nested sub tests', async (t) => {
         data: {
             description: 'inside',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 2
     }, {
@@ -257,21 +254,21 @@ test('test harness with nested sub tests', async (t) => {
         data: {
             description: 'inside',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'after', operator: 'ok', id: 3},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'after', operator: 'ok'},
         offset: 1
     }, {
         type: 'TEST_END',
         data: {
             description: 'some first root',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -279,21 +276,21 @@ test('test harness with nested sub tests', async (t) => {
         data: {
             description: 'some first root',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_START', data: {description: 'some other tester'}, offset: 0}, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'just to check', operator: 'ok', id: 1},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'just to check', operator: 'ok'},
         offset: 1
     }, {
         type: 'TEST_END',
         data: {
             description: 'some other tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -301,8 +298,8 @@ test('test harness with nested sub tests', async (t) => {
         data: {
             description: 'some other tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
@@ -340,15 +337,15 @@ test('test haness with nested async sub test: should stream in the declared orde
         offset: 1
     }, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'inside first', operator: 'ok', id: 1},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'inside first', operator: 'ok'},
         offset: 2
     }, {
         type: 'TEST_END',
         data: {
             description: 'a first tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 2
     }, {
@@ -356,8 +353,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'a first tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {type: 'TEST_START', data: {description: 'check counter'}, offset: 1}, {
@@ -367,8 +364,8 @@ test('test haness with nested async sub test: should stream in the declared orde
             actual: 0,
             expected: 0,
             description: 'should find the not updated value',
-            operator: 'equal',
-            id: 1
+            operator: 'equal'
+
         },
         offset: 2
     }, {
@@ -376,8 +373,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'check counter',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 2
     }, {
@@ -385,8 +382,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'check counter',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -394,8 +391,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'keep parallel',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -403,8 +400,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'keep parallel',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_START', data: {description: 'control flow'}, offset: 0}, {
@@ -413,15 +410,15 @@ test('test haness with nested async sub test: should stream in the declared orde
         offset: 1
     }, {
         type: 'ASSERTION',
-        data: {pass: true, actual: true, expected: 'truthy value', description: 'inside first', operator: 'ok', id: 1},
+        data: {pass: true, actual: true, expected: 'truthy value', description: 'inside first', operator: 'ok'},
         offset: 2
     }, {
         type: 'TEST_END',
         data: {
             description: 'a first tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 2
     }, {
@@ -429,8 +426,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'a first tester',
             pass: true,
-            executionTime: '{TIME}',
-            id: 1
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {type: 'TEST_START', data: {description: 'check counter'}, offset: 1}, {
@@ -440,8 +437,8 @@ test('test haness with nested async sub test: should stream in the declared orde
             actual: 1,
             expected: 1,
             description: 'should have the updated value',
-            operator: 'equal',
-            id: 1
+            operator: 'equal'
+
         },
         offset: 2
     }, {
@@ -449,8 +446,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'check counter',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 2
     }, {
@@ -458,8 +455,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'check counter',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -467,8 +464,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'control flow',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 1
     }, {
@@ -476,8 +473,8 @@ test('test haness with nested async sub test: should stream in the declared orde
         data: {
             description: 'control flow',
             pass: true,
-            executionTime: '{TIME}',
-            id: 2
+            executionTime: '{TIME}'
+
         },
         offset: 0
     }, {type: 'TEST_END', data: {executionTime: '{TIME}'}, offset: 0}]);
@@ -502,8 +499,8 @@ test('test harness in bailout: should end the stream', async (t) => {
                 actual: 'should be seen',
                 expected: 'truthy value',
                 description: 'should be truthy',
-                operator: 'ok',
-                id: 1
+                operator: 'ok'
+
             },
             offset: 1
         },
@@ -532,8 +529,8 @@ test('test harness with a nested bailout: should end the stream', async (t) => {
             actual: true,
             expected: 'truthy value',
             description: 'should be seen',
-            operator: 'ok',
-            id: 1
+            operator: 'ok'
+
         },
         offset: 1
     },
@@ -545,8 +542,8 @@ test('test harness with a nested bailout: should end the stream', async (t) => {
                 actual: true,
                 expected: 'truthy value',
                 description: 'assert inside',
-                operator: 'ok',
-                id: 1
+                operator: 'ok'
+
             },
             offset: 2
         }, {type: 'BAIL_OUT', data: error, offset: 2}]);

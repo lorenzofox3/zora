@@ -44,7 +44,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@lorenzofox3/for-await": "^0.2.0",
     "fast-deep-equal": "^2.0.1"
   },
   "devDependencies": {

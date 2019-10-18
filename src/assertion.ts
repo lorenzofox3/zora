@@ -1,6 +1,7 @@
-import {defaultTestOptions, noop, tester} from './test';
+import {tester} from './test';
 import {Assert, AssertionFunction, AssertionResult, Operator, Test} from './interfaces';
 import equal from 'fast-deep-equal';
+import {defaultTestOptions, noop} from './commons';
 
 export const isAssertionResult = (result: Test | AssertionResult): result is AssertionResult => {
     return 'operator' in result;

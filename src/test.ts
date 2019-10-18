@@ -1,31 +1,15 @@
 import {assert} from './assertion';
-import {assertionMessage, bailout, endTestMessage, startTestMessage} from './protocol';
-import {counter, delegateToCounter} from './counter';
 import {Test} from './interfaces';
-
-export const defaultTestOptions = Object.freeze({
-    offset: 0,
-    skip: false,
-    runOnly: false
-});
-
-export const noop = () => {
-};
+import {defaultTestOptions, noop, testerFactory} from './commons';
 
 export const tester = (description, spec, {offset = 0, skip = false, runOnly = false} = defaultTestOptions): Test => {
-    let id = 0;
-    let pass = true;
     let executionTime = 0;
     let error = null;
-    const testCounter = counter();
-    const withTestCounter = delegateToCounter(testCounter);
-
     const assertions = [];
     const collect = item => assertions.push(item);
     const specFunction = skip === true ? noop : function zora_spec_fn() {
         return spec(assert(collect, offset, runOnly));
     };
-
     const testRoutine = (async function () {
         try {
             const start = Date.now();
@@ -37,40 +21,13 @@ export const tester = (description, spec, {offset = 0, skip = false, runOnly = f
         }
     })();
 
-    return Object.defineProperties(withTestCounter({
-        [Symbol.asyncIterator]: async function* () {
-            await testRoutine;
-            for (const assertion of assertions) {
-                assertion.id = ++id;
-                if (assertion[Symbol.asyncIterator]) {
-                    // Sub test
-                    yield startTestMessage({description: assertion.description}, offset);
-                    yield* assertion;
-                    if (assertion.error !== null) {
-                        // Bubble up the error and return
-                        error = assertion.error;
-                        pass = false;
-                        return;
-                    }
-                }
-                yield assertionMessage(assertion, offset);
-                pass = pass && assertion.pass;
-                testCounter.update(assertion);
-            }
-
-            return error !== null ?
-                yield bailout(error, offset) :
-                yield endTestMessage(this, offset);
-        }
-    }), {
-        description: {
-            enumerable: true,
-            value: description
-        },
-        pass: {
-            enumerable: true,
+    return Object.defineProperties(testerFactory(assertions, testRoutine, offset), {
+        error: {
             get() {
-                return pass;
+                return error;
+            },
+            set(val) {
+                error = val;
             }
         },
         executionTime: {
@@ -79,21 +36,12 @@ export const tester = (description, spec, {offset = 0, skip = false, runOnly = f
                 return executionTime;
             }
         },
-        length: {
-            get() {
-                return assertions.length;
-            }
-        },
-        error: {
-            get() {
-                return error;
-            }
-        },
-        routine: {
-            value: testRoutine
-        },
         skip: {
             value: skip
+        },
+        description: {
+            enumerable: true,
+            value: description
         }
     });
 };

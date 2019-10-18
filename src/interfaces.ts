@@ -111,6 +111,12 @@ export interface Counter {
     count: number;
 }
 
+export interface Test extends AsyncIterable<Message<any>>, TestResult, Counter {
+    readonly routine: Promise<any>;
+    readonly length: number;
+    readonly error?: any;
+}
+
 export interface TestCounter extends Counter {
     update(assertion: Test | AssertionResult): void;
 }
@@ -154,9 +160,3 @@ export type AssertionMessage = Message<Test | AssertionResult>;
 export type TestEndMessage = Message<Test>
 
 export type BailoutMessage = Message<Error>;
-
-export interface Test extends AsyncIterable<Message<any>>, TestResult, Counter {
-    readonly routine: Promise<any>;
-    readonly length: number;
-    readonly error?: any;
-}

@@ -1,16 +1,18 @@
 import {isAssertionResult} from './assertion';
-import {filter, map} from '@lorenzofox3/for-await';
 import {
     AssertionMessage,
-    AssertionResult,
     BailoutMessage,
-    Message,
     MessageType,
     StartTestMessage,
     TestEndMessage,
     TestHarness
 } from './interfaces';
-import {assertionMessage} from './protocol';
+import {map} from './commons';
+
+const flatten = map(m => {
+    m.offset = 0;
+    return m;
+});
 
 const print = (message: string, offset = 0): void => {
     console.log(message.padStart(message.length + (offset * 4))); // 4 white space used as indent (see tap-parser)
@@ -28,7 +30,7 @@ const printYAML = (obj: object, offset = 0): void => {
     const YAMLOffset = offset + 0.5;
     print('---', YAMLOffset);
     for (const [prop, value] of Object.entries(obj)) {
-        print(`${prop}: ${JSON.stringify(stringifySymbol(null, value), stringifySymbol)}`, YAMLOffset + 0.5);
+        print(`${prop}: ${JSON.stringify(value, stringifySymbol)}`, YAMLOffset + 0.5);
     }
     print('...', YAMLOffset);
 };
@@ -42,32 +44,8 @@ const subTestPrinter = (prefix = '') => (message: StartTestMessage): void => {
     const value = `${prefix}${data.description}`;
     comment(value, message.offset);
 };
-const mochaTapSubTest = subTestPrinter('Subtest: ');
-const tapeSubTest = subTestPrinter();
-
-const assertPrinter = (diagnostic: (assertionResult: AssertionResult) => Object) => (message: AssertionMessage): void => {
-    const {data, offset} = message;
-    const {pass, description, id} = data;
-    const label = pass === true ? 'ok' : 'not ok';
-    if (isAssertionResult(data)) {
-        print(`${label} ${id} - ${description}`, offset);
-        if (pass === false) {
-            printYAML(diagnostic(data), offset);
-        }
-    } else {
-        const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
-        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${comment}`, message.offset);
-    }
-
-};
-const tapeAssert = assertPrinter(({id, pass, description, ...rest}) => rest);
-const mochaTapAssert = assertPrinter(({expected, id, pass, description, actual, operator, at, ...rest}) => ({
-    wanted: expected,
-    found: actual,
-    at,
-    operator,
-    ...rest
-}));
+const indentedSubTest = subTestPrinter('Subtest: ');
+const flatSubTest = subTestPrinter();
 
 const testEnd = (message: TestEndMessage): void => {
     const length = message.data.length;
@@ -75,60 +53,85 @@ const testEnd = (message: TestEndMessage): void => {
     print(`1..${length}`, offset);
 };
 
-const printBailout = (message: BailoutMessage) => {
+const bailOut = (message: BailoutMessage) => {
     print('Bail out! Unhandled error.');
 };
 
-export const reportAsMochaTap = (message: Message<any>): void => {
+const indentedDiagnostic = ({expected, pass, description, actual, operator, at = 'N/A', ...rest}) => ({
+    wanted: expected,
+    found: actual,
+    at,
+    operator,
+    ...rest
+});
+const flatDiagnostic = ({pass, description, ...rest}) => rest;
+
+const indentedAssertion = (message: AssertionMessage, idIter: Iterator<number>) => {
+    const {data, offset} = message;
+    const {pass, description} = data;
+    const label = pass === true ? 'ok' : 'not ok';
+    const {value: id} = idIter.next();
+    if (isAssertionResult(data)) {
+        print(`${label} ${id} - ${description}`, offset);
+        if (pass === false) {
+            printYAML(indentedDiagnostic(data), offset);
+        }
+    } else {
+        const comment = data.skip === true ? 'SKIP' : `${data.executionTime}ms`;
+        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # ${comment}`, message.offset);
+    }
+};
+
+const flatAssertion = (message: AssertionMessage, idIter: Iterator<number>) => {
+    const {data, offset} = message;
+    const {pass, description} = data;
+    const label = pass === true ? 'ok' : 'not ok';
+    if (isAssertionResult(data)) {
+        const {value: id} = idIter.next();
+        print(`${label} ${id} - ${description}`, offset);
+        if (pass === false) {
+            printYAML(flatDiagnostic(data), offset);
+        }
+    } else if (data.skip) {
+        const {value: id} = idIter.next();
+        print(`${pass ? 'ok' : 'not ok'} ${id} - ${description} # SKIP`, offset);
+    }
+};
+
+const indentedReport = (message, id) => {
     switch (message.type) {
         case MessageType.TEST_START:
-            mochaTapSubTest(message);
+            id.fork();
+            indentedSubTest(message);
             break;
         case MessageType.ASSERTION:
-            mochaTapAssert(message);
+            indentedAssertion(message, id);
             break;
         case  MessageType.TEST_END:
+            id.merge();
             testEnd(message);
             break;
         case MessageType.BAIL_OUT:
-            printBailout(message);
+            bailOut(message);
             throw message.data;
     }
 };
 
-export const reportAsTapeTap = (message: Message<any>): void => {
+const flatReport = (message, id) => {
     switch (message.type) {
         case MessageType.TEST_START:
-            tapeSubTest(message);
+            flatSubTest(message);
             break;
         case MessageType.ASSERTION:
-            tapeAssert(message);
+            flatAssertion(message, id);
             break;
         case MessageType.BAIL_OUT:
-            printBailout(message);
+            bailOut(message);
             throw message.data;
     }
 };
 
-const flatFilter = filter<Message<any>>((message) => {
-    return message.type === MessageType.TEST_START
-        || message.type === MessageType.BAIL_OUT
-        || (message.type === MessageType.ASSERTION && (isAssertionResult(message.data) || message.data.skip === true));
-});
-const flattenStream = (stream: AsyncIterable<Message<any>>) => {
-    let id = 0;
-    const mapper = map<Message<any>>(message => {
-        if (message.type === MessageType.ASSERTION) {
-            const mappedData = <AssertionResult>Object.assign(message.data, {id: ++id});
-            return assertionMessage(mappedData, 0);
-        }
-        return Object.assign({}, message, {offset: 0});
-    });
-
-    return mapper(flatFilter(stream));
-};
-
-const printSummary = (harness: TestHarness): void => {
+const summary = (harness: TestHarness): void => {
     print('', 0);
     comment(harness.pass ? 'ok' : 'not ok', 0);
     comment(`success: ${harness.successCount}`, 0);
@@ -136,21 +139,53 @@ const printSummary = (harness: TestHarness): void => {
     comment(`failure: ${harness.failureCount}`, 0);
 };
 
+const id = function* () {
+    let i = 0;
+    while (true) {
+        yield ++i;
+    }
+};
+
+interface IdGenerator extends IterableIterator<number> {
+    fork(): void;
+
+    merge(): void;
+}
+
+const idGen = (): IdGenerator => {
+    let stack = [id()];
+    return {
+        [Symbol.iterator]() {
+            return this;
+        },
+        next() {
+            return stack[0].next();
+        },
+        fork() {
+            stack.unshift(id());
+        },
+        merge() {
+            stack.shift();
+        }
+    };
+};
+
 export const tapeTapLike = async (stream: TestHarness): Promise<void> => {
+    const src = flatten(stream);
+    const id = idGen();
     print('TAP version 13');
-    const streamInstance = flattenStream(stream);
-    for await (const message of streamInstance) {
-        reportAsTapeTap(message);
+    for await (const message of src) {
+        flatReport(message, id);
     }
     print(`1..${stream.count}`, 0);
-    printSummary(stream);
+    summary(stream);
 };
 
 export const mochaTapLike = async (stream: TestHarness): Promise<void> => {
     print('TAP version 13');
+    const id = idGen();
     for await (const message of stream) {
-        reportAsMochaTap(message);
+        indentedReport(message, id);
     }
-    printSummary(stream);
+    summary(stream);
 };
-
