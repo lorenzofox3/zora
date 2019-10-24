@@ -2,19 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 const filesCount = 12;
-const testCount = 10;
-const waitTime = 100;
+const testCount = 8;
+const waitTime = 50;
 
 const zoraCode = `
-const {test} = require('../../../dist/bundle/index.js');
+module.exports =(({test}) => {
 for (let i = 0; i < ${testCount}; i++) {
   test('test ' + i, async function (assert) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.ok(Math.random() * 100 > 5);
+    assert.ok(Math.random() * 100 > 3);
   });
-}
+}});
 `;
 
 const avaCode = `
@@ -24,7 +24,7 @@ for (let i = 0; i < ${testCount}; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.truthy(Math.random() * 100 > 5);
+    assert.truthy(Math.random() * 100 > 3);
   });
 }
 `;
@@ -35,7 +35,7 @@ describe('test file', function() {
   for(let i=0; i < ${testCount};i++){
     it('test ' + i, function(done) {
       setTimeout(()=>{
-        assert.ok(Math.random() * 100 > 5);
+        assert.ok(Math.random() * 100 > 3);
         done();
       },${waitTime});
     });
@@ -48,7 +48,7 @@ const test = require('tape');
 for (let i = 0; i < ${testCount}; i++) {
   test('test ' + i, function  (assert) {
     setTimeout(()=>{
-      assert.ok(Math.random() * 100 > 5);
+      assert.ok(Math.random() * 100 > 3);
       assert.end();
     },${waitTime});
   });
@@ -62,7 +62,7 @@ describe('add', function () {
       await new Promise(resolve => {
         setTimeout(()=>resolve(),${waitTime});
       });
-      expect(Math.random() * 100 > 5).toBeTruthy();
+      expect(Math.random() * 100 > 3).toBeTruthy();
     });
   }
 });
@@ -77,14 +77,14 @@ for (let f of tests){
 }
 `;
 const zoraIndex = `
+const {test} = require('../../dist/bundle/index.js');
 const path = require('path');
 const fs = require('fs');
 const tests = fs.readdirSync(path.join(process.cwd(),'./benchmarks/zora/test'));
 for (let f of tests){
-  require(path.join(process.cwd(),'./benchmarks/zora/test/',f));
+  test(f,require(path.join(process.cwd(),'./benchmarks/zora/test/',f)));
 }
 `;
-
 
 for (let i = 1; i <= filesCount; i++) {
     const zoraPath = path.join(process.cwd(), '/benchmarks/zora/test/', 'test' + i + '.js');

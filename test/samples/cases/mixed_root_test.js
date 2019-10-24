@@ -1,4 +1,4 @@
-import {ok, test, eq} from '../../../src/index.js';
+import {eq, ok, test} from '../../../dist/bundle/module.js';
 
 ok(true, 'true is truthy');
 

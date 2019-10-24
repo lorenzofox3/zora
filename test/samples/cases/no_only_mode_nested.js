@@ -1,4 +1,4 @@
-import {test, only} from '../../../src/index.js';
+import {test, only} from '../../../dist/bundle/module.js';
 
 test('should not run', t => {
     t.fail('I should not run ');

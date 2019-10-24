@@ -1,4 +1,4 @@
-import {test} from '../../../src/index.js';
+import {test} from '../../../dist/bundle/module.js';
 
 test('tester 1', t => {
 

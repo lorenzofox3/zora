@@ -41,3 +41,4 @@ test/dist
 benchmarks
 dist
 src/*.js
+sample.html

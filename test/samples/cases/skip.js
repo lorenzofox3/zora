@@ -1,4 +1,4 @@
-import {test, ok, skip} from '../../../src/index.js';
+import {test, ok, skip} from '../../../dist/bundle/module.js';
 
 ok(true, 'hey hey');
 ok(true, 'hey hey bis');
