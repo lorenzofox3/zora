@@ -1,10 +1,10 @@
 
 module.exports =(({test}) => {
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 10; i++) {
   test('test ' + i, async function (assert) {
     await new Promise(resolve => {
-      setTimeout(()=>resolve(),50);
+      setTimeout(()=>resolve(),100);
     });
-    assert.ok(Math.random() * 100 > 3);
+    assert.ok(Math.random() * 100 > 5);
   });
 }});

@@ -1,11 +1,11 @@
 
 describe('add', function () {
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     it('should test',async function () {
       await new Promise(resolve => {
-        setTimeout(()=>resolve(),50);
+        setTimeout(()=>resolve(),100);
       });
-      expect(Math.random() * 100 > 3).toBeTruthy();
+      expect(Math.random() * 100 > 5).toBeTruthy();
     });
   }
 });

@@ -62,11 +62,11 @@ Each framework runs with its default settings.
 
 Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 12 :
 
-|        |  zora@3.1.0  |  tape@4.11.2 |  Jest@24.9.0  |  AvA@2.4.0  |  Mocha@6.2.1|
-|--------|:------------:|:-----------: |:-------------:|:------------:|:----------:|
-|Library |  102ms       |  1240ms      |  2835ms       |  1888ms      |  1349ms    |
-|Web app |  134ms       |  3523ms      |  4084ms       |  2900ms      |  3696ms    |
-|API     |  187ms       |  12586ms     |  7380ms       |  3900ms      | 12766ms    |
+|        |  zora@3.1.0  |   pta@0.1.0  |  tape@4.11.2 |  Jest@24.9.0  |  AvA@2.4.0  |  Mocha@6.2.1|
+|--------|:------------:|:------------:|:------------:|:-------------:|:------------:|:----------:|
+|Library |    102ms     |     231ms    |    1240ms    |    2835ms     |    1888ms    |    1349ms  |
+|Web app |    134ms     |     278ms    |    3523ms    |    4084ms     |    2900ms    |    3696ms  |
+|API     |    187ms     |     331ms    |   12586ms    |    7380ms     |    3900ms    |   12766ms  |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 
@@ -83,9 +83,9 @@ In my opinions:
 
 As a result zora is much smaller of an install according to [packagephobia](https://packagephobia.now.sh) than all the others test frameworks
 
-|        |  zora  |  tape |  Jest  |  AvA  |  Mocha|
-|--------|:------------:|:-----------:|:-------------:|:------------:|:------------:|
-|Install size |  [![zora](https://packagephobia.now.sh/badge?p=zora)](https://packagephobia.now.sh/result?p=zora)  |  [![tape](https://packagephobia.now.sh/badge?p=tape)](https://packagephobia.now.sh/result?p=tape)  |  [![jes](https://packagephobia.now.sh/badge?p=jest)](https://packagephobia.now.sh/result?p=jest) |  [![ava](https://packagephobia.now.sh/badge?p=ava)](https://packagephobia.now.sh/result?p=ava) |  [![mocha](https://packagephobia.now.sh/badge?p=mocha)](https://packagephobia.now.sh/result?p=mocha) |
+|        |  zora  |  pta  |tape |  Jest  |  AvA  |  Mocha|
+|--------|:------------:|:------------:|:-----------:|:-------------:|:------------:|:------------:|
+|Install size |  [![zora](https://packagephobia.now.sh/badge?p=zora)](https://packagephobia.now.sh/result?p=zora)  |  [![pta](https://packagephobia.now.sh/badge?p=pta)](https://packagephobia.now.sh/result?p=pta)  |  [![tape](https://packagephobia.now.sh/badge?p=tape)](https://packagephobia.now.sh/result?p=tape)  |  [![jes](https://packagephobia.now.sh/badge?p=jest)](https://packagephobia.now.sh/result?p=jest) |  [![ava](https://packagephobia.now.sh/badge?p=ava)](https://packagephobia.now.sh/result?p=ava) |  [![mocha](https://packagephobia.now.sh/badge?p=mocha)](https://packagephobia.now.sh/result?p=mocha) |
 
 ### Reporting is handled with another process (TAP aware)
 

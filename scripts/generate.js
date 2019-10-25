@@ -2,8 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const filesCount = 12;
-const testCount = 8;
-const waitTime = 50;
+const testCount = 10;
+const waitTime = 100;
+const errorRate = 5;
 
 const zoraCode = `
 module.exports =(({test}) => {
@@ -12,7 +13,7 @@ for (let i = 0; i < ${testCount}; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.ok(Math.random() * 100 > 3);
+    assert.ok(Math.random() * 100 > ${errorRate});
   });
 }});
 `;
@@ -24,7 +25,7 @@ for (let i = 0; i < ${testCount}; i++) {
     await new Promise(resolve => {
       setTimeout(()=>resolve(),${waitTime});
     });
-    assert.truthy(Math.random() * 100 > 3);
+    assert.truthy(Math.random() * 100 > ${errorRate});
   });
 }
 `;
@@ -35,7 +36,7 @@ describe('test file', function() {
   for(let i=0; i < ${testCount};i++){
     it('test ' + i, function(done) {
       setTimeout(()=>{
-        assert.ok(Math.random() * 100 > 3);
+        assert.ok(Math.random() * 100 > ${errorRate});
         done();
       },${waitTime});
     });
@@ -48,7 +49,7 @@ const test = require('tape');
 for (let i = 0; i < ${testCount}; i++) {
   test('test ' + i, function  (assert) {
     setTimeout(()=>{
-      assert.ok(Math.random() * 100 > 3);
+      assert.ok(Math.random() * 100 > ${errorRate});
       assert.end();
     },${waitTime});
   });
@@ -62,7 +63,7 @@ describe('add', function () {
       await new Promise(resolve => {
         setTimeout(()=>resolve(),${waitTime});
       });
-      expect(Math.random() * 100 > 3).toBeTruthy();
+      expect(Math.random() * 100 > ${errorRate}).toBeTruthy();
     });
   }
 });
