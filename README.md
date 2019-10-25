@@ -114,6 +114,9 @@ isNot({},{},'those are not the same reference');
 
 If you run the previous program, test report will start on its own by default with the following console output:
 
+<details>
+    <summary>output.txt</summary>
+
 ```TAP
 TAP version 13
 ok 1 - true is truthy
@@ -126,6 +129,8 @@ ok 3 - those are not the same reference
 # skipped: 0
 # failure: 0
 ```
+
+</details>
 
 However one will usually want to group assertions within a sub test: the ``test`` method can be used.
 
@@ -141,6 +146,9 @@ test('some grouped assertions', t => {
 
 with the following result
 
+<details>
+    <summary>output.txt</summary>
+
 ```TAP
 TAP version 13
 # some grouped assertions
@@ -154,6 +162,8 @@ ok 3 - those are not the same reference
 # skipped: 0
 # failure: 0
 ```
+
+</details>
 
 You can also group tests within a parent test:
 
@@ -169,7 +179,9 @@ test('some grouped assertions', t => {
     });
 });
 ```
-
+<details>
+    <summary>output.txt</summary>
+    
 ```TAP
 TAP version 13
 # some grouped assertions
@@ -184,6 +196,7 @@ ok 3 - those are not the same reference
 # skipped: 0
 # failure: 0
 ```
+</details>
 
 ### Asynchronous tests and control flow
 
@@ -306,8 +319,9 @@ test('tester 2', t => {
     t.ok(true, 'assert4');
 });
 ```
-
-You will see in the console
+<details>
+    <summary>output.txt</summary>
+    
 ```TAP
 TAP version 13
 # tester 1
@@ -340,6 +354,8 @@ ok 11 - assert4
 # skipped: 0
 # failure: 1
 ```
+
+</details>
 
 Another common structure is the one used by [node-tap](http://node-tap.org/). The structure can be parsed with common tap parser (such as [tap-parser](https://github.com/tapjs/tap-parser)) And will be parsed as well by tap parser which
 do not understand the indentation. However to take full advantage of the structure you should probably use a formatter (such [tap-mocha-reporter](https://www.npmjs.com/package/tap-mocha-reporter)) aware of this specific structure to get the whole benefit
@@ -392,7 +408,9 @@ test('tester 2', t => {
 });
 ```
 
-will give you the following result
+<details>
+    <summary>output.txt</summary>
+
 ```TAP
 TAP version 13
 # Subtest: tester 1
@@ -438,6 +456,8 @@ ok 2 - tester 2 # 0ms
 # failure: 1
 ```
 
+</details>
+
 ### Skip a test
 
 You can decide to skip some tests if you wish not to run them, in that case they will be considered as _passing_. However the assertion summary at the end will tell you that some tests have been skipped
@@ -462,6 +482,9 @@ skip('failing text', t => {
 });
 ```
 
+<details>
+    <summary>output.txt</summary>
+
 ```TAP
 TAP version 13
 ok 1 - hey hey
@@ -481,6 +504,8 @@ ok 6 - failing text # SKIP
 # skipped: 3
 # failure: 0
 ```
+
+</details>
 
 ### Run only some tests
 
@@ -520,6 +545,9 @@ only('should run but nothing inside', t => {
 
 If you run the following program with node ``RUN_ONLY node ./path/to/program.js``, you will get the following output:
 
+<details>
+    <summary>output.txt</summary>
+    
 ```tap
 TAP version 13
 # should not run
@@ -543,6 +571,9 @@ ok 6 - will not run # SKIP
 # skipped: 4
 # failure: 0
 ```
+
+</details>
+
 
 ### Assertion API
 
