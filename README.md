@@ -635,6 +635,10 @@ harness
 
 In practice you won't use this method unless you have specific requirements or want to build your own test runner on top of zora.
 
+## Nodejs test runner
+
+If you want a little bit more opiniated test runner based on zora you can check [pta](https://github.com/lorenzofox3/zora-node)
+
 ## In the browser
 
 Zora itself does not depend on native Nodejs modules (such file system, processes, etc) so the code you will get is regular EcmaScript.
