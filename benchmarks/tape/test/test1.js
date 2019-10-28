@@ -5,6 +5,6 @@ for (let i = 0; i < 8; i++) {
     setTimeout(()=>{
       assert.ok(Math.random() * 100 > 3);
       assert.end();
-    },50);
+    },250);
   });
 }

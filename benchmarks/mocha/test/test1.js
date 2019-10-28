@@ -6,7 +6,7 @@ describe('test file', function() {
       setTimeout(()=>{
         assert.ok(Math.random() * 100 > 3);
         done();
-      },50);
+      },250);
     });
   }
 });
