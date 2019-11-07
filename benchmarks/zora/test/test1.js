@@ -3,8 +3,8 @@ module.exports =(({test}) => {
 for (let i = 0; i < 8; i++) {
   test('test ' + i, async function (assert) {
     await new Promise(resolve => {
-      setTimeout(()=>resolve(),250);
+      setTimeout(()=>resolve(),100);
     });
-    assert.ok(Math.random() * 100 > 3);
+    assert.ok(Math.random() * 100 > 1);
   });
 }});

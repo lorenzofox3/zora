@@ -12,15 +12,14 @@ Fast javascript testing library for **nodejs** and **browsers**
 
 ``npm i --save-dev zora``
 
-Note that the version 3 of zora targets modern Javascript engines. Behind the scene it uses *Asynchronous iterators* and *for await* statement. Both
-are supported by Node (>= 10 or >= 8 with flag) and all the major browsers. If you wish to use the v2 you can find its code and documentation on the [v2 branch](https://github.com/lorenzofox3/zora/tree/v2).
+If you are interested in a test runner for Nodejs, checkout [pta](https://github.com/lorenzofox3/zora-node) built on top of zora
 
 ## (Un)Opinions and Design
 
 These are the following rules and ideas I have followed while developing zora. Whether they are right or not is an entire different topic ! :D
 Note I have decided to develop zora specially because I was not able to find a tool which complies entirely with these ideas.
 
-[read more](https://dev.to/lorenzofox3/tools-and-the-design-of-a-testing-experience-2mdc) on how it fits in the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy)
+[read more](https://dev.to/lorenzofox3/tools-and-the-design-of-a-testing-experience-2mdc) on how it fits in the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) or on how [it can achieve great performances](https://dev.to/lorenzofox3/there-is-beauty-in-simplicity-1npe).
 
 ### Tests are regular Javascript programs.
 

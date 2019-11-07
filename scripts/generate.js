@@ -3,8 +3,8 @@ const path = require('path');
 
 const filesCount = 20;
 const testCount = 8;
-const waitTime = 250;
-const errorRate = 3;
+const waitTime = 100;
+const errorRate = 1;
 
 const zoraCode = `
 module.exports =(({test}) => {

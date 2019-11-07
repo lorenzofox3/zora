@@ -60,7 +60,7 @@
     "typescript": "^3.6.4"
   },
   "jest": {
-    "testRegex": ".*.js",
+    "testRegex": "test\\d+.js",
     "roots": [
       "./benchmarks/jest/test"
     ],
