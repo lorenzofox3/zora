@@ -131,12 +131,12 @@ const flatReport = (message, id) => {
     }
 };
 
-const summary = (harness: TestHarness): void => {
+const summary = (harness: TestEndMessage): void => {
     print('', 0);
-    comment(harness.pass ? 'ok' : 'not ok', 0);
-    comment(`success: ${harness.successCount}`, 0);
-    comment(`skipped: ${harness.skipCount}`, 0);
-    comment(`failure: ${harness.failureCount}`, 0);
+    comment(harness.data.pass ? 'ok' : 'not ok', 0);
+    comment(`success: ${harness.data.successCount}`, 0);
+    comment(`skipped: ${harness.data.skipCount}`, 0);
+    comment(`failure: ${harness.data.failureCount}`, 0);
 };
 
 const id = function* () {
@@ -173,19 +173,23 @@ const idGen = (): IdGenerator => {
 export const tapeTapLike = async (stream: TestHarness): Promise<void> => {
     const src = flatten(stream);
     const id = idGen();
+    let lastMessage = null;
     print('TAP version 13');
     for await (const message of src) {
+        lastMessage = message;
         flatReport(message, id);
     }
     print(`1..${stream.count}`, 0);
-    summary(stream);
+    summary(lastMessage);
 };
 
 export const mochaTapLike = async (stream: TestHarness): Promise<void> => {
     print('TAP version 13');
     const id = idGen();
+    let lastMessage = null;
     for await (const message of stream) {
+        lastMessage = message;
         indentedReport(message, id);
     }
-    summary(stream);
+    summary(lastMessage);
 };
