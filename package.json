@@ -23,7 +23,7 @@
   "scripts": {
     "build:clean": "rm -rf ./dist && mkdir -p ./dist/bundle ./dist/declarations",
     "build:compile": "tsc",
-    "build:bundle": "rollup -c ./rollup/build.js && rollup -c ./rollup/cdn.js",
+    "build:bundle": "rollup -c ./rollup/build.js",
     "build": "npm run build:clean && npm run build:compile && npm run build:bundle",
     "bench:clean": "rm -r ./benchmarks && mkdir -p ./benchmarks/zora/test/ ./benchmarks/ava/test ./benchmarks/jest/test ./benchmarks/mocha/test ./benchmarks/tape/test",
     "bench:build": "npm run bench:clean && node ./scripts/generate.js",
@@ -43,19 +43,19 @@
     "email": "laurent34azerty@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-    "fast-deep-equal": "^2.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "ava": "^2.4.0",
+    "fast-deep-equal": "^3.1.1",
     "jest": "^24.9.0",
     "mocha": "^6.2.2",
-    "pta": "^0.1.0",
-    "rollup": "^1.26.0",
+    "pta": "^0.1.2",
+    "rollup": "^1.27.9",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "tape": "^4.11.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.3",
+    "zora-tap-reporter": "^2.0.0"
   },
   "jest": {
     "testRegex": "test\\d+.js",
