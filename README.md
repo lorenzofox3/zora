@@ -29,7 +29,7 @@ If you have the following test.
 import {test} from 'path/to/zora';
 
 test('should result to the answer', t => {
-    const answer = 42
+    const answer = 42;
     t.equal(answer, 42, 'answer should be 42');
 });
 ```
@@ -367,7 +367,7 @@ You can ask zora to indent sub tests with configuration flag:
 2. setting a global variable on the window object if you use the browser to run the test program 
 ```markup
 <script>INDENT=true;</script>
-<script src="path/to/test/program></script>
+<script src="path/to/test/program"></script>
 ```
 
 ```Javascript
@@ -594,13 +594,14 @@ aliases: falsy
 
 ### Create manually a test harness
 
-You can discard the default test harness and create your own. This has various effect:
+You can discard the default test harness and create your own. This has various effects:
 - the reporting won't start automatically, you will have to trigger it yourself but it also lets you know when the reporting is over
 - you can pass a custom reporter. Zora produces a stream of messages which are then transformed into a TAP stream. If you create the test harness yourself
 you can directly pass your custom reporter to transform the raw messages stream.
 
 ```Javascript
-const {createHarness, mochaTapLike} = require('zora');
+const {createHarness} = require('zora');
+const {indentedTapReporter} = require('zora-tap-reporter');
 
 const harness = createHarness();
 const {test} = harness;
@@ -622,7 +623,7 @@ test('a first sub test', t => {
 });
 
 harness
-    .report(mochaTapLike) // we have passed the mochaTapLike (with indention but here you can pass whatever you want
+    .report(indentedTapReporter())
     .then(() => {
         // reporting is over: we can release some pending resources
         console.log('DONE !');

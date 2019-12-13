@@ -306,7 +306,7 @@ test('test harness with nested sub tests', async (t) => {
     t.end();
 });
 
-test('test haness with nested async sub test: should stream in the declared order', async (t) => {
+test('test harness with nested async sub test: should stream in the declared order', async (t) => {
     const harness = createHarness();
     const {test} = harness;
     test('keep parallel', async (t) => {
