@@ -61,11 +61,11 @@ Each framework runs with its default settings.
 
 Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 12 :
 
-|        |  zora@3.1.0  |   pta@0.1.0  |  tape@4.11.2 |  Jest@24.9.0  |  AvA@2.4.0  |  Mocha@6.2.1|
+|        |  zora@3.1.8  |   pta@0.1.3  |  tape@4.13.0 |  Jest@25.1.0  |  AvA@3.0.0  |  Mocha@7.0.0|
 |--------|:------------:|:------------:|:------------:|:-------------:|:------------:|:----------:|
-|Library |    102ms     |     231ms    |    1240ms    |    2835ms     |    1888ms    |    1349ms  |
-|Web app |    134ms     |     278ms    |    3523ms    |    4084ms     |    2900ms    |    3696ms  |
-|API     |    187ms     |     331ms    |   12586ms    |    7380ms     |    3900ms    |   12766ms  |
+|Library |    109ms     |     225ms    |    1236ms    |    2636ms     |    1311ms    |    1427ms  |
+|Web app |    130ms     |     261ms    |    3602ms    |    5595ms     |    2034ms    |    3716ms  |
+|API     |    212ms     |     329ms    |   12569ms    |    6606ms     |    2496ms    |   12764ms  |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 

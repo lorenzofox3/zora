@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 20;
-const testCount = 8;
+const filesCount = 12;
+const testCount = 10;
 const waitTime = 100;
-const errorRate = 1;
+const errorRate = 5;
 
 const zoraCode = `
 module.exports =(({test}) => {
