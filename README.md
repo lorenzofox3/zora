@@ -13,13 +13,16 @@ Fast javascript testing library for **nodejs** and **browsers**
 ``npm i --save-dev zora``
 
 If you are interested in a test runner for Nodejs, checkout [pta](https://github.com/lorenzofox3/zora-node) built on top of zora
+If you are interested in a test runner for the Browser environment, checkout [playwright-test](https://github.com/hugomrdias/playwright-test) which supports zora out of the box
 
 ## (Un)Opinions and Design
 
 These are the following rules and ideas I have followed while developing zora. Whether they are right or not is an entire different topic ! :D
 Note I have decided to develop zora specially because I was not able to find a tool which complies entirely with these ideas.
 
-[read more](https://dev.to/lorenzofox3/tools-and-the-design-of-a-testing-experience-2mdc) on how it fits in the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) or on how [it can achieve great performances](https://dev.to/lorenzofox3/there-is-beauty-in-simplicity-1npe).
+Interesting reading related to zora:
+* [Tools and the design of a testing experience](https://dev.to/lorenzofox3/tools-and-the-design-of-a-testing-experience-2mdc)
+* [High concurrency and performances in a testing experience](https://dev.to/lorenzofox3/there-is-beauty-in-simplicity-1npe)
 
 ### Tests are regular Javascript programs.
 
@@ -665,6 +668,13 @@ test('some failing test', (assert) => {
 </body>
 <!-- some content -->
 ```
+
+### Test runners
+
+There are few test runners which allow you to run testing programs in a browser environment (not emulated with JSDOM).
+* [playwright-test](https://karma-runner.github.io/4.0/index.html)
+* [Karma](https://karma-runner.github.io/4.0/index.html)
+* [zora-dev-server](https://github.com/lorenzofox3/zora-dev-server) - work in progress
 
 ### As part of CI (example with rollup)
 
