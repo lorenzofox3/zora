@@ -13,7 +13,7 @@ const equalPassingCasesExpectations = ['foo', 4, {woot: 'bim', foo: {bar: null}}
     foo: {bar: null}
 }]];
 
-const equalAliases = ['equal', 'equals', 'eq', 'deepEqual'];
+const equalAliases = ['equal', 'equals', 'eq', 'deepEqual', 'same'];
 
 for (const alias of equalAliases) {
     test(`${alias} operator: passing cases`, t => {
@@ -83,7 +83,7 @@ for (const alias of notEqualAliases) {
     });
 }
 
-const isAliases = ['is', 'same'];
+const isAliases = ['is'];
 
 for (const alias of isAliases) {
     test(`${alias} operator: should pass on same value`, t => {
@@ -311,10 +311,10 @@ test('throws operator: expected (RegExp, failed)', t => {
 
 test('throws operator: expected (constructor)', t => {
     const a = createAssert();
-
+    
     function CustomError() {
     }
-
+    
     const error = new CustomError();
     const {operator, description, pass, expected, actual} = a.throws(() => {
         throw error;
@@ -329,10 +329,10 @@ test('throws operator: expected (constructor)', t => {
 
 test('throws operator: expected (constructor, failed)', t => {
     const a = createAssert();
-
+    
     function CustomError() {
     }
-
+    
     const error = new Error('Plain error');
     const {operator, description, pass, expected, actual} = a.throws(() => {
         throw error;
@@ -380,10 +380,10 @@ test('doesNotThrow operator: failure', t => {
 
 test('doesNotThrow operator: expected (ignored)', t => {
     const a = createAssert();
-
+    
     function CustomError() {
     }
-
+    
     const {operator, description, pass, expected, actual} = a.doesNotThrow(() => {
     }, CustomError);
     t.equal(operator, 'doesNotThrow' /* DOES_NOT_THROW */, 'should have the operator doesNotThrow');
@@ -397,7 +397,7 @@ test('doesNotThrow operator: expected (ignored)', t => {
 test('extend assertion library', t => {
     const result = [];
     const a = assert(item => result.push(item), 0);
-
+    
     AssertPrototype.isFoo = function (value, description = 'should be "foo"') {
         const result = {
             pass: value === 'foo',
@@ -408,9 +408,9 @@ test('extend assertion library', t => {
         };
         return this.collect(result);
     };
-
+    
     const r = a.isFoo('foo');
-
+    
     t.equal(result.length, 1, 'should have collected the assertion');
     t.equal(r.pass, true, 'pass prop should be true');
     t.equal(r.expected, 'foo', 'expected prop should be "foo"');
@@ -423,7 +423,7 @@ test('extend assertion library', t => {
 test('extend assertion library with failing assertion: should set the "at" property', t => {
     const result = [];
     const a = assert(item => result.push(item), 0);
-
+    
     AssertPrototype.isFoo = function (value, description = 'should be "foo"') {
         const result = {
             pass: value === 'foo',
@@ -434,9 +434,9 @@ test('extend assertion library with failing assertion: should set the "at" prope
         };
         return this.collect(result);
     };
-
+    
     const r = a.isFoo('blah', 'woot');
-
+    
     t.equal(result.length, 1, 'should have collected the assertion');
     t.equal(r.pass, false, 'pass prop should be false');
     t.equal(r.expected, 'foo', 'expected prop should be "foo"');

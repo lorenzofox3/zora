@@ -43,6 +43,7 @@ export const AssertPrototype = {
     equals: aliasMethodHook('equal'),
     eq: aliasMethodHook('equal'),
     deepEqual: aliasMethodHook('equal'),
+    same: aliasMethodHook('equal'),
     notEqual: assertMethodHook((actual, expected, description = 'should not be equivalent') => ({
         pass: !equal(actual, expected),
         actual,
@@ -60,7 +61,6 @@ export const AssertPrototype = {
         description,
         operator: Operator.IS
     })),
-    same: aliasMethodHook('is'),
     isNot: assertMethodHook((actual, expected, description = 'should not be the same') => ({
         pass: !Object.is(actual, expected),
         actual,
