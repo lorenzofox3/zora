@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const filesCount = 200;
-const testCount = 10;
-const waitTime = 20;
+const filesCount = 10;
+const testCount = 8;
+const waitTime = 40;
 const errorRate = 5;
 
 const zoraCode = `
