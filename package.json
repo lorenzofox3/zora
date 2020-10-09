@@ -36,7 +36,7 @@
     "bench:mocha": "time mocha ./benchmarks/mocha/test/",
     "bench:mocha:parallel": "time mocha --parallel ./benchmarks/mocha/test/",
     "bench:tape": "time node ./benchmarks/tape/index",
-    "bench:jest": "time jest",
+    "bench:jest": "time jest --env=node",
     "bench:uvu": "time uvu -r esm ./benchmarks/uvu test",
     "bench:pta": "time pta benchmarks/zora/test/*.js",
     "test:unit": "rollup -c ./rollup/test.js | node",
