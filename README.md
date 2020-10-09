@@ -53,7 +53,7 @@ Zora is by far the **fastest** Javascript test runner in the ecosystem.
 
 #### Benchmark
 
-This repository includes a benchmark which consists on running N test files, with M tests in each and where one test lasts T milliseconds.
+This repository includes a *pseudo benchmark* which consists on running N test files, with M tests in each and where one test lasts T milliseconds.
 About 5% of tests should fail.
 
 1. profile library: N = 5, M = 8, T = 25ms
@@ -62,13 +62,13 @@ About 5% of tests should fail.
 
 Each framework runs with its default settings.
 
-Here are the result of different test frameworks on my developer machine (MacBook Pro, 2.7GH i5) with node 12 :
+Here are the result of different test frameworks on my developer machine (2,4 GHz Quad-Core Intel Core i5, 16GB RAM) with node 14 :
 
-|        |  zora@3.1.8  |   pta@0.1.3  |  tape@4.13.0 |  Jest@25.1.0  |  AvA@3.0.0  |  Mocha@7.0.0|
-|--------|:------------:|:------------:|:------------:|:-------------:|:------------:|:----------:|
-|Library |    109ms     |     225ms    |    1236ms    |    2636ms     |    1311ms    |    1427ms  |
-|Web app |    130ms     |     261ms    |    3602ms    |    5595ms     |    2034ms    |    3716ms  |
-|API     |    212ms     |     329ms    |   12569ms    |    6606ms     |    2496ms    |   12764ms  |
+|        |  zora@4.0.0  |   pta@0.1.3  |  tape@5.0.1 |  Jest@26.5.2  |  AvA@3.13.0  |  Mocha@8.1.13| uvu@0.3.4
+|--------|:------------:|:------------:|:------------:|:-------------:|:------------:|:----------:|:----------:|
+|Library |    91ms     |     177ms    |    1232ms    |    2440ms     |    942ms    |    1381ms  | 1280ms |
+|Web app |    103ms     |     213ms    |    3575ms    |    2826ms     |    1369ms    |    3714ms  | 3599ms |
+|API     |    169ms     |     275ms    |   12566ms    |    4318ms     |    1645ms    |   12649ms  | 12521ms |
 
 Of course as any benchmark, it may not cover your use case and you should probably run your own tests before you draw any conclusion.
 
