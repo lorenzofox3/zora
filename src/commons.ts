@@ -1,6 +1,5 @@
 import {assertionMessage, bailout, endTestMessage, startTestMessage} from './protocol';
 import {counter, delegateToCounter} from './counter';
-import {Message} from './interfaces';
 
 export const defaultTestOptions = Object.freeze({
     offset: 0,
@@ -74,9 +73,3 @@ export const testerLikeProvider = (BaseProto = TesterPrototype) => (assertions: 
 };
 
 export const testerFactory = testerLikeProvider();
-
-export const map = fn => async function* (stream: AsyncIterable<Message<any>>) {
-    for await (const m of stream) {
-        yield fn(m);
-    }
-};
