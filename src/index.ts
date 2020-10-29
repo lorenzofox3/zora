@@ -14,6 +14,10 @@ const findConfigurationFlag = (name) => {
     if (typeof process !== 'undefined') {
         return process.env[name] === 'true';
         // @ts-ignore
+    } else if (typeof Deno !== 'undefined') {
+        // @ts-ignore
+        return Deno.env.get(name) === 'true';
+        // @ts-ignore
     } else if (typeof window !== 'undefined') {
         // @ts-ignore
         return Boolean(window[name]);
