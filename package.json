@@ -17,8 +17,11 @@
   "module": "./dist/bundle/module.js",
   "types": "./dist/declarations/index.d.ts",
   "exports": {
-    "import": "./dist/bundle/index.mjs",
-    "require": "./dist/bundle/index.js"
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/bundle/index.mjs",
+      "require": "./dist/bundle/index.js"
+    }
   },
   "files": [
     "dist/bundle",
