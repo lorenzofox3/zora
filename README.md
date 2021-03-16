@@ -215,7 +215,7 @@ Notice that each test runs in its own micro task in parallel (for performance). 
 It is often a good practice!
 However, you'll be able to group your tests if you wish to conserve some state between them or wait one to finish before you start another one (ideal with tests running against real database).
 
-The sequence is simply controlled by AsyncFunction (and await keyboard), the ``test`` function return the result of its spec function argument, so you can control whether you want a specific test to complete before moving on
+The sequence is simply controlled by AsyncFunction (and await keyword), the ``test`` function return the result of its spec function argument, so you can control whether you want a specific test to complete before moving on
 
 ```Javascript
 let state = 0;
