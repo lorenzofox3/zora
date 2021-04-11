@@ -395,8 +395,6 @@ test('doesNotThrow operator: expected (ignored)', t => {
 });
 
 test('extend assertion library', t => {
-    const result = [];
-    const a = assert(item => result.push(item), 0);
     
     AssertPrototype.isFoo = function (value, description = 'should be "foo"') {
         const result = {
@@ -408,6 +406,9 @@ test('extend assertion library', t => {
         };
         return this.collect(result);
     };
+    
+    const result = [];
+    const a = assert(item => result.push(item), 0);
     
     const r = a.isFoo('foo');
     
@@ -445,6 +446,16 @@ test('extend assertion library with failing assertion: should set the "at" prope
     t.equal(r.operator, 'isFoo', 'should have set the operator');
     t.ok(r.at, 'stack trace should have been set');
     t.end();
+});
+
+test('destructure assertion object', (t) =>{
+    const result = [];
+    const {eq} = assert(item => result.push(item), 0);
+    const r = eq('foo','bar');
+    t.equal(result.length, 1, 'should have collected the assertion result');
+    t.equal(r.pass, false);
+    t.ok(r.at);
+    t.end()
 });
 
 

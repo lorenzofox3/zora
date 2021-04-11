@@ -32,6 +32,12 @@ const aliasMethodHook = (methodName: string) => function (...args) {
     return this[methodName](...args);
 };
 
+const unbindAssert = (target: Assert): { [p: string]: (...args) => any } => Object.fromEntries(
+    Object
+        .keys(AssertPrototype)
+        .map((methodName) => [methodName, (...args) => target[methodName](...args)])
+);
+
 export const AssertPrototype = {
     equal: assertMethodHook((actual, expected, description = 'should be equivalent') => ({
         pass: equal(actual, expected),
@@ -162,24 +168,23 @@ export const assert = (collect, offset: number, runOnly = false): Assert => {
         return test(description, spec, Object.assign({}, opts, {skip: true}));
     };
 
-    return Object.assign(
-        Object.create(AssertPrototype, {collect: {value: actualCollect}}),
-        {
-            test(description, spec, opts = {}) {
-                if (runOnly) {
-                    return skip(description, spec, opts);
-                }
-                return test(description, spec, opts);
-            },
-            skip(description: string, spec = noop, opts = {}) {
-                return skip(description, spec, opts);
-            },
-            only(description: string, spec, opts = {}) {
-                const specFn = runOnly === false ? _ => {
-                    throw new Error(`Can not use "only" method when not in run only mode`);
-                } : spec;
-                return test(description, specFn, opts);
-            }
+    // @ts-ignore
+    return {
+        ...unbindAssert(Object.create(AssertPrototype, {collect: {value: actualCollect}})),
+        test(description, spec, opts = {}) {
+        if (runOnly) {
+            return skip(description, spec, opts);
         }
-    );
+        return test(description, spec, opts);
+    },
+        skip(description: string, spec = noop, opts = {}) {
+        return skip(description, spec, opts);
+    },
+        only(description: string, spec, opts = {}) {
+        const specFn = runOnly === false ? _ => {
+            throw new Error(`Can not use "only" method when not in run only mode`);
+        } : spec;
+        return test(description, specFn, opts);
+    }
+    };
 };
