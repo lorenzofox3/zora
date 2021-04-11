@@ -13,14 +13,16 @@ export const harnessFactory = ({runOnly = false, indent = false}: TestHarnessCon
     const api = assert(collect, rootOffset, runOnly);
     let error = null;
 
-    const factory = testerLikeProvider(Object.assign(api, TesterPrototype, {
+    const Prototype = Object.assign(api, TesterPrototype, {
         report: async function (reporter) {
             const rep = reporter || (indent ? mochaTapLike : tapeTapLike);
             return rep(this);
         }
-    }));
+    });
 
-    return Object.defineProperties(factory(tests, Promise.resolve(), rootOffset), {
+    const factory = testerLikeProvider(Prototype);
+
+    return Object.create(factory(tests, Promise.resolve(), rootOffset), {
         error: {
             get() {
                 return error;
@@ -29,5 +31,5 @@ export const harnessFactory = ({runOnly = false, indent = false}: TestHarnessCon
                 error = val;
             }
         }
-    });
+    })
 };
