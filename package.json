@@ -1,6 +1,12 @@
 {
   "name": "zora",
   "workspaces": [
-    "assert"
-  ]
+    "assert",
+    "core"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "~18.0.0",
+    "@rollup/plugin-node-resolve": "~11.2.1",
+    "rollup": "~2.45.2"
+  }
 }
