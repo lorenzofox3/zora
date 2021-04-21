@@ -1,0 +1,6 @@
+{
+  "name": "zora",
+  "workspaces": [
+    "assert"
+  ]
+}
