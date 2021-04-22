@@ -1,8 +1,4 @@
-import {createHarness} from './harness.js';
-
-const harness = createHarness('DEFAULT TEST HARNESS');
-
-const {test} = harness;
+import zora, {test} from '../dist/index.js';
 
 const wait = (time = 100) => new Promise((resolve) => {
     setTimeout(() => {
@@ -34,9 +30,8 @@ test('some test', async ({eq, test}) => {
     eq(counter, 2);
 });
 
-harness
+zora
     .report()
     .then(() => {
         console.log('done');
     });
-

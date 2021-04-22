@@ -11,6 +11,10 @@ Assert.test = (description, spec, opts = defaultOptions) => test(description, sp
 
 Assert.skip = (description, spec, opts = defaultOptions) => test(description, spec, {...opts, skip: true});
 
+Assert.only = (...args) => {
+    throw new Error(`Can not use "only" method when not in "run only" mode`);
+};
+
 export const test = (description, spec, opts = defaultOptions) => {
     const {skip = false} = opts;
     const assertions = [];
@@ -49,7 +53,7 @@ ${spec.toString()}`);
     
     return Object.assign(testRoutine, {
         [Symbol.asyncIterator]: async function* () {
-            yield newTestMessage({description});
+            yield newTestMessage({description, skip});
             await testRoutine;
             for (const assertion of assertions) {
                 if (isTest(assertion)) {
@@ -67,5 +71,7 @@ ${spec.toString()}`);
         }
     });
 };
+
+export {Assert} from 'zora-assert';
 
 export const createAssert = assertFactory;

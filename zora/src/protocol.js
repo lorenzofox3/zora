@@ -5,9 +5,9 @@ const MESSAGE_TYPE = {
     BAIL_OUT: 'BAIL_OUT'
 };
 
-export const newTestMessage = ({description}) => ({
+export const newTestMessage = ({description, skip}) => ({
     type: MESSAGE_TYPE.TEST_START,
-    data: {description}
+    data: {description, skip}
 });
 
 export const assertionMessage = (data) => ({

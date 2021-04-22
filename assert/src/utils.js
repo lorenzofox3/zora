@@ -11,9 +11,10 @@ export const Operator = {
 };
 
 const specFnRegexp = /zora_spec_fn/;
-const filterStackLine = l => (l && !l.startsWith('Error') || specFnRegexp.test(l));
+const zoraInternal = /zora\/dist/;
+const filterStackLine = l => (l && !zoraInternal.test(l) && !l.startsWith('Error') || specFnRegexp.test(l));
 
-export const getAssertionLocation = () => {
+const getAssertionLocation = () => {
     const err = new Error();
     const stack = (err.stack || '')
         .split('\n')
