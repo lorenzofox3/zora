@@ -1,0 +1,19 @@
+{
+  "name": "zora-protocol",
+  "version": "1.0.0",
+  "description": "protocol messages for zora",
+  "type": "module",
+  "types": "./index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "author": "@Lorenzofox3 <Laurent RENARD>",
+  "license": "MIT"
+}

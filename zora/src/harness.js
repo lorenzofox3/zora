@@ -1,5 +1,5 @@
 import {Assert, createAssert} from './test.js';
-import {tapReporter} from './tap-reporter.js';
+import tapReporter from './tap-reporter.js';
 
 export const createHarness = ({onlyMode = false} = {}) => {
     const tests = [];
@@ -18,6 +18,7 @@ export const createHarness = ({onlyMode = false} = {}) => {
     
     // for convenience
     test.only = only;
+    test.skip = skip;
     
     return {
         only,

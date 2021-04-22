@@ -8,9 +8,18 @@ const filter = (predicate) => async function* (stream) {
 
 const filterOutTestEnd = filter(({type}) => type !== 'TEST_END');
 
-export const tapReporter = () => async (messageStream) => {
-    for await (const message of (messageStream)) {
-        console.log(message);
-    }
+const createReporter = ({serialize = JSON.stringify, log = console.log} = {}) => {
+
+};
+
+export default (opts) => {
+    
+    const reporter = createReporter(opts);
+    
+    return async (messageStream) => {
+        for await (const message of (messageStream)) {
+            console.log(message);
+        }
+    };
 };
 

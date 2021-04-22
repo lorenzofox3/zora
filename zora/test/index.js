@@ -30,6 +30,10 @@ test('some test', async ({eq, test}) => {
     eq(counter, 2);
 });
 
+test.skip('should be skipped', ({fail}) =>{
+    fail('blah')
+})
+
 zora
     .report()
     .then(() => {
