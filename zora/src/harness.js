@@ -1,10 +1,10 @@
 import {Assert, createAssert} from './test.js';
-import tapReporter from './tap-reporter.js';
+import createTAPReporter from './reporters/tap.js';
 
 export const createHarness = ({onlyMode = false} = {}) => {
     const tests = [];
     
-    // WARNING if the "only" mode is passed to an harness, all the harnesses will be affected.
+    // WARNING if the "onlyMode is passed to any harness, all the harnesses will be affected.
     // However, we do not expect multiple harnesses to be used in the same process
     if (onlyMode) {
         const {skip, test} = Assert;
@@ -24,7 +24,7 @@ export const createHarness = ({onlyMode = false} = {}) => {
         only,
         test,
         skip,
-        report({reporter = tapReporter()} = {}) {
+        report({reporter = createTAPReporter()} = {}) {
             return reporter(createMessageStream(tests));
         }
     };

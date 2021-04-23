@@ -1,5 +1,5 @@
 import assertFactory, {Assert} from 'zora-assert';
-import {assertionMessage, bailOutMessage, newTestMessage, testEndMessage} from 'zora-protocol';
+import {assertionMessage, bailOutMessage, newTestMessage, testEndMessage} from './protocol.js';
 
 const defaultOptions = Object.freeze({skip: false});
 const noop = () => {
@@ -11,7 +11,7 @@ Assert.test = (description, spec, opts = defaultOptions) => test(description, sp
 
 Assert.skip = (description, spec, opts = defaultOptions) => test(description, spec, {...opts, skip: true});
 
-Assert.only = (...args) => {
+Assert.only = () => {
     throw new Error(`Can not use "only" method when not in "run only" mode`);
 };
 

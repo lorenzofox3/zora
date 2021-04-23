@@ -1,4 +1,4 @@
-const MESSAGE_TYPE = {
+export const MESSAGE_TYPE = {
     TEST_START: 'TEST_START',
     ASSERTION: 'ASSERTION',
     TEST_END: 'TEST_END',

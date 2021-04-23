@@ -1,4 +1,4 @@
-import zora, {test} from '../dist/index.js';
+import {test} from '../dist/index.js';
 
 const wait = (time = 100) => new Promise((resolve) => {
     setTimeout(() => {
@@ -11,12 +11,13 @@ test('some test', async ({eq, test}) => {
     eq(counter, 0);
     
     counter++;
-    eq(counter, 1);
+    eq(counter, 1, 'some comment');
     
-    test('sub 1', async ({eq}) => {
+    test('sub doo', async ({eq}) => {
         await wait(300);
         counter++;
         eq(counter, 3);
+        eq(counter, 66, 'the failing one');
     });
     
     eq(counter, 1);
@@ -24,18 +25,18 @@ test('some test', async ({eq, test}) => {
     await test('sub serial', async ({eq}) => {
         await wait();
         counter++;
-        eq(counter, 2);
+        eq(counter, 2, 'here as well');
     });
     
     eq(counter, 2);
 });
 
-test.skip('should be skipped', ({fail}) =>{
-    fail('blah')
-})
+test.skip('should be skipped', ({fail}) => {
+    fail('blah');
+});
 
-zora
-    .report()
-    .then(() => {
-        console.log('done');
-    });
+// zora
+//     .report()
+//     .then(() => {
+//         console.log('done');
+//     });

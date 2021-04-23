@@ -2,8 +2,7 @@
   "name": "zora",
   "workspaces": [
     "assert",
-    "core",
-    "protocol"
+    "zora"
   ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "~18.0.0",

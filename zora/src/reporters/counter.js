@@ -44,7 +44,7 @@ export default () => {
         total: {
             enumerable: true,
             get() {
-                return skip + failure + skip;
+                return skip + failure + success;
             }
         }
     });
