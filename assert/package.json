@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.js && cp src/index.d.ts ./dist",
-    "test": "node test/assert.js && node test/index.js"
+    "test": "node test/assert.js && node test/index.js && echo 'tests OK' "
   },
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",

@@ -93,25 +93,6 @@ export const throws = (func, expected, description = 'should throw') => {
     };
 };
 
-export const doesNotThrow = (func, expected, description = 'should not throw') => {
-    let caught;
-    if (typeof expected === 'string') {
-        [expected, description] = [description, expected];
-    }
-    try {
-        func();
-    } catch (err) {
-        caught = {error: err};
-    }
-    return {
-        pass: caught === undefined,
-        expected: 'no thrown error',
-        actual: caught?.error,
-        operator: Operator.DOES_NOT_THROW,
-        description: description
-    };
-};
-
 export const Assert = {
     equal,
     equals: aliasMethodHook('equal'),
@@ -130,6 +111,5 @@ export const Assert = {
     notOk,
     falsy: aliasMethodHook('notOk'),
     fail,
-    throws,
-    doesNotThrow
+    throws
 };

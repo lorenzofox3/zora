@@ -6,8 +6,7 @@ export const Operator = {
     NOT_OK: 'notOk',
     IS_NOT: 'isNot',
     FAIL: 'fail',
-    THROWS: 'throws',
-    DOES_NOT_THROW: 'doesNotThrow'
+    THROWS: 'throws'
 };
 
 const specFnRegexp = /zora_spec_fn/;

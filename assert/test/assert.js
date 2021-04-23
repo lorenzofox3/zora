@@ -1,5 +1,5 @@
 import {deepStrictEqual as eq} from 'assert';
-import {doesNotThrow, equal, fail, is, isNot, notEqual, notOk, ok, throws} from '../src/assert.js';
+import {equal, fail, is, isNot, notEqual, notOk, ok, throws} from '../src/assert.js';
 
 // equal
 {
@@ -175,29 +175,5 @@ import {doesNotThrow, equal, fail, is, isNot, notEqual, notOk, ok, throws} from 
         expected: CustomError,
         description: 'should throw',
         operator: 'throws'
-    });
-}
-
-// does not throw
-{
-    const error = new Error();
-    
-    eq(doesNotThrow(() => {
-    }), {
-        pass: true,
-        expected: 'no thrown error',
-        actual: undefined,
-        operator: 'doesNotThrow',
-        description: 'should not throw'
-    });
-    
-    eq(doesNotThrow(() => {
-        throw error;
-    }), {
-        pass: false,
-        description: 'should not throw',
-        actual: error,
-        operator: 'doesNotThrow',
-        expected: 'no thrown error'
     });
 }

@@ -69,8 +69,6 @@ interface Assert {
     fail: MessageAssertionFunction;
 
     throws: ErrorAssertionFunction;
-
-    doesNotThrow: ErrorAssertionFunction;
 }
 ```
 

@@ -59,8 +59,6 @@ interface IAssert {
     fail: MessageAssertionFunction;
 
     throws: ErrorAssertionFunction;
-
-    doesNotThrow: ErrorAssertionFunction;
 }
 
 declare function factory(options?: IAssertOptions): IAssert;
