@@ -1,4 +1,4 @@
-import {defaultLogger, defaultSerializer, eventuallySetExitCode} from './utils.js';
+import {defaultLogger, defaultSerializer, eventuallySetExitCode} from '../utils.js';
 
 export default ({
                     log = defaultLogger,

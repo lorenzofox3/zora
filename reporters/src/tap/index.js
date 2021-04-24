@@ -1,5 +1,5 @@
-import {assertionMessage, MESSAGE_TYPE} from './protocol.js';
-import {defaultLogger, defaultSerializer, eventuallySetExitCode, filter, flatDiagnostic} from './utils.js';
+import {assertionMessage, MESSAGE_TYPE} from '../protocol.js';
+import {defaultLogger, defaultSerializer, eventuallySetExitCode, filter, flatDiagnostic} from '../utils.js';
 import createCounter from './counter.js';
 
 const filterOutTestEnd = filter(({type}) => type !== MESSAGE_TYPE.TEST_END);

@@ -1,4 +1,4 @@
-import {MESSAGE_TYPE} from './protocol.js';
+import {MESSAGE_TYPE} from '../protocol.js';
 
 const idSequence = () => {
     let id = 0;
