@@ -1,4 +1,4 @@
-import {test} from '../../../dist/bundle/module.js';
+import {test} from 'zora';
 
 test('tester 1', t => {
 

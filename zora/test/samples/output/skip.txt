@@ -1,17 +1,12 @@
 TAP version 13
-ok 1 - hey hey
-ok 2 - hey hey bis
 # hello world
-ok 3 - should be truthy
-# blah
-ok 4 - blah # SKIP
-# for some reason
-ok 5 - for some reason # SKIP
-# failing text
-ok 6 - failing text # SKIP
-1..6
+ok 1 - should be truthy
+ok 2 - blah # SKIP
+ok 3 - for some reason # SKIP
+ok 4 - failing text # SKIP
 
-# ok
-# success: 3
-# skipped: 3
-# failure: 0
+1..4
+# tests 4
+# pass  1
+# fail  0
+# skip  3

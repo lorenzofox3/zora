@@ -1,4 +1,4 @@
-import {test} from '../../../dist/bundle/module.js';
+import {test} from 'zora';
 
 const wait = time => new Promise(resolve => {
     setTimeout(() => resolve(), time);

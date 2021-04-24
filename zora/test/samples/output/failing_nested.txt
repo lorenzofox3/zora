@@ -10,9 +10,9 @@ not ok 3 - should fail with coercion
     operator: "equal"
     at:{STACK}
   ...
-1..3
 
-# not ok
-# success: 2
-# skipped: 0
-# failure: 1
+1..3
+# tests 3
+# pass  2
+# fail  1
+# skip  0

@@ -8,9 +8,9 @@ not ok 2 - foo should equal bar
     operator: "equal"
     at:{STACK}
   ...
-1..2
 
-# not ok
-# success: 1
-# skipped: 0
-# failure: 1
+1..2
+# tests 2
+# pass  1
+# fail  1
+# skip  0
