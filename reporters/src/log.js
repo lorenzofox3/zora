@@ -1,15 +1,11 @@
-import {isNode} from '../env.js';
-
-const isFailing = (message) => message.type === 'ASSERTION' && !message.data.pass;
+import {defaultLogger, defaultSerializer, eventuallySetExitCode} from './utils.js';
 
 export default ({
                     log = defaultLogger,
                     serialize = defaultSerializer
                 } = {}) => async (messageStream) => {
     for await (const message of messageStream) {
-        if (isFailing(message) && isNode) {
-            process.exitCode = 1;
-        }
+        eventuallySetExitCode(message);
         log(serialize(message));
     }
 };

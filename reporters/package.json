@@ -1,0 +1,22 @@
+{
+  "name": "zora-reporters",
+  "version": "1.0.0",
+  "description": "zora reporters",
+  "main": "./dist/index.cjs",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c rollup.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "@lorenzofox3 <Laurent RENARD>",
+  "license": "MIT"
+}

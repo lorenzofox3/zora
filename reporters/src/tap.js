@@ -1,24 +1,29 @@
-import {assertionMessage, MESSAGE_TYPE} from '../protocol.js';
-import {defaultLogger, defaultSerializer, filter, flatDiagnostic} from './utils.js';
+import {assertionMessage, MESSAGE_TYPE} from './protocol.js';
+import {defaultLogger, defaultSerializer, eventuallySetExitCode, filter, flatDiagnostic} from './utils.js';
 import createCounter from './counter.js';
 
 const filterOutTestEnd = filter(({type}) => type !== MESSAGE_TYPE.TEST_END);
 
-const writeMessage = ({writer, counter}) => (message) => {
-    switch (message.type) {
-        case MESSAGE_TYPE.ASSERTION:
-            return writer.printAssertion(message, {id: counter.nextId()});
-        case MESSAGE_TYPE.TEST_START: {
+const writeMessage = ({writer, nextId}) => {
+    const writerTable = {
+        [MESSAGE_TYPE.ASSERTION](message) {
+            writer.printAssertion(message, {id: nextId()});
+        },
+        [MESSAGE_TYPE.TEST_START](message) {
             if (message.data.skip) {
                 const skippedAssertionMessage = assertionMessage({description: message.data.description, pass: true});
                 return writer.printAssertion(skippedAssertionMessage, {
                     comment: 'SKIP',
-                    id: counter.nextId()
+                    id: nextId()
                 });
             }
             return writer.printTestStart(message);
         }
-    }
+    };
+    return (message) => {
+        eventuallySetExitCode(message);
+        writerTable[message.type]?.(message);
+    };
 };
 
 export default ({
@@ -31,7 +36,7 @@ export default ({
         serialize
     });
     const counter = createCounter();
-    const write = writeMessage({writer, counter});
+    const write = writeMessage({writer, nextId: counter.nextId});
     const stream = filterOutTestEnd(messageStream);
     
     writer.printHeader();
