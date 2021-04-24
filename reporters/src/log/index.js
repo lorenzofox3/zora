@@ -2,7 +2,7 @@ import {
   defaultLogger,
   defaultSerializer,
   eventuallySetExitCode,
-} from "../utils.js";
+} from '../utils.js';
 
 export default ({
   log = defaultLogger,

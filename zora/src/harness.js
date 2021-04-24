@@ -1,4 +1,4 @@
-import { Assert, createAssert } from "./test.js";
+import { Assert, createAssert } from './test.js';
 
 export const createHarness = ({ onlyMode = false } = {}) => {
   const tests = [];

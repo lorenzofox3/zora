@@ -8,6 +8,6 @@ export const findConfigurationValue = (name) => {
   }
 };
 
-export const isNode = typeof process !== "undefined";
-export const isBrowser = typeof window !== "undefined";
-export const isDeno = typeof Deno !== "undefined";
+export const isNode = typeof process !== 'undefined';
+export const isBrowser = typeof window !== 'undefined';
+export const isDeno = typeof Deno !== 'undefined';

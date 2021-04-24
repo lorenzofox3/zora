@@ -1,5 +1,5 @@
-import { decorateWithLocation } from "./utils.js";
-import { Assert as AssertPrototype } from "./assert.js";
+import { decorateWithLocation } from './utils.js';
+import { Assert as AssertPrototype } from './assert.js';
 
 const noop = () => {};
 

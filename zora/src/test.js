@@ -1,10 +1,10 @@
-import assertFactory, { Assert } from "zora-assert";
+import assertFactory, { Assert } from 'zora-assert';
 import {
   assertionMessage,
-  bailOutMessage,
+  errorMessage,
   newTestMessage,
   testEndMessage,
-} from "zora-reporters";
+} from 'zora-reporters';
 
 const defaultOptions = Object.freeze({ skip: false });
 const noop = () => {};
@@ -73,7 +73,7 @@ ${spec.toString()}`);
       }
 
       if (error) {
-        return yield bailOutMessage({ error });
+        return yield errorMessage({ error });
       }
 
       yield testEndMessage({ description, executionTime });
@@ -81,6 +81,6 @@ ${spec.toString()}`);
   });
 };
 
-export { Assert } from "zora-assert";
+export { Assert } from 'zora-assert';
 
 export const createAssert = assertFactory;

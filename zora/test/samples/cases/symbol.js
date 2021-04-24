@@ -1,10 +1,10 @@
-import { test } from "zora";
+import { test } from 'zora';
 
-test("symbol tester 1", (t) => {
-  t.equal(Symbol("foo"), Symbol("bar"), "Symbol foo should equal Symbol bar");
+test('symbol tester 1', (t) => {
+  t.equal(Symbol('foo'), Symbol('bar'), 'Symbol foo should equal Symbol bar');
   t.equal(
-    { symbol: Symbol("foo") },
-    { symbol: Symbol("bar") },
-    "Property Symbol foo should equal Symbol bar"
+    { symbol: Symbol('foo') },
+    { symbol: Symbol('bar') },
+    'Property Symbol foo should equal Symbol bar'
   );
 });

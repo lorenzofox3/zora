@@ -1,4 +1,4 @@
-import { IAssertionResult } from "zora-assert";
+import { IAssertionResult } from 'zora-assert';
 
 export interface INewTestMessageInput {
   description: string;
@@ -16,19 +16,19 @@ export interface IMessage<T> {
 }
 
 export interface INewTestMessage extends IMessage<INewTestMessageInput> {
-  type: "TEST_START";
+  type: 'TEST_START';
 }
 
 export interface IAssertionMessage extends IMessage<IAssertionResult<unknown>> {
-  type: "ASSERTION";
+  type: 'ASSERTION';
 }
 
 export interface ITestEndMessage extends IMessage<ITestEndMessageInput> {
-  type: "TEST_END";
+  type: 'TEST_END';
 }
 
 export interface IBailOutMessage extends IMessage<{ error: unknown }> {
-  type: "BAIL_OUT";
+  type: 'BAIL_OUT';
 }
 
 export type Message =

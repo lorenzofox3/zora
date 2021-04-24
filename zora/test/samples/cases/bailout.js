@@ -1,13 +1,13 @@
-import { test } from "zora";
+import { test } from 'zora';
 
-test("will not go to the end", (t) => {
-  t.ok(true, "okay");
+test('will not go to the end', (t) => {
+  t.ok(true, 'okay');
 
-  throw new Error("Oh no!");
+  throw new Error('Oh no!');
 
-  t.ok(true, "will never be reached");
+  t.ok(true, 'will never be reached');
 });
 
-test("another one", (t) => {
-  t.ok(true, "will never be reported");
+test('another one', (t) => {
+  t.ok(true, 'will never be reported');
 });

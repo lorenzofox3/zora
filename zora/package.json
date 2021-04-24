@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0-alpha.3",
   "description": "",
   "main": "./dist/index.cjs",
   "type": "module",

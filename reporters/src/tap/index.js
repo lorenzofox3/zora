@@ -1,12 +1,12 @@
-import { assertionMessage, MESSAGE_TYPE } from "../protocol.js";
+import { assertionMessage, MESSAGE_TYPE } from '../protocol.js';
 import {
   defaultLogger,
   defaultSerializer,
   eventuallySetExitCode,
-} from "../utils.js";
-import createCounter from "./counter.js";
-import { filter } from "@lorenzofox3/for-await";
-import { createTAPWriter } from "./writer.js";
+} from '../utils.js';
+import createCounter from '../counter.js';
+import { filter } from '@lorenzofox3/for-await';
+import { createTAPWriter } from './writer.js';
 
 const isNotTestEnd = ({ type }) => type !== MESSAGE_TYPE.TEST_END;
 const filterOutTestEnd = filter(isNotTestEnd);
@@ -23,13 +23,13 @@ const writeMessage = ({ writer, nextId }) => {
           pass: true,
         });
         return writer.printAssertion(skippedAssertionMessage, {
-          comment: "SKIP",
+          comment: 'SKIP',
           id: nextId(),
         });
       }
       return writer.printTestStart(message);
     },
-    [MESSAGE_TYPE.BAIL_OUT](message) {
+    [MESSAGE_TYPE.ERROR](message) {
       writer.printBailOut();
       throw message.data.error;
     },

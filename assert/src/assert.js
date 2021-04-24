@@ -1,5 +1,5 @@
-import { Operator } from "./utils.js";
-import eq from "fast-deep-equal";
+import { Operator } from './utils.js';
+import eq from 'fast-deep-equal';
 
 const aliasMethodHook = (methodName) =>
   function (...args) {
@@ -9,7 +9,7 @@ const aliasMethodHook = (methodName) =>
 export const equal = (
   actual,
   expected,
-  description = "should be equivalent"
+  description = 'should be equivalent'
 ) => ({
   pass: eq(actual, expected),
   actual,
@@ -21,7 +21,7 @@ export const equal = (
 export const notEqual = (
   actual,
   expected,
-  description = "should not be equivalent"
+  description = 'should not be equivalent'
 ) => ({
   pass: !eq(actual, expected),
   actual,
@@ -30,7 +30,7 @@ export const notEqual = (
   operator: Operator.NOT_EQUAL,
 });
 
-export const is = (actual, expected, description = "should be the same") => ({
+export const is = (actual, expected, description = 'should be the same') => ({
   pass: Object.is(actual, expected),
   actual,
   expected,
@@ -41,7 +41,7 @@ export const is = (actual, expected, description = "should be the same") => ({
 export const isNot = (
   actual,
   expected,
-  description = "should not be the same"
+  description = 'should not be the same'
 ) => ({
   pass: !Object.is(actual, expected),
   actual,
@@ -50,35 +50,35 @@ export const isNot = (
   operator: Operator.IS_NOT,
 });
 
-export const ok = (actual, description = "should be truthy") => ({
+export const ok = (actual, description = 'should be truthy') => ({
   pass: Boolean(actual),
   actual,
-  expected: "truthy value",
+  expected: 'truthy value',
   description,
   operator: Operator.OK,
 });
 
-export const notOk = (actual, description = "should be falsy") => ({
+export const notOk = (actual, description = 'should be falsy') => ({
   pass: !Boolean(actual),
   actual,
-  expected: "falsy value",
+  expected: 'falsy value',
   description,
   operator: Operator.NOT_OK,
 });
 
-export const fail = (description = "fail called") => ({
+export const fail = (description = 'fail called') => ({
   pass: false,
-  actual: "fail called",
-  expected: "fail not called",
+  actual: 'fail called',
+  expected: 'fail not called',
   description,
   operator: Operator.FAIL,
 });
 
-export const throws = (func, expected, description = "should throw") => {
+export const throws = (func, expected, description = 'should throw') => {
   let caught;
   let pass;
   let actual;
-  if (typeof expected === "string") {
+  if (typeof expected === 'string') {
     [expected, description] = [description, expected];
   }
   try {
@@ -93,7 +93,7 @@ export const throws = (func, expected, description = "should throw") => {
     pass = expected.test(actual) || expected.test(actual && actual.message);
     actual = actual?.message ?? actual;
     expected = String(expected);
-  } else if (typeof expected === "function" && caught) {
+  } else if (typeof expected === 'function' && caught) {
     pass = actual instanceof expected;
     actual = actual.constructor;
   }
@@ -108,21 +108,21 @@ export const throws = (func, expected, description = "should throw") => {
 
 export const Assert = {
   equal,
-  equals: aliasMethodHook("equal"),
-  eq: aliasMethodHook("equal"),
-  deepEqual: aliasMethodHook("equal"),
-  same: aliasMethodHook("equal"),
+  equals: aliasMethodHook('equal'),
+  eq: aliasMethodHook('equal'),
+  deepEqual: aliasMethodHook('equal'),
+  same: aliasMethodHook('equal'),
   notEqual,
-  notEquals: aliasMethodHook("notEqual"),
-  notEq: aliasMethodHook("notEqual"),
-  notDeepEqual: aliasMethodHook("notEqual"),
+  notEquals: aliasMethodHook('notEqual'),
+  notEq: aliasMethodHook('notEqual'),
+  notDeepEqual: aliasMethodHook('notEqual'),
   is,
   isNot,
-  notSame: aliasMethodHook("isNot"),
+  notSame: aliasMethodHook('isNot'),
   ok,
-  truthy: aliasMethodHook("ok"),
+  truthy: aliasMethodHook('ok'),
   notOk,
-  falsy: aliasMethodHook("notOk"),
+  falsy: aliasMethodHook('notOk'),
   fail,
   throws,
 };

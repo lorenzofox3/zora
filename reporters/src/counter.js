@@ -1,4 +1,5 @@
-import { MESSAGE_TYPE } from "../protocol.js";
+import { MESSAGE_TYPE } from './protocol.js';
+import { isSkipped } from './utils.js';
 
 const idSequence = () => {
   let id = 0;
@@ -11,11 +12,11 @@ export default () => {
   let failure = 0;
   let skip = 0;
 
-  return Object.defineProperties(
+  return Object.create(
     {
       increment(message) {
         const { type } = message;
-        if (type === MESSAGE_TYPE.TEST_START && message.data.skip) {
+        if (isSkipped(message)) {
           skip++;
         } else if (type === MESSAGE_TYPE.ASSERTION) {
           success += message.data.pass === true ? 1 : 0;

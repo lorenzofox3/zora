@@ -1,8 +1,8 @@
 export const MESSAGE_TYPE = {
-  TEST_START: "TEST_START",
-  ASSERTION: "ASSERTION",
-  TEST_END: "TEST_END",
-  BAIL_OUT: "BAIL_OUT",
+  TEST_START: 'TEST_START',
+  ASSERTION: 'ASSERTION',
+  TEST_END: 'TEST_END',
+  ERROR: 'ERROR',
 };
 
 export const newTestMessage = ({ description, skip }) => ({
@@ -23,8 +23,8 @@ export const testEndMessage = ({ description, executionTime }) => ({
   },
 });
 
-export const bailOutMessage = ({ error }) => ({
-  type: MESSAGE_TYPE.BAIL_OUT,
+export const errorMessage = ({ error }) => ({
+  type: MESSAGE_TYPE.ERROR,
   data: {
     error,
   },
