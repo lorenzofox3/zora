@@ -1,64 +1,68 @@
 export interface IAssertionResult<T> {
-    pass: boolean;
-    actual: unknown;
-    expected: T;
-    description: string;
-    operator: string;
-    at?: string;
+  pass: boolean;
+  actual: unknown;
+  expected: T;
+  description: string;
+  operator: string;
+  at?: string;
 }
 
 export interface ComparatorAssertionFunction {
-    <T>(actual: unknown, expected: T, description?: string): IAssertionResult<T>;
+  <T>(actual: unknown, expected: T, description?: string): IAssertionResult<T>;
 }
 
 export interface BooleanAssertionFunction {
-    (actual: unknown, description?: string): IAssertionResult<boolean>;
+  (actual: unknown, description?: string): IAssertionResult<boolean>;
 }
 
 export interface ErrorAssertionFunction {
-    (fn: Function, expected?: string | RegExp | Function, description ?: string): IAssertionResult<string | RegExp | Function>;
+  (
+    fn: Function,
+    expected?: string | RegExp | Function,
+    description?: string
+  ): IAssertionResult<string | RegExp | Function>;
 }
 
 export interface MessageAssertionFunction {
-    (message?: string): IAssertionResult<string>;
+  (message?: string): IAssertionResult<string>;
 }
 
 interface IAssert {
-    equal: ComparatorAssertionFunction;
+  equal: ComparatorAssertionFunction;
 
-    equals: ComparatorAssertionFunction;
+  equals: ComparatorAssertionFunction;
 
-    eq: ComparatorAssertionFunction;
+  eq: ComparatorAssertionFunction;
 
-    deepEqual: ComparatorAssertionFunction;
+  deepEqual: ComparatorAssertionFunction;
 
-    notEqual: ComparatorAssertionFunction;
+  notEqual: ComparatorAssertionFunction;
 
-    notEquals: ComparatorAssertionFunction;
+  notEquals: ComparatorAssertionFunction;
 
-    notEq: ComparatorAssertionFunction;
+  notEq: ComparatorAssertionFunction;
 
-    notDeepEqual: ComparatorAssertionFunction;
+  notDeepEqual: ComparatorAssertionFunction;
 
-    is: ComparatorAssertionFunction;
+  is: ComparatorAssertionFunction;
 
-    same: ComparatorAssertionFunction;
+  same: ComparatorAssertionFunction;
 
-    isNot: ComparatorAssertionFunction;
+  isNot: ComparatorAssertionFunction;
 
-    notSame: ComparatorAssertionFunction;
+  notSame: ComparatorAssertionFunction;
 
-    ok: BooleanAssertionFunction;
+  ok: BooleanAssertionFunction;
 
-    truthy: BooleanAssertionFunction;
+  truthy: BooleanAssertionFunction;
 
-    notOk: BooleanAssertionFunction;
+  notOk: BooleanAssertionFunction;
 
-    falsy: BooleanAssertionFunction;
+  falsy: BooleanAssertionFunction;
 
-    fail: MessageAssertionFunction;
+  fail: MessageAssertionFunction;
 
-    throws: ErrorAssertionFunction;
+  throws: ErrorAssertionFunction;
 }
 
 declare function factory(options?: IAssertOptions): IAssert;
@@ -66,7 +70,7 @@ declare function factory(options?: IAssertOptions): IAssert;
 export const Assert: IAssert;
 
 export interface IAssertOptions {
-    onResult: (result: IAssertionResult<unknown>) => void;
+  onResult: (result: IAssertionResult<unknown>) => void;
 }
 
 export default factory;

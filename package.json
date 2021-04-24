@@ -6,7 +6,7 @@
     "reporters"
   ],
   "scripts": {
-    "format": "prettier --write"
+    "format": "prettier --write **/{src,test}"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "~18.0.0",
