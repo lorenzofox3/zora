@@ -1,13 +1,22 @@
 {
   "name": "zora",
-  "version": "0.0.1",
+  "version": "5.0.0-alpha.1",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.cjs",
   "type": "module",
-  "scripts": {
-    "build": "rollup -c rollup.js && cp src/index.d.ts ./dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
+  "scripts": {
+    "build": "rollup -c rollup.js"
+  },
+  "files": [
+    "dist"
+  ],
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT"
 }
