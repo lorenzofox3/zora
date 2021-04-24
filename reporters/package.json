@@ -18,5 +18,8 @@
     "dist"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@lorenzofox3/for-await": "~0.2.1"
+  }
 }

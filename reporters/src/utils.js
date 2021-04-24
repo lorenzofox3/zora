@@ -10,15 +10,6 @@ export const defaultSerializer = (value) =>
 
 export const defaultLogger = (value) => console.log(value);
 
-export const filter = (predicate) =>
-  async function* (stream) {
-    for await (const item of stream) {
-      if (predicate(item)) {
-        yield item;
-      }
-    }
-  };
-
 export const isFailing = (message) =>
   message.type === "ASSERTION" && !message.data.pass;
 
