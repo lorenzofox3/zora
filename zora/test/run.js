@@ -11,10 +11,14 @@ const files = readdirSync(sampleRoot)
 
 for (const f of files) {
     console.log(`testing ${f}`);
+    const env = {};
+    if (f.startsWith('only')) {
+        env.ZORA_ONLY = true;
+    }
     const cp = spawnSync(node, [f], {
         cwd: sampleRoot,
         stdio: ['pipe', 'pipe', 'ignore'],
-        env: {RUN_ONLY: f.startsWith('only')}
+        env
     });
     const actualOutput = cp.stdout.toString()
         .replace(/at:.*/g, 'at:{STACK}');

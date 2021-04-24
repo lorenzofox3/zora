@@ -1,4 +1,4 @@
-import {test, only} from '../../../dist/bundle/module.js';
+import {only, test} from 'zora';
 
 test('should not run', t => {
     t.fail('I should not run ');
@@ -6,13 +6,13 @@ test('should not run', t => {
 
 only('should run', t => {
     t.ok(true, 'I ran');
-
+    
     t.only('keep running', t => {
         t.only('keeeeeep running', t => {
             t.ok(true, ' I got there');
         });
     });
-
+    
     t.test('should not run', t => {
         t.fail('shouldn ot run');
     });
