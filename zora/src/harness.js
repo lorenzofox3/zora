@@ -1,5 +1,4 @@
 import {Assert, createAssert} from './test.js';
-import createTAPReporter from './reporters/tap.js';
 
 export const createHarness = ({onlyMode = false} = {}) => {
     const tests = [];
@@ -24,7 +23,7 @@ export const createHarness = ({onlyMode = false} = {}) => {
         only,
         test,
         skip,
-        report({reporter = createTAPReporter()} = {}) {
+        report({reporter}) {
             return reporter(createMessageStream(tests));
         }
     };

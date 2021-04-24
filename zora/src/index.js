@@ -1,5 +1,6 @@
 import {createHarness as privateHarnessFactory} from './harness.js';
 import {findConfigurationValue} from './env.js';
+import {createJSONReporter, createTAPReporter} from 'zora-reporters';
 
 let autoStart = true;
 
@@ -22,7 +23,8 @@ export const createHarness = (opts) => {
 
 const start = async () => {
     if (autoStart) {
-        await report();
+        const reporter = findConfigurationValue('ZORA_REPORTER') === 'json' ? createJSONReporter() : createTAPReporter();
+        await report({reporter});
     }
 };
 

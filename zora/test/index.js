@@ -1,4 +1,4 @@
-import {test} from '../dist/index.js';
+import {test} from '../src/index.js';
 
 const wait = (time = 100) => new Promise((resolve) => {
     setTimeout(() => {

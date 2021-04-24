@@ -1,5 +1,5 @@
 import assertFactory, {Assert} from 'zora-assert';
-import {assertionMessage, bailOutMessage, newTestMessage, testEndMessage} from './protocol.js';
+import {assertionMessage, bailOutMessage, newTestMessage, testEndMessage} from 'zora-reporters';
 
 const defaultOptions = Object.freeze({skip: false});
 const noop = () => {
