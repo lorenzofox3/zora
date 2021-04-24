@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "rollup -c rollup.js",
+    "build:watch": "rollup -w -c rollup.js",
     "test": "node test/run.js"
   },
   "files": [
