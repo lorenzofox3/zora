@@ -1,0 +1,19 @@
+TAP version 13
+# Subtest: tester 1
+    ok 1 - foo should equal foo
+    not ok 2 - should be "foo"
+      ---
+        wanted: "foo"
+        found: "blah"
+        at:{STACK}
+        operator: "isFoo"
+        other: "property"
+      ...
+    1..2
+not ok 1 - tester 1 # {TIME}
+1..1
+
+# not ok
+# success: 1
+# skipped: 0
+# failure: 1

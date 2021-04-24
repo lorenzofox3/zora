@@ -1,0 +1,11 @@
+TAP version 13
+# should not run
+not ok 1 - I should not run 
+  ---
+    actual: "fail called"
+    expected: "fail not called"
+    operator: "fail"
+    at:{STACK}
+  ...
+# should run
+Bail out! Unhandled error.

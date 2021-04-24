@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: tester 1
+    ok 1 - assert1
+    # Subtest: inside
+        ok 1 - correct
+        not ok 2 - should fail with coercion
+          ---
+            wanted: "4"
+            found: 4
+            at:{STACK}
+            operator: "equal"
+          ...
+        1..2
+    not ok 2 - inside # {TIME}
+    1..2
+not ok 1 - tester 1 # {TIME}
+1..1
+
+# not ok
+# success: 2
+# skipped: 0
+# failure: 1

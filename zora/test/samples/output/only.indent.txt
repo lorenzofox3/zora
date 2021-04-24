@@ -1,0 +1,14 @@
+TAP version 13
+# Subtest: should not run
+    1..0
+ok 1 - should not run # SKIP
+# Subtest: should run
+    ok 1 - I ran
+    1..1
+ok 2 - should run # {TIME}
+1..2
+
+# ok
+# success: 1
+# skipped: 1
+# failure: 0

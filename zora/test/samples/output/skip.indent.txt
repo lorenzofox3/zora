@@ -1,0 +1,22 @@
+TAP version 13
+ok 1 - hey hey
+ok 2 - hey hey bis
+# Subtest: hello world
+    ok 1 - should be truthy
+    # Subtest: blah
+        1..0
+    ok 2 - blah # SKIP
+    # Subtest: for some reason
+        1..0
+    ok 3 - for some reason # SKIP
+    1..3
+ok 3 - hello world # {TIME}
+# Subtest: failing text
+    1..0
+ok 4 - failing text # SKIP
+1..4
+
+# ok
+# success: 3
+# skipped: 3
+# failure: 0

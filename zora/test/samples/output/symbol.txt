@@ -1,0 +1,22 @@
+TAP version 13
+# symbol tester 1
+not ok 1 - Symbol foo should equal Symbol bar
+  ---
+    actual: "Symbol(foo)"
+    expected: "Symbol(bar)"
+    operator: "equal"
+    at:{STACK}
+  ...
+not ok 2 - Property Symbol foo should equal Symbol bar
+  ---
+    actual: {"symbol":"Symbol(foo)"}
+    expected: {"symbol":"Symbol(bar)"}
+    operator: "equal"
+    at:{STACK}
+  ...
+1..2
+
+# not ok
+# success: 0
+# skipped: 0
+# failure: 2

@@ -1,0 +1,24 @@
+TAP version 13
+# tester 1
+ok 1 - assert1
+# some nested tester
+ok 2 - nested 1
+ok 3 - nested 2
+# some nested tester bis
+ok 4 - nested 1
+# deeply nested
+ok 5 - deeply nested really
+ok 6 - deeply nested again
+ok 7 - nested 2
+ok 8 - assert2
+# tester 2
+ok 9 - assert3
+# nested in two
+ok 10 - still happy
+ok 11 - assert4
+1..11
+
+# ok
+# success: 11
+# skipped: 0
+# failure: 0
