@@ -18,6 +18,10 @@ const writeMessage = ({writer, nextId}) => {
                 });
             }
             return writer.printTestStart(message);
+        },
+        [MESSAGE_TYPE.BAIL_OUT](message){
+          writer.printBailOut();
+          throw message.data.error;
         }
     };
     return (message) => {
