@@ -4,6 +4,8 @@ Assertion library used by zora projects
 
 This library does not throw exception but returns [assertion results](#assertion-result) instead
 
+Note: this package is not published 
+
 ## assertion API
 
 ```typescript
