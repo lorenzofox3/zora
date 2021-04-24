@@ -1,5 +1,5 @@
 import {createHarness as privateHarnessFactory} from './harness.js';
-import {findConfigurationValue} from './env.js';
+import {findConfigurationValue, isBrowser} from './env.js';
 import {createJSONReporter, createTAPReporter} from 'zora-reporters';
 
 let autoStart = true;
@@ -29,7 +29,7 @@ const start = async () => {
 };
 
 // on next tick start reporting
-if (typeof window === 'undefined') {
+if (!isBrowser) {
     setTimeout(start, 0);
 } else {
     window.addEventListener('load', start);

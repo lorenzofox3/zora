@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "build": "rollup -c rollup.js"
+    "build": "rollup -c rollup.js",
+    "test": "node test/run.js"
   },
   "files": [
     "dist"
