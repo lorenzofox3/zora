@@ -2,7 +2,7 @@
   "name": "zora-assert",
   "version": "0.0.1",
   "description": "assertion library for zora",
-  "main": "index.cjs",
+  "main": "./dist/index.cjs",
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
