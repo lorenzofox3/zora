@@ -1,1 +1,2 @@
-import './counter.js';
+import "./counter.js";
+import "./utils.js";
