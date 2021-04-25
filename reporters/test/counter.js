@@ -1,17 +1,17 @@
-import { test } from "zora";
-import createCounter from "../src/counter.js";
+import { test } from 'zora';
+import createCounter from '../src/counter.js';
 import {
   testEndMessage,
   newTestMessage,
   errorMessage,
   assertionMessage,
-} from "../src/protocol.js";
+} from '../src/protocol.js';
 
-test("counter", ({ test }) => {
-  test("with __tests__ end message", ({ eq }) => {
+test('counter', ({ test }) => {
+  test('with __tests__ end message', ({ eq }) => {
     const counter = createCounter();
     const message = testEndMessage({
-      description: "example",
+      description: 'example',
       executionTime: 42,
     });
     counter.increment(message);
@@ -30,9 +30,9 @@ test("counter", ({ test }) => {
     });
   });
 
-  test("with error message", ({ eq }) => {
+  test('with error message', ({ eq }) => {
     const counter = createCounter();
-    const message = errorMessage({ error: new Error("some error") });
+    const message = errorMessage({ error: new Error('some error') });
     counter.increment(message);
     eq(counter, {
       success: 0,
@@ -49,10 +49,10 @@ test("counter", ({ test }) => {
     });
   });
 
-  test("with __tests__ start message", ({ eq }) => {
+  test('with __tests__ start message', ({ eq }) => {
     const counter = createCounter();
     const message = newTestMessage({
-      description: "example",
+      description: 'example',
       skip: false,
     });
     counter.increment(message);
@@ -64,11 +64,11 @@ test("counter", ({ test }) => {
         skip: 0,
         total: 0,
       },
-      "should not increment the counter"
+      'should not increment the counter'
     );
     counter.increment(
       newTestMessage({
-        description: "example",
+        description: 'example',
         skip: true,
       })
     );
@@ -80,11 +80,11 @@ test("counter", ({ test }) => {
         skip: 1,
         total: 1,
       },
-      "should update counter when __tests__ is skipped"
+      'should update counter when __tests__ is skipped'
     );
   });
 
-  test("with assertion message", ({ eq }) => {
+  test('with assertion message', ({ eq }) => {
     const message = assertionMessage({
       pass: true,
     });

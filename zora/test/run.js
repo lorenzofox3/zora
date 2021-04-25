@@ -1,30 +1,30 @@
-import { spawnSync } from "child_process";
-import { resolve, extname } from "path";
-import { readdirSync, readFileSync } from "fs";
-import { test } from "zora";
+import { spawnSync } from 'child_process';
+import { resolve, extname } from 'path';
+import { readdirSync, readFileSync } from 'fs';
+import { test } from 'zora';
 
 const node = process.execPath;
 
-const sampleRoot = resolve(process.cwd(), "./__tests__/samples/cases/");
+const sampleRoot = resolve(process.cwd(), './__tests__/samples/cases/');
 const files = readdirSync(sampleRoot).filter(
-  (f) => extname(f) === ".js" && f !== "late_collect.js"
+  (f) => extname(f) === '.js' && f !== 'late_collect.js'
 ); // late collect will be checked separately
 
 for (const f of files) {
   test(`testing file ${f}`, ({ eq }) => {
     const env = {};
-    if (f.startsWith("only")) {
+    if (f.startsWith('only')) {
       env.ZORA_ONLY = true;
     }
     const cp = spawnSync(node, [f], {
       cwd: sampleRoot,
-      stdio: ["pipe", "pipe", "ignore"],
+      stdio: ['pipe', 'pipe', 'ignore'],
       env,
     });
-    const actualOutput = cp.stdout.toString().replace(/at:.*/g, "at:{STACK}");
-    const outputFile = `../output/${[f.split(".")[0], "txt"].join(".")}`;
+    const actualOutput = cp.stdout.toString().replace(/at:.*/g, 'at:{STACK}');
+    const outputFile = `../output/${[f.split('.')[0], 'txt'].join('.')}`;
     const expectedOutput = readFileSync(resolve(sampleRoot, outputFile), {
-      encoding: "utf8",
+      encoding: 'utf8',
     });
     eq(actualOutput, expectedOutput);
   });
