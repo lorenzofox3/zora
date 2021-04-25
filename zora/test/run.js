@@ -1,13 +1,13 @@
 import { spawnSync } from "child_process";
-import { resolve } from "path";
+import { resolve, extname } from "path";
 import { readdirSync, readFileSync } from "fs";
 import { test } from "zora";
 
 const node = process.execPath;
 
-const sampleRoot = resolve(process.cwd(), "./test/samples/cases/");
+const sampleRoot = resolve(process.cwd(), "./__tests__/samples/cases/");
 const files = readdirSync(sampleRoot).filter(
-  (f) => f.split(".").reverse()[0] === "js" && f !== "late_collect.js"
+  (f) => extname(f) === ".js" && f !== "late_collect.js"
 ); // late collect will be checked separately
 
 for (const f of files) {
@@ -30,13 +30,13 @@ for (const f of files) {
   });
 }
 
-// test(`late collect should report an error on stderr`, t => {
+// __tests__(`late collect should report an error on stderr`, t => {
 //     const cp = spawnSync(node, ['-r', 'esm', 'late_collect.js'], {
 //         cwd: sampleRoot,
 //         stdio: ['pipe', 'pipe', 'pipe']
 //     });
 //     const actualOutput = cp.stderr.toString();
-//     t.ok(actualOutput.startsWith(`Error: test "late collection"
+//     t.ok(actualOutput.startsWith(`Error: __tests__ "late collection"
 // tried to collect an assertion after it has run to its completion.
 // You might have forgotten to wait for an asynchronous task to complete
 // ------

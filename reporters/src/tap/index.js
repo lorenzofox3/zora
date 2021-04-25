@@ -6,7 +6,7 @@ import {
 } from '../utils.js';
 import createCounter from '../counter.js';
 import { filter } from '@lorenzofox3/for-await';
-import { createTAPWriter } from './writer.js';
+import createTAPWriter from './writer.js';
 
 const isNotTestEnd = ({ type }) => type !== MESSAGE_TYPE.TEST_END;
 const filterOutTestEnd = filter(isNotTestEnd);

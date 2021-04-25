@@ -1,6 +1,6 @@
-import { defaultLogger, defaultSerializer, flatDiagnostic } from '../utils.js';
+import { defaultLogger, defaultSerializer, flatDiagnostic } from "../utils.js";
 
-export const createTAPWriter = ({
+export default ({
   log = defaultLogger,
   serialize = defaultSerializer,
   version = 13,
@@ -11,11 +11,11 @@ export const createTAPWriter = ({
 
   const printYAML = (obj, padding = 0) => {
     const YAMLPadding = padding + 0.5;
-    print('---', YAMLPadding);
+    print("---", YAMLPadding);
     for (const [prop, value] of Object.entries(obj)) {
       print(`${prop}: ${serialize(value)}`, YAMLPadding + 0.5);
     }
-    print('...', YAMLPadding);
+    print("...", YAMLPadding);
   };
 
   const printComment = (comment, padding = 0) => {
@@ -23,7 +23,7 @@ export const createTAPWriter = ({
   };
 
   const printBailOut = () => {
-    print('Bail out! Unhandled error.');
+    print("Bail out! Unhandled error.");
   };
 
   const printTestStart = (newTestMessage) => {
@@ -33,11 +33,11 @@ export const createTAPWriter = ({
     printComment(description);
   };
 
-  const printAssertion = (assertionMessage, { id, comment = '' }) => {
+  const printAssertion = (assertionMessage, { id, comment = "" }) => {
     const { data } = assertionMessage;
     const { pass, description } = data;
-    const label = pass === true ? 'ok' : 'not ok';
-    const directiveComment = comment ? ` # ${comment}` : '';
+    const label = pass === true ? "ok" : "not ok";
+    const directiveComment = comment ? ` # ${comment}` : "";
     print(`${label} ${id} - ${description}` + directiveComment);
     if (pass === false) {
       printYAML(flatDiagnostic(data));
@@ -45,7 +45,7 @@ export const createTAPWriter = ({
   };
 
   const printSummary = ({ success, skip, failure, total }) => {
-    print('', 0);
+    print("", 0);
     print(`1..${total}`);
     printComment(`tests ${total}`, 0);
     printComment(`pass  ${success}`, 0);
