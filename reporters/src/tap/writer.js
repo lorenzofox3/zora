@@ -28,7 +28,7 @@ export default ({
 
   const printTestStart = (newTestMessage) => {
     const {
-      data: { description, skip },
+      data: { description },
     } = newTestMessage;
     printComment(description);
   };
