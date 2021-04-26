@@ -1,4 +1,4 @@
-import { spawnSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { resolve, extname } from 'path';
 import { readFile } from 'fs/promises';
 import { readdirSync } from 'fs';
