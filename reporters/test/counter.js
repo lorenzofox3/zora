@@ -8,7 +8,7 @@ import {
 } from '../src/protocol.js';
 
 test('counter', ({ test }) => {
-  test('with __tests__ end message', ({ eq }) => {
+  test('with tests end message', ({ eq }) => {
     const counter = createCounter();
     const message = testEndMessage({
       description: 'example',
@@ -49,7 +49,7 @@ test('counter', ({ test }) => {
     });
   });
 
-  test('with __tests__ start message', ({ eq }) => {
+  test('with tests start message', ({ eq }) => {
     const counter = createCounter();
     const message = newTestMessage({
       description: 'example',
@@ -80,7 +80,7 @@ test('counter', ({ test }) => {
         skip: 1,
         total: 1,
       },
-      'should update counter when __tests__ is skipped'
+      'should update counter when tests is skipped'
     );
   });
 
