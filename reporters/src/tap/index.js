@@ -4,9 +4,9 @@ import {
   defaultSerializer,
   eventuallySetExitCode,
 } from '../utils.js';
-import createCounter from '../counter.js';
+import { createCounter } from '../counter.js';
 import { filter } from '@lorenzofox3/for-await';
-import createTAPWriter from './writer.js';
+import { createWriter } from './writer.js';
 
 const isNotTestEnd = ({ type }) => type !== MESSAGE_TYPE.TEST_END;
 const filterOutTestEnd = filter(isNotTestEnd);
@@ -41,7 +41,7 @@ export default ({
   log = defaultLogger,
   serialize = defaultSerializer,
 } = {}) => async (messageStream) => {
-  const writer = createTAPWriter({
+  const writer = createWriter({
     log,
     serialize,
   });

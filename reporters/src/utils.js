@@ -12,14 +12,17 @@ export const defaultSerializer = (value) =>
 
 export const defaultLogger = (value) => console.log(value);
 
-export const isFailing = (message) =>
+export const isAssertionFailing = (message) =>
   message.type === MESSAGE_TYPE.ASSERTION && !message.data.pass;
 
 export const isSkipped = (message) =>
   message.type === MESSAGE_TYPE.TEST_START && message.data.skip;
 
 export const eventuallySetExitCode = (message) => {
-  if (isNode && isFailing(message)) {
+  if (isNode && isAssertionFailing(message)) {
     process.exitCode = 1;
   }
 };
+
+export const compose = (fns) => (arg) =>
+  fns.reduceRight((arg, fn) => fn(arg), arg);

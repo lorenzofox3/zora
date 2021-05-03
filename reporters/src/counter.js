@@ -6,7 +6,7 @@ const idSequence = () => {
   return () => ++id;
 };
 
-export default () => {
+export const createCounter = () => {
   const nextId = idSequence();
   let success = 0;
   let failure = 0;

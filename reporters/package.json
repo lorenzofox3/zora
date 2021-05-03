@@ -22,6 +22,7 @@
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
   "dependencies": {
-    "@lorenzofox3/for-await": "~0.2.1"
+    "@lorenzofox3/for-await": "~0.2.1",
+    "colorette": "~1.2.2"
   }
 }

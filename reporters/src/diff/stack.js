@@ -1,4 +1,4 @@
-export const stack = () => {
+export const createStack = () => {
   const items = [];
   const stack = {
     [Symbol.iterator]() {
@@ -12,4 +12,5 @@ export const stack = () => {
       return items.pop();
     },
   };
+  return stack;
 };

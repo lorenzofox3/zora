@@ -1,6 +1,6 @@
 import { defaultLogger, defaultSerializer, flatDiagnostic } from '../utils.js';
 
-export default ({
+export const createWriter = ({
   log = defaultLogger,
   serialize = defaultSerializer,
   version = 13,
