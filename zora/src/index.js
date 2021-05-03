@@ -19,8 +19,10 @@ export const skip = harness.skip;
 
 export const report = harness.report;
 
+export const hold = () => !(autoStart = false);
+
 export const createHarness = (opts) => {
-  autoStart = false;
+  hold();
   return privateHarnessFactory(opts);
 };
 
