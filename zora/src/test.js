@@ -73,7 +73,7 @@ ${spec.toString()}`);
       }
 
       if (error) {
-        return yield errorMessage({ error });
+        yield errorMessage({ error });
       }
 
       yield testEndMessage({ description, executionTime });
