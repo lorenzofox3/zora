@@ -1,11 +1,8 @@
-import { hold, report } from 'zora';
 import { createCounter } from '../counter.js';
 import { createStack } from './stack.js';
 import { createWriter } from './writer.js';
-import './sample.js';
 import { eventuallySetExitCode, isAssertionFailing } from '../utils.js';
 import { MESSAGE_TYPE } from '../protocol.js';
-hold();
 
 const writeMessage = ({ writer, stack }) => {
   const writeTable = {
@@ -18,6 +15,7 @@ const writeMessage = ({ writer, stack }) => {
     [MESSAGE_TYPE.ASSERTION](message) {
       if (isAssertionFailing(message)) {
         writer.printTestPath(stack);
+        writer.printLocation(message.data.at);
         writer.printDiagnostic(message.data);
       }
     },
@@ -26,7 +24,7 @@ const writeMessage = ({ writer, stack }) => {
   return (message) => writeTable[message.type]?.(message);
 };
 
-const reporter = () => async (messageStream) => {
+export const createDiffReporter = () => async (messageStream) => {
   const counter = createCounter();
   const stack = createStack();
   const writer = createWriter();
@@ -39,5 +37,3 @@ const reporter = () => async (messageStream) => {
   }
   writer.printSummary(counter);
 };
-
-report({ reporter: reporter() });

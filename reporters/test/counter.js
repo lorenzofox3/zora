@@ -1,5 +1,5 @@
 import { test } from 'zora';
-import createCounter from '../src/counter.js';
+import { createCounter } from '../src/counter.js';
 import {
   testEndMessage,
   newTestMessage,

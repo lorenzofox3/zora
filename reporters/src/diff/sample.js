@@ -1,12 +1,12 @@
 import { test } from 'zora';
 
-const wait = (time = 500) =>
+const wait = (time = 100) =>
   new Promise((resolve) => {
     setTimeout(() => resolve(), time);
   });
 
 test('root', async (t) => {
-  t.ok(true);
+  t.ok(null);
   await wait();
   t.test('nested', async (t) => {
     t.ok(true);
