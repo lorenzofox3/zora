@@ -1,4 +1,4 @@
-import { compose } from '../utils.js';
+import { compose } from "../utils.js";
 
 export const leftPad = (offset, string) => {
   if (string === void 0) {
@@ -15,3 +15,13 @@ export const rightPad = (offset, string) => {
 };
 
 export const withMargin = compose([leftPad(1), rightPad(1)]);
+
+export const typeAsString = (value) => {
+  if (typeof value === "object") {
+    if (!value?.constructor) {
+      return String(value);
+    }
+    return value.constructor.name;
+  }
+  return typeof value;
+};
