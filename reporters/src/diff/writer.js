@@ -1,6 +1,8 @@
 import { compose, defaultLogger } from '../utils.js';
 import { createTheme } from './theme.js';
 import { leftPad, withMargin } from './utils.js';
+import { Operator } from '../../../assert/src/utils.js';
+import { isNot } from '../../../assert/src/assert.js';
 
 const hasSome = (label) => (counter) => counter[label] > 0;
 const hasFailure = hasSome('failure');
@@ -77,50 +79,45 @@ export const createWriter = ({
   };
 };
 
-const type = (value) => {
-  if (typeof value === 'object') {
-    if (value === null) {
-      return null;
-    }
-    return value.constructor.name;
-  }
-
-  return typeof value;
-};
-
-const getDiagnosticMessage = (theme) => {
+const getDiagnosticMessage = ({ theme }) => {
   const operators = {
-    ['ok']: okDiagnosticMessage(theme),
+    [Operator.OK]: okDiagnosticMessage({ theme }),
+    [Operator.NOT_OK]: notOkDiagnosticMessage({ theme }),
+    [Operator.FAIL]: failDiagnosticMessage({ theme }),
+    [Operator.NOT_EQUAL]: notEqualDiagnosticMessage({ theme }),
+    [Operator.IS]: isDiagnosticMessage({ theme }),
+    [Operator.IS_NOT]: isNotDiagnosticMessage({ theme }),
+    // [Operator.THROWS]:
   };
 
   return (diag) =>
     operators[diag.operator]?.(diag) ?? `unknown operator ${diag.operator}`;
 };
 
-export const okDiagnosticMessage = (theme) => ({ actual }) =>
+export const okDiagnosticMessage = ({ theme }) => ({ actual }) =>
   `expected ${theme.emphasis('"truthy"')} but got ${theme.emphasis(
     actual === '' ? '""' : actual
   )}`;
 
-export const notOkDiagnosticMessage = (theme) => ({ actual }) =>
+export const notOkDiagnosticMessage = ({ theme }) => ({ actual }) =>
   `expected ${theme.emphasis('"falsy"')} but got ${theme.emphasis(
     JSON.stringify(actual)
   )}`;
 
-export const failDiagnosticMessage = (theme) => ({ description }) =>
+export const failDiagnosticMessage = ({ theme }) => ({ description }) =>
   `expected ${theme.emphasis(
     'fail'
   )} not to be called, but was called as ${theme.emphasis(
     JSON.stringify(description)
   )}`;
 
-export const notEqualDiagnosticMessage = (theme) => () =>
+export const notEqualDiagnosticMessage = ({ theme }) => () =>
   `expected the arguments ${theme.emphasis(
     'not to be equivalent'
   )} but they were`;
 
-export const isDiagnosticMessage = (theme) => () =>
-  `expected ${theme.emphasis('references to be the same')} but the were not`;
+export const isDiagnosticMessage = ({ theme }) => () =>
+  `expected ${theme.emphasis('references to be the same')} but they were not`;
 
-export const isNotdiagnosticMessage = (theme) => () =>
-  `expected ${theme.emphasis('references not to be the same')} but the were`;
+export const isNotDiagnosticMessage = ({ theme }) => () =>
+  `expected ${theme.emphasis('references not to be the same')} but they were`;

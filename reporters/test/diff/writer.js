@@ -2,7 +2,7 @@ import { test } from 'zora';
 import {
   failDiagnosticMessage,
   isDiagnosticMessage,
-  isNotdiagnosticMessage,
+  isNotDiagnosticMessage,
   notEqualDiagnosticMessage,
   notOkDiagnosticMessage,
   okDiagnosticMessage,
@@ -19,7 +19,7 @@ const theme = new Proxy(
 
 test('diff writer', (t) => {
   t.test(`ok diagnostic message`, (t) => {
-    const getMessage = okDiagnosticMessage(theme);
+    const getMessage = okDiagnosticMessage({ theme });
 
     t.eq(
       getMessage({ actual: null }),
@@ -33,7 +33,7 @@ test('diff writer', (t) => {
     );
   });
   t.test(`notOk diagnostic message`, (t) => {
-    const getMessage = notOkDiagnosticMessage(theme);
+    const getMessage = notOkDiagnosticMessage({ theme });
 
     t.eq(
       getMessage({ actual: 'foo' }),
@@ -52,7 +52,7 @@ test('diff writer', (t) => {
   });
 
   t.test(`fail diagnostic message`, (t) => {
-    const getMessage = failDiagnosticMessage(theme);
+    const getMessage = failDiagnosticMessage({ theme });
     t.eq(
       getMessage({ description: 'should not get here' }),
       `expected <emphasis>fail</emphasis> not to be called, but was called as <emphasis>"should not get here"</emphasis>`
@@ -60,7 +60,7 @@ test('diff writer', (t) => {
   });
 
   t.test(`notEqual diagnostic message`, (t) => {
-    const getMessage = notEqualDiagnosticMessage(theme);
+    const getMessage = notEqualDiagnosticMessage({ theme });
     t.eq(
       getMessage(),
       `expected the arguments <emphasis>not to be equivalent</emphasis> but they were`
@@ -68,18 +68,18 @@ test('diff writer', (t) => {
   });
 
   t.test(`is diagnostic message`, (t) => {
-    const getMessage = isDiagnosticMessage(theme);
+    const getMessage = isDiagnosticMessage({ theme });
     t.eq(
       getMessage(),
-      `expected <emphasis>references to be the same</emphasis> but the were not`
+      `expected <emphasis>references to be the same</emphasis> but they were not`
     );
   });
 
   t.test(`isNot diagnostic message`, (t) => {
-    const getMessage = isNotdiagnosticMessage(theme);
+    const getMessage = isNotDiagnosticMessage({ theme });
     t.eq(
       getMessage(),
-      `expected <emphasis>references not to be the same</emphasis> but the were`
+      `expected <emphasis>references not to be the same</emphasis> but they were`
     );
   });
 

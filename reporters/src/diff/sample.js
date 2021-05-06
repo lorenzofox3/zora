@@ -6,7 +6,7 @@ const wait = (time = 100) =>
   });
 
 test('root', async (t) => {
-  t.ok(null);
+  t.is({}, {});
   await wait();
   t.test('nested', async (t) => {
     t.ok(true);
