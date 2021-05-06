@@ -6,7 +6,7 @@
     "reporters"
   ],
   "scripts": {
-    "format": "prettier --write **/{src,test} --single-quote"
+    "format": "prettier --write **/{src,test}"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "~18.0.0",
@@ -17,6 +17,9 @@
     "prettier": "~2.2.1",
     "pretty-quick": "~3.1.0",
     "rollup": "~2.45.2"
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "husky": {
     "hooks": {

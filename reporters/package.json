@@ -22,6 +22,9 @@
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
+  "prettier": {
+    "singleQuote": true
+  },
   "dependencies": {
     "@lorenzofox3/for-await": "~0.2.1",
     "arg": "~5.0.0",

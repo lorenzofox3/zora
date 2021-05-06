@@ -11,6 +11,9 @@
       "require": "./dist/index.cjs"
     }
   },
+  "prettier": {
+    "singleQuote": true
+  },
   "scripts": {
     "build": "rollup -c rollup.js",
     "build:watch": "rollup -w -c rollup.js",
