@@ -79,45 +79,43 @@ export const createWriter = ({
   };
 };
 
-const getDiagnosticMessage = ({ theme }) => {
+export const getDiagnosticMessage = ({ theme }) => {
   const operators = {
-    [Operator.OK]: okDiagnosticMessage({ theme }),
-    [Operator.NOT_OK]: notOkDiagnosticMessage({ theme }),
-    [Operator.FAIL]: failDiagnosticMessage({ theme }),
-    [Operator.NOT_EQUAL]: notEqualDiagnosticMessage({ theme }),
-    [Operator.IS]: isDiagnosticMessage({ theme }),
-    [Operator.IS_NOT]: isNotDiagnosticMessage({ theme }),
+    [Operator.OK]: ({ actual }) =>
+      `expected ${theme.emphasis('"truthy"')} but got ${theme.emphasis(
+        actual === '' ? '""' : actual
+      )}`,
+    [Operator.NOT_OK]: ({ actual }) =>
+      `expected ${theme.emphasis('"falsy"')} but got ${theme.emphasis(
+        JSON.stringify(actual)
+      )}`,
+    [Operator.FAIL]: ({ description }) =>
+      `expected ${theme.emphasis(
+        'fail'
+      )} not to be called, but was called as ${theme.emphasis(
+        JSON.stringify(description)
+      )}`,
+    [Operator.NOT_EQUAL]: () =>
+      `expected the arguments ${theme.emphasis(
+        'not to be equivalent'
+      )} but they were`,
+    [Operator.IS]: () =>
+      `expected ${theme.emphasis(
+        'references to be the same'
+      )} but they were not`,
+    [Operator.IS_NOT]: () =>
+      `expected ${theme.emphasis(
+        'references not to be the same'
+      )} but they were`,
     // [Operator.THROWS]:
   };
 
-  return (diag) =>
-    operators[diag.operator]?.(diag) ?? `unknown operator ${diag.operator}`;
+  const unknown = ({ operator }) =>
+    `unknown operator ${theme.emphasis(operator)}`;
+
+  return (diag) => operators[diag.operator]?.(diag) ?? unknown(diag);
 };
 
-export const okDiagnosticMessage = ({ theme }) => ({ actual }) =>
-  `expected ${theme.emphasis('"truthy"')} but got ${theme.emphasis(
-    actual === '' ? '""' : actual
-  )}`;
-
-export const notOkDiagnosticMessage = ({ theme }) => ({ actual }) =>
-  `expected ${theme.emphasis('"falsy"')} but got ${theme.emphasis(
-    JSON.stringify(actual)
-  )}`;
-
-export const failDiagnosticMessage = ({ theme }) => ({ description }) =>
-  `expected ${theme.emphasis(
-    'fail'
-  )} not to be called, but was called as ${theme.emphasis(
-    JSON.stringify(description)
-  )}`;
-
-export const notEqualDiagnosticMessage = ({ theme }) => () =>
-  `expected the arguments ${theme.emphasis(
-    'not to be equivalent'
-  )} but they were`;
-
-export const isDiagnosticMessage = ({ theme }) => () =>
-  `expected ${theme.emphasis('references to be the same')} but they were not`;
-
-export const isNotDiagnosticMessage = ({ theme }) => () =>
-  `expected ${theme.emphasis('references not to be the same')} but they were`;
+export const getSummaryMessage = ({ theme }) => {
+  return (counter) => {};
+};

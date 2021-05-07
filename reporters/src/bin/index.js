@@ -15,9 +15,11 @@ const { ['--reporter']: reporter = 'diff' } = arg({
   ['-R']: '--reporter',
 });
 
+const splitChunkToLines = (chunk) => chunk.toString().split(EOL);
+
 (async () => {
   const inputStream = stream(process.stdin)
-    .map((chunk) => stream(chunk.toString().split(EOL)).filter(Boolean))
+    .map((chunk) => stream(splitChunkToLines(chunk)).filter(Boolean))
     .flatMap(JSON.parse);
 
   const report = reporterMap[reporter];
