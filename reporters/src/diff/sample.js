@@ -20,5 +20,5 @@ test('root', async (t) => {
 test('some more', async (t) => {
   t.ok(true);
   await wait();
-  t.eq(true, false);
+  t.eq('foo', 'fob');
 });

@@ -13,9 +13,9 @@
   },
   "scripts": {
     "build": "rollup -c rollup.js",
-    "test": "node ./test/index.js",
-    "test:watch": "nodemon ./test/index.js",
-    "try": "ZORA_REPORTER=json node src/diff/sample.js | src/bin/index.js"
+    "test": "ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js",
+    "dev": "ZORA_REPORTER=json nodemon --exec  'node ./test/index.js | node ./src/bin/index.js'",
+    "try": "ZORA_REPORTER=json node ./src/diff/sample.js | node ./src/bin/index.js"
   },
   "files": [
     "dist"
@@ -28,6 +28,7 @@
   "dependencies": {
     "@lorenzofox3/for-await": "~0.2.1",
     "arg": "~5.0.0",
-    "colorette": "~1.2.2"
+    "colorette": "~1.2.2",
+    "diff": "~5.0.0"
   }
 }

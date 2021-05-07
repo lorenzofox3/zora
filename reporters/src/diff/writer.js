@@ -1,8 +1,8 @@
 import { compose, defaultLogger } from '../utils.js';
 import { createTheme } from './theme.js';
-import { leftPad, withMargin } from './utils.js';
+import { leftPad, typeAsString, withMargin } from './utils.js';
 import { Operator } from '../../../assert/src/utils.js';
-import { isNot } from '../../../assert/src/assert.js';
+import { diffChars } from 'diff';
 
 const hasSome = (label) => (counter) => counter[label] > 0;
 const hasFailure = hasSome('failure');
@@ -15,43 +15,21 @@ export const createWriter = ({
   const print = compose([log, leftPad(2)]);
 
   const diagnostics = getDiagnosticMessage({ theme });
+  const summary = getSummaryMessage({ theme });
 
   const printDiagnostic = (diag) => {
     const { operator } = diag;
     print('');
     const operatorString = theme.operator(`[${operator}]`);
     print(`${operatorString} ${diagnostics(diag)}`);
-
-    // print(
-    //   `${operatorString} expected "${theme.emphasis(
-    //     expected
-    //   )}" but got "${theme.emphasis(actual)}"`
-    // );
   };
 
-  const printSummary = ({ success, skip, failure, total }) => {
+  const printSummary = (counter) => {
     print('');
-    const headerLabel = `TOTAL:  ${total}`;
-    const length = String(total).length + 2;
-    const padNumber = (number) => String(number).padStart(length);
-    const successLabel = `PASS:${padNumber(success)}`;
-    const failLabel = `FAIL:${padNumber(failure)}`;
-    const skipLabel = `SKIP:${padNumber(skip)}`;
-
-    print(theme.header(headerLabel));
-    print(
-      hasFailure({ failure })
-        ? theme.disable(successLabel)
-        : theme.successBadge(successLabel)
-    );
-    print(
-      hasFailure({ failure })
-        ? theme.errorBadge(failLabel)
-        : theme.disable(failLabel)
-    );
-    print(
-      hasSkip({ skip }) ? theme.skipBadge(skipLabel) : theme.disable(skipLabel)
-    );
+    print(summary.total(counter));
+    print(summary.pass(counter));
+    print(summary.fail(counter));
+    print(summary.skip(counter));
     print('');
   };
 
@@ -76,6 +54,36 @@ export const createWriter = ({
     printSummary,
     printTestPath,
     printLocation,
+  };
+};
+
+const getPad = ({ total }) => (number) =>
+  String(number).padStart(String(total).length + 2);
+
+export const getSummaryMessage = ({ theme }) => {
+  return {
+    fail(counter) {
+      const padNumber = getPad(counter);
+      const label = `FAIL:${padNumber(counter.failure)}`;
+      return hasFailure(counter)
+        ? theme.errorBadge(label)
+        : theme.disable(label);
+    },
+    pass(counter) {
+      const padNumber = getPad(counter);
+      const label = `PASS:${padNumber(counter.success)}`;
+      return hasFailure(counter)
+        ? theme.disable(label)
+        : theme.successBadge(label);
+    },
+    skip(counter) {
+      const padNumber = getPad(counter);
+      const label = `SKIP:${padNumber(counter.skip)}`;
+      return hasSkip(counter) ? theme.skipBadge(label) : theme.disable(label);
+    },
+    total(counter) {
+      return theme.header(`TOTAL:  ${counter.total}`);
+    },
   };
 };
 
@@ -107,7 +115,10 @@ export const getDiagnosticMessage = ({ theme }) => {
       `expected ${theme.emphasis(
         'references not to be the same'
       )} but they were`,
-    // [Operator.THROWS]:
+    [Operator.THROWS]: () => {
+      throw new Error('not implemented yet');
+    },
+    [Operator.EQUAL]: getEqualDiagnosticMessage(theme),
   };
 
   const unknown = ({ operator }) =>
@@ -116,6 +127,44 @@ export const getDiagnosticMessage = ({ theme }) => {
   return (diag) => operators[diag.operator]?.(diag) ?? unknown(diag);
 };
 
-export const getSummaryMessage = ({ theme }) => {
-  return (counter) => {};
+export const getDiffCharThemedMessage = (theme) => {
+  const mapParts = ({ value, added, removed }) => {
+    if (!(added || removed)) {
+      return value;
+    }
+    return added ? theme.diffExpected(value) : theme.diffActual(value);
+  };
+  return ({ actual, expected }) =>
+    diffChars(actual, expected).map(mapParts).join('');
+};
+
+const getDifferentTypeMessage = (theme) => ({ actual, expected }) =>
+  `expected a ${theme.emphasis(
+    typeAsString(expected)
+  )} but got a ${theme.emphasis(typeAsString(actual))}`;
+
+export const getEqualDiagnosticMessage = (theme) => {
+  const diffChars = getDiffCharThemedMessage(theme);
+  const differentTypes = getDifferentTypeMessage(theme);
+
+  const sameTypeDiff = {
+    ['string']: ({ expected, actual }) =>
+      `diff in strings:
+  ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
+  
+  ${diffChars({ expected, actual })}`,
+  };
+
+  return (diag) => {
+    const { actual, expected } = diag;
+    const expectedType = typeof expected;
+    if (typeof actual !== expectedType) {
+      return differentTypes({ actual, expected });
+    }
+
+    return (
+      sameTypeDiff[expectedType]?.(diag) ??
+      `unsupported type ${theme.emphasis(expectedType)}`
+    );
+  };
 };

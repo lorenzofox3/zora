@@ -18,10 +18,7 @@ export const withMargin = compose([leftPad(1), rightPad(1)]);
 
 export const typeAsString = (value) => {
   if (typeof value === 'object') {
-    if (!value?.constructor) {
-      return String(value);
-    }
-    return value.constructor.name;
+    return value?.constructor?.name ?? String(value);
   }
   return typeof value;
 };

@@ -12,14 +12,20 @@ export const createTheme = ({
   disableFont = colors.gray,
   badgeFont = colors.whiteBright,
   adornerFont = colors.cyan,
-} = {}) => ({
-  errorBadge: badge(compose([bgError, badgeFont])),
-  successBadge: badge(compose([bgSuccess, badgeFont])),
-  skipBadge: badge(compose([bgSkip, badgeFont])),
-  disable: compose([disableFont, withMargin]),
-  header: bold,
-  adorner: adornerFont,
-  emphasis: compose([underline, bold]),
-  operator: adornerFont,
-  light: disableFont,
-});
+} = {}) => {
+  const success = compose([bgSuccess, badgeFont]);
+  const error = compose([bgError, badgeFont]);
+  return {
+    errorBadge: badge(error),
+    successBadge: badge(success),
+    skipBadge: badge(compose([bgSkip, badgeFont])),
+    disable: compose([disableFont, withMargin]),
+    header: bold,
+    adorner: adornerFont,
+    emphasis: compose([underline, bold]),
+    operator: adornerFont,
+    light: disableFont,
+    diffExpected: success,
+    diffActual: error,
+  };
+};
