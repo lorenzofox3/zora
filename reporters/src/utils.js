@@ -4,11 +4,31 @@ const isNode = typeof process !== 'undefined';
 
 export const flatDiagnostic = ({ pass, description, ...rest }) => rest;
 
-const stringifySymbol = (key, value) =>
-  typeof value === 'symbol' ? value.toString() : value;
+const createReplacer = () => {
+  const visited = new Set();
+  return (key, value) => {
+    if (isObject(value)) {
+      if (visited.has(value)) {
+        return '[__CIRCULAR_REF__]';
+      }
 
-export const defaultSerializer = (value) =>
-  JSON.stringify(value, stringifySymbol);
+      visited.add(value);
+    }
+
+    if (typeof value === 'symbol') {
+      return value.toString();
+    }
+
+    return value;
+  };
+};
+
+const isObject = (candidate) =>
+  typeof candidate === 'object' && candidate !== null;
+
+const stringify = (value) => JSON.stringify(value, createReplacer());
+
+export const defaultSerializer = stringify;
 
 export const defaultLogger = (value) => console.log(value);
 

@@ -1,7 +1,7 @@
 import { test } from 'zora';
 import { defaultSerializer as stringify } from '../src/utils.js';
 
-test(`serialize`, ({ test }) => {
+test(`serialize`, ({ test, skip }) => {
   test('literals', ({ eq }) => {
     eq(stringify(4), '4');
     eq(stringify('foo'), '"foo"');
@@ -23,6 +23,31 @@ test(`serialize`, ({ test }) => {
       stringify({ foo: Symbol('some symbol') }),
       '{"foo":"Symbol(some symbol)"}',
       'nested'
+    );
+  });
+
+  test(`circular dependencies`, ({ eq }) => {
+    const a = {
+      foo: 'bar',
+    };
+    const b = {
+      foo: 'other bar',
+      a,
+    };
+
+    a.b = b;
+
+    eq(
+      stringify(a),
+      '{"foo":"bar","b":{"foo":"other bar","a":"[__CIRCULAR_REF__]"}}'
+    );
+
+    delete b.a;
+
+    eq(
+      stringify(a),
+      '{"foo":"bar","b":{"foo":"other bar"}}',
+      'should not keep in memory visited node'
     );
   });
 });
