@@ -31,16 +31,19 @@ test(`diagnostic messages`, (t) => {
       );
     });
 
-    t.test(`expected and actual have same type`, (t) => {
-      t.test(`getDiffCharThemedMessage`, (t) => {
-        const getMessage = getDiffCharThemedMessage(theme);
-        const { expected, actual } = getMessage({
+    t.test(`expected and actual are strings`, (t) => {
+      t.eq(
+        getMessage({
           actual: 'fob',
           expected: 'foo',
-        });
-        t.eq(expected, 'fo<diffExpected>o</diffExpected>');
-        t.eq(actual, 'fo<diffActual>b</diffActual>');
-      });
+          operator: Operator.EQUAL,
+        }),
+        `diff in strings:
+  <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
+  
+  <errorBadge>-</errorBadge> fo<diffActual>b</diffActual>
+  <successBadge>+</successBadge> fo<diffExpected>o</diffExpected>`
+      );
     });
   });
 
