@@ -2,21 +2,15 @@
   "name": "zora-assert",
   "version": "0.0.1",
   "description": "assertion library for zora",
-  "main": "./dist/index.cjs",
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./src/index.js"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "rollup -c rollup.js && cp src/index.d.ts ./dist",
     "test": "node ./test/index.js",
     "test:watch": "nodemon ./test/index.js"
   },
