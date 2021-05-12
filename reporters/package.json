@@ -4,6 +4,9 @@
   "description": "zora reporters",
   "main": "./dist/index.cjs",
   "type": "module",
+  "bin": {
+    "zr": "./src/bin/index.js"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {

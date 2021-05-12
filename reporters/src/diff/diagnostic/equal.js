@@ -1,5 +1,5 @@
 import { diffChars } from 'diff';
-import { typeAsString } from './utils.js';
+import { typeAsString } from '../utils.js';
 
 const actualParts = ({ added }) => added !== true;
 const expectedParts = ({ removed }) => removed !== true;
@@ -36,9 +36,10 @@ export const getEqualDiagnosticMessage = (theme) => {
       });
 
       return `diff in strings:
+  ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
   
-  ${theme.errorBadge('  actual')} ${theme.adorner('>')} ${actualMessage}
-  ${theme.successBadge('expected')} ${theme.adorner('>')} ${expectedMessage}`;
+  ${theme.errorBadge('-')} ${actualMessage}
+  ${theme.successBadge('+')} ${expectedMessage}`;
     },
   };
 

@@ -1,9 +1,9 @@
 import { test } from 'zora';
-import { Operator } from '../../../assert/src/utils.js';
+import { Operator } from '../../../../assert/src/utils.js';
 import {
   getDiffCharThemedMessage,
   getEqualDiagnosticMessage,
-} from '../../src/diff/diagnostic/equal.js';
+} from '../../../src/diff/diagnostic/equal.js';
 
 const theme = new Proxy(
   {},

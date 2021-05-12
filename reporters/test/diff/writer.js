@@ -1,8 +1,6 @@
 import { test } from 'zora';
 import {
   getDiagnosticMessage,
-  getDiffCharThemedMessage,
-  getEqualDiagnosticMessage,
   getSummaryMessage,
 } from '../../src/diff/writer.js';
 import { Operator } from '../../../assert/src/utils.js';
@@ -106,22 +104,12 @@ test('diff writer', (t) => {
       t.test(`expected and actual have same type`, (t) => {
         t.test(`getDiffCharThemedMessage`, (t) => {
           const getMessage = getDiffCharThemedMessage(theme);
-
-          t.eq(
-            getMessage({ actual: 'fob', expected: 'foo' }),
-            'fo<diffActual>b</diffActual><diffExpected>o</diffExpected>'
-          );
-        });
-
-        t.skip(`string`, (t) => {
-          t.eq(
-            getMessage({
-              actual: 'hello bold',
-              expected: 'hello world',
-              operator: Operator.EQUAL,
-            }),
-            ``
-          );
+          const { expected, actual } = getMessage({
+            actual: 'fob',
+            expected: 'foo',
+          });
+          t.eq(expected, 'fo<diffExpected>o</diffExpected>');
+          t.eq(actual, 'fo<diffActual>b</diffActual>');
         });
       });
     });

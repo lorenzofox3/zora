@@ -3,6 +3,7 @@ import { createTheme } from './theme.js';
 import { leftPad, typeAsString, withMargin } from './utils.js';
 import { Operator } from '../../../assert/src/utils.js';
 import { diffChars } from 'diff';
+import { getEqualDiagnosticMessage } from './diagnostic/equal.js';
 
 const hasSome = (label) => (counter) => counter[label] > 0;
 const hasFailure = hasSome('failure');
@@ -125,46 +126,4 @@ export const getDiagnosticMessage = ({ theme }) => {
     `unknown operator ${theme.emphasis(operator)}`;
 
   return (diag) => operators[diag.operator]?.(diag) ?? unknown(diag);
-};
-
-export const getDiffCharThemedMessage = (theme) => {
-  const mapParts = ({ value, added, removed }) => {
-    if (!(added || removed)) {
-      return value;
-    }
-    return added ? theme.diffExpected(value) : theme.diffActual(value);
-  };
-  return ({ actual, expected }) =>
-    diffChars(actual, expected).map(mapParts).join('');
-};
-
-const getDifferentTypeMessage = (theme) => ({ actual, expected }) =>
-  `expected a ${theme.emphasis(
-    typeAsString(expected)
-  )} but got a ${theme.emphasis(typeAsString(actual))}`;
-
-export const getEqualDiagnosticMessage = (theme) => {
-  const diffChars = getDiffCharThemedMessage(theme);
-  const differentTypes = getDifferentTypeMessage(theme);
-
-  const sameTypeDiff = {
-    ['string']: ({ expected, actual }) =>
-      `diff in strings:
-  ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
-  
-  ${diffChars({ expected, actual })}`,
-  };
-
-  return (diag) => {
-    const { actual, expected } = diag;
-    const expectedType = typeof expected;
-    if (typeof actual !== expectedType) {
-      return differentTypes({ actual, expected });
-    }
-
-    return (
-      sameTypeDiff[expectedType]?.(diag) ??
-      `unsupported type ${theme.emphasis(expectedType)}`
-    );
-  };
 };
