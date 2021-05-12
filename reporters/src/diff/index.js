@@ -1,6 +1,6 @@
 import { createCounter } from '../counter.js';
 import { createStack } from './stack.js';
-import { createWriter } from './writer.js';
+import { createWriter } from './writer/index.js';
 import { eventuallySetExitCode, isAssertionFailing } from '../utils.js';
 import { MESSAGE_TYPE } from '../protocol.js';
 

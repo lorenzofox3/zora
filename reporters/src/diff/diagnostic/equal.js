@@ -24,7 +24,7 @@ const getDifferentTypeMessage = (theme) => ({ actual, expected }) =>
     typeAsString(expected)
   )} but got a ${theme.emphasis(typeAsString(actual))}`;
 
-export const getEqualDiagnosticMessage = (theme) => {
+export default (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
   const differentTypes = getDifferentTypeMessage(theme);
 
