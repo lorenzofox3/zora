@@ -1,0 +1,26 @@
+{
+  "name": "cjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/isOdd.js",
+    "dev": "nodemon test/isOdd.js",
+    "test:only": "ZORA_ONLY=true npm t",
+    "test:coverage": "c8 node test/isOdd.js",
+    "test:pretty": "ZORA_REPORTER=json node test/isOdd.js | ../../reporters/src/bin/index.js",
+    "test:json-pipeline": "ZORA_REPORTER=json node test/isOdd.js | grep '\"pass\":false' | fx .data",
+    "test:tap-pipeline": "node test/isOdd.js | tap-difflet"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "is-even": "~1.0.0"
+  },
+  "devDependencies": {
+    "c8": "~7.7.2",
+    "fx": "~20.0.2",
+    "nodemon": "~2.0.7",
+    "tap-difflet": "~0.7.2"
+  }
+}
