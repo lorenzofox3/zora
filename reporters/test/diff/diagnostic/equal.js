@@ -1,5 +1,9 @@
 import { test } from 'zora';
-import { getDiffCharThemedMessage } from '../../../src/diff/diagnostic/equal.js';
+import {
+  diffLine,
+  expandNewLines,
+  getDiffCharThemedMessage,
+} from '../../../src/diff/diagnostic/equal.js';
 
 const theme = new Proxy(
   {},
@@ -18,4 +22,47 @@ test(`getDiffCharThemedMessage`, (t) => {
   });
   t.eq(expected, 'fo<diffExpected>o</diffExpected>');
   t.eq(actual, 'fo<diffActual>b</diffActual>');
+});
+
+test('getDiffJSONThemedMessage', (t) => {
+  t.test(`expandNewLines`, (t) => {
+    const lines = [
+      { value: '{\n  "foo": "bar",\n' },
+      {
+        removed: true,
+        value: '  "other": "waht"\n',
+      },
+      {
+        added: true,
+        value: '  "other": "what"\n',
+      },
+      { value: '}' },
+    ];
+
+    const actual = expandNewLines(lines);
+
+    t.eq(actual, [
+      { value: '{' },
+      { value: '  "foo": "bar",' },
+      {
+        removed: true,
+        value: '  "other": "waht"',
+      },
+      { added: true, value: '  "other": "what"' },
+      { value: '}' },
+    ]);
+  });
+
+  t.test(`diffLine`, (t) => {
+    const diff = diffLine(theme);
+    t.eq(
+      diff({ added: true, value: 'foo' }),
+      '<successBadge>+</successBadge> foo'
+    );
+    t.eq(
+      diff({ removed: true, value: 'foo' }),
+      '<errorBadge>-</errorBadge> foo'
+    );
+    t.eq(diff({ value: 'foo' }), '   <disable>foo</disable>');
+  });
 });

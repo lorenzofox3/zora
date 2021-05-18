@@ -2,8 +2,7 @@
 import { stream } from '@lorenzofox3/for-await';
 import arg from 'arg';
 import { EOL } from 'os';
-import { createTAPReporter } from '../index.js';
-import { createDiffReporter } from '../diff/index.js';
+import { createTAPReporter, createDiffReporter } from '../index.js';
 
 const reporterMap = {
   diff: createDiffReporter({}),

@@ -31,16 +31,16 @@ export const createWriter = ({
 
   const printLocation = (at) => print(`${theme.light('at')}: ${at}`);
 
-  const printTestPath = (stack) => {
+  const printFailingTestPath = (stack) => {
     print('');
     const testPath = [...stack];
     const current = testPath.pop();
     print(
-      theme.header(
+      `${theme.errorBadge('FAIL')} ${theme.header(
         [...testPath, theme.emphasis(current)].join(
           theme.adorner(withMargin('>'))
         )
-      )
+      )}`
     );
   };
 
@@ -48,7 +48,7 @@ export const createWriter = ({
     printDiagnostic,
     print,
     printSummary,
-    printTestPath,
+    printFailingTestPath,
     printLocation,
   };
 };

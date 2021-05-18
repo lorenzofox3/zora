@@ -1,18 +1,20 @@
 import { compose } from '../utils.js';
 
-export const leftPad = (offset, string) => {
-  if (string === void 0) {
-    return (string) => leftPad(offset, string);
+const curry2 = (fn) => (a, b) => {
+  if (b === void 0) {
+    return (b) => fn(a, b);
   }
-  return string.padStart(string.length + offset);
+
+  return fn(a, b);
 };
 
-export const rightPad = (offset, string) => {
-  if (string === void 0) {
-    return (string) => rightPad(offset, string);
-  }
-  return string.padEnd(string.length + offset);
-};
+export const leftPad = curry2((offset, string) =>
+  string.padStart(string.length + offset)
+);
+
+export const rightPad = curry2((offset, string) =>
+  string.padEnd(string.length + offset)
+);
 
 export const withMargin = compose([leftPad(1), rightPad(1)]);
 

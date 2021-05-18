@@ -14,17 +14,21 @@ const writeMessage = ({ writer, stack }) => {
     },
     [MESSAGE_TYPE.ASSERTION](message) {
       if (isAssertionFailing(message)) {
-        writer.printTestPath(stack);
+        writer.printFailingTestPath(stack);
         writer.printLocation(message.data.at);
         writer.printDiagnostic(message.data);
       }
+    },
+    [MESSAGE_TYPE.ERROR](message) {
+      // todo
+      throw message.data.error;
     },
   };
 
   return (message) => writeTable[message.type]?.(message);
 };
 
-export const createDiffReporter = () => async (messageStream) => {
+export default () => async (messageStream) => {
   const counter = createCounter();
   const stack = createStack();
   const writer = createWriter();

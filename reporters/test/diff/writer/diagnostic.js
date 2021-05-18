@@ -45,6 +45,56 @@ test(`diagnostic messages`, (t) => {
   <successBadge>+</successBadge> fo<diffExpected>o</diffExpected>`
       );
     });
+
+    t.test(`expected and actual are booleans`, (t) => {
+      t.eq(
+        getMessage({ actual: true, expected: false }),
+        `expected boolean to be <emphasis>false</emphasis> but got <emphasis>true</emphasis>`
+      );
+    });
+
+    t.test(`expected and actual are Dates`, (t) => {
+      t.eq(
+        getMessage({
+          actual: new Date(Date.UTC(2021, 4, 1)),
+          expected: new Date(Date.UTC(2021, 5, 1)),
+        }),
+        `diff in dates:
+  <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
+  
+  <errorBadge>-</errorBadge> 2021-0<diffActual>5</diffActual>-01T00:00:00.000Z
+  <successBadge>+</successBadge> 2021-0<diffExpected>6</diffExpected>-01T00:00:00.000Z`
+      );
+    });
+
+    t.test(`expected and actual are objects`, (t) => {
+      const expected = {
+        foo: 'bar',
+        nested: {
+          answer: 42,
+        },
+      };
+      const actual = {
+        foo: 'baz',
+        nested: {
+          answer: 43,
+        },
+      };
+      t.eq(
+        getMessage({ expected, actual }),
+        `diff in objects:
+  <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
+  
+     <disable>{</disable>
+  <errorBadge>-</errorBadge>   "foo": "baz",
+  <successBadge>+</successBadge>   "foo": "bar",
+     <disable>  "nested": {</disable>
+  <errorBadge>-</errorBadge>     "answer": 43
+  <successBadge>+</successBadge>     "answer": 42
+     <disable>  }</disable>
+     <disable>}</disable>`
+      );
+    });
   });
 
   t.test(`ok diagnostic message`, (t) => {
