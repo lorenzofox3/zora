@@ -9,6 +9,8 @@
     "test:only": "ZORA_ONLY=true npm t",
     "test:coverage": "c8 node test/isOdd.js",
     "test:pretty": "ZORA_REPORTER=json node test/isOdd.js | ../../reporters/src/bin/index.js",
+    "test:node-as-runner": "echo \"process.exit();\" | node -r ./test/*.js",
+    "test:bash": "for f in $(find ${@:-$PWD/test} | grep 'js$'); do echo \"require('$f')\";done | node | grep '^not\\|^\\s'",
     "test:json-pipeline": "ZORA_REPORTER=json node test/isOdd.js | grep '\"pass\":false' | fx .data",
     "test:tap-pipeline": "node test/isOdd.js | tap-difflet"
   },
