@@ -156,7 +156,8 @@ test('throws', ({ eq }) => {
       expected: '/^totally/i',
       description: 'should throw',
       operator: 'throws',
-    }
+    },
+    'expected is a regexp, passing'
   );
 
   eq(
@@ -169,7 +170,8 @@ test('throws', ({ eq }) => {
       expected: '/^totally/i',
       description: 'should throw',
       operator: 'throws',
-    }
+    },
+    'expected is a regexp, failing'
   );
 
   eq(
@@ -182,7 +184,8 @@ test('throws', ({ eq }) => {
       expected: CustomError,
       description: 'should throw',
       operator: 'throws',
-    }
+    },
+    'expected is a constructor, passing'
   );
 
   eq(
@@ -195,6 +198,7 @@ test('throws', ({ eq }) => {
       expected: CustomError,
       description: 'should throw',
       operator: 'throws',
-    }
+    },
+    'expected is a constructor, failing'
   );
 });

@@ -79,7 +79,7 @@ export const throws = (func, expected, description = 'should throw') => {
   let pass;
   let actual;
   if (typeof expected === 'string') {
-    [expected, description] = [description, expected];
+    [expected, description] = [void 0, expected];
   }
   try {
     func();
