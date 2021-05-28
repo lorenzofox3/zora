@@ -95,6 +95,15 @@ test(`diagnostic messages`, (t) => {
      <disable>}</disable>`
       );
     });
+
+    t.test(`expected and actual are numbers`, (t) => {
+      const expected = 5;
+      const actual = 3;
+      t.eq(
+        getMessage({ expected, actual }),
+        `expected number to be <successBadge>5</successBadge> but got <errorBadge>3</errorBadge>`
+      );
+    });
   });
 
   t.test(`ok diagnostic message`, (t) => {

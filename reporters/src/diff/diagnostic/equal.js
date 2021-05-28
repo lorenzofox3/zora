@@ -1,6 +1,7 @@
 import { diffChars, diffJson } from 'diff';
 import { leftPad, typeAsString } from '../utils.js';
 import { EOL } from 'os';
+import { compose } from '../../utils.js';
 
 const actualParts = ({ added }) => added !== true;
 const expectedParts = ({ removed }) => removed !== true;
@@ -19,7 +20,7 @@ export const getDiffCharThemedMessage = (theme) => ({ actual, expected }) => {
   };
 };
 
-const diffString = (theme) => {
+const diffStrings = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
   return ({ expected, actual }) => {
     const { expected: expectedMessage, actual: actualMessage } = diffChars({
@@ -34,6 +35,11 @@ const diffString = (theme) => {
   ${theme.successBadge('+')} ${expectedMessage}`;
   };
 };
+
+const diffNumbers = (theme) => ({ expected, actual }) =>
+  `expected number to be ${theme.successBadge(
+    expected
+  )} but got ${theme.errorBadge(actual)}`;
 
 const diffDates = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
@@ -96,16 +102,19 @@ const diffObjects = (theme) => {
 ${diffJSON({ actual, expected })}`;
 };
 
-const getDifferentTypeMessage = (theme) => ({ actual, expected }) =>
-  `expected a ${theme.emphasis(
-    typeAsString(expected)
-  )} but got a ${theme.emphasis(typeAsString(actual))}`;
+const getDifferentTypeMessage = (theme) => {
+  const printType = compose([theme.emphasis, typeAsString]);
+
+  return ({ actual, expected }) =>
+    `expected a ${printType(expected)} but got a ${printType(actual)}`;
+};
 
 export default (theme) => {
   const differentTypes = getDifferentTypeMessage(theme);
 
   const sameTypeDiff = {
-    ['string']: diffString(theme),
+    ['number']: diffNumbers(theme),
+    ['string']: diffStrings(theme),
     ['boolean']: diffBooleans(theme),
     ['object']: ({ expected, actual }) => {
       if (expected.constructor === Date) {

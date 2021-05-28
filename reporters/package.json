@@ -16,9 +16,9 @@
   },
   "scripts": {
     "build": "rollup -c rollup.js",
-    "test": "ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js",
-    "dev": "ZORA_REPORTER=json nodemon --exec  'node ./test/index.js | node ./src/bin/index.js'",
-    "try": "ZORA_REPORTER=json node ./src/diff/sample.js | node ./src/bin/index.js"
+    "test": "node ./test/index.js",
+    "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js",
+    "dev": "nodemon --exec  'ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js'"
   },
   "files": [
     "dist"
