@@ -31,7 +31,7 @@ interface IBailOutMessage extends IMessage<{ error: unknown }> {
   type: 'BAIL_OUT';
 }
 
-type Message =
+export type Message =
   | IAssertionMessage
   | IBailOutMessage
   | ITestEndMessage
@@ -51,11 +51,11 @@ export declare function testEndMessage(
 
 export declare function errorMessage(opts: { error: unknown }): IBailOutMessage;
 
-interface IReporter {
+export interface IReporter {
   (messageStream: AsyncIterable<Message>): Promise<void>;
 }
 
-interface ILogOptions {
+export interface ILogOptions {
   log?: (message: any) => void;
   serialize?: (value: any) => string;
 }

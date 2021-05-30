@@ -24,8 +24,9 @@
     "singleQuote": true
   },
   "scripts": {
-    "build": "rollup -c rollup.js",
     "build:types": "rollup -c rollup-types.js",
+    "build:js": "rollup -c rollup.js",
+    "build": "npm run build:js && npm run build:types",
     "build:watch": "rollup -w -c rollup.js",
     "test": "node test/run.js"
   },

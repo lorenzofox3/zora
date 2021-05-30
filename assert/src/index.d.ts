@@ -27,7 +27,7 @@ export interface MessageAssertionFunction {
   (message?: string): IAssertionResult<string>;
 }
 
-interface IAssert {
+export interface IAssert {
   equal: ComparatorAssertionFunction;
 
   equals: ComparatorAssertionFunction;
@@ -67,7 +67,7 @@ interface IAssert {
 
 declare function factory(options?: IAssertOptions): IAssert;
 
-export const Assert: IAssert;
+export declare const Assert: IAssert;
 
 export interface IAssertOptions {
   onResult: (result: IAssertionResult<unknown>) => void;
