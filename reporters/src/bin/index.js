@@ -28,8 +28,4 @@ const splitChunkToLines = (chunk) => chunk.toString().split(EOL);
   }
 
   await report(inputStream);
-
-  // for await (const message of inputStream) {
-  //   console.log(message);
-  // }
 })();

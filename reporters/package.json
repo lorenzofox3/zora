@@ -2,7 +2,6 @@
   "name": "zora-reporters",
   "version": "1.0.0",
   "description": "zora reporters",
-  "main": "./dist/index.cjs",
   "type": "module",
   "bin": {
     "zr": "./src/bin/index.js"
