@@ -15,12 +15,12 @@ export interface BooleanAssertionFunction {
   (actual: unknown, description?: string): IAssertionResult<boolean>;
 }
 
-export type ErrorAssertionFunction = (
-  fn: Function,
-  expected: RegExp | Function,
-  description?: string
-) =>
-  | IAssertionResult<RegExp | Function>
+export type ErrorAssertionFunction =
+  | ((
+      fn: Function,
+      expected: RegExp | Function,
+      description?: string
+    ) => IAssertionResult<RegExp | Function>)
   | ((fn: Function, description?: string) => IAssertionResult<undefined>);
 
 export interface MessageAssertionFunction {

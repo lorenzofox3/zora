@@ -18,7 +18,7 @@ export interface BooleanAssertionFunction {
 }
 
 export interface ErrorAssertionFunction {
-    (fn: Function, expected?: string | RegExp | Function, description ?: string): AssertionResult<string | RegExp | Function>;
+    (fn: Function, expected?: RegExp | Function, description ?: string): AssertionResult<string | RegExp | Function>;
 }
 
 export interface MessageAssertionFunction {
