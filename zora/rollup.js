@@ -13,5 +13,8 @@ export default {
       format: 'es',
     },
   ],
+  treeshake: {
+    moduleSideEffects: false, // otherwise package 'diff' from 'zora-reporters' gets included
+  },
   plugins: [node(), cjs()],
 };
