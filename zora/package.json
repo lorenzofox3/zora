@@ -33,8 +33,5 @@
     "dist"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
-  "license": "MIT",
-  "devDependencies": {
-    "rollup-plugin-dts": "~3.0.2"
-  }
+  "license": "MIT"
 }

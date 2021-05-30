@@ -1,37 +1,37 @@
-import { IAssertionResult } from 'zora-assert';
+import { IAssertionResult } from '../../../assert/src/index';
 
-export interface INewTestMessageInput {
+interface INewTestMessageInput {
   description: string;
   skip: boolean;
 }
 
-export interface ITestEndMessageInput {
+interface ITestEndMessageInput {
   description: string;
   executionTime: number;
 }
 
-export interface IMessage<T> {
+interface IMessage<T> {
   type: string;
   data: T;
 }
 
-export interface INewTestMessage extends IMessage<INewTestMessageInput> {
+interface INewTestMessage extends IMessage<INewTestMessageInput> {
   type: 'TEST_START';
 }
 
-export interface IAssertionMessage extends IMessage<IAssertionResult<unknown>> {
+interface IAssertionMessage extends IMessage<IAssertionResult<unknown>> {
   type: 'ASSERTION';
 }
 
-export interface ITestEndMessage extends IMessage<ITestEndMessageInput> {
+interface ITestEndMessage extends IMessage<ITestEndMessageInput> {
   type: 'TEST_END';
 }
 
-export interface IBailOutMessage extends IMessage<{ error: unknown }> {
+interface IBailOutMessage extends IMessage<{ error: unknown }> {
   type: 'BAIL_OUT';
 }
 
-export type Message =
+type Message =
   | IAssertionMessage
   | IBailOutMessage
   | ITestEndMessage
@@ -49,6 +49,19 @@ export declare function testEndMessage(
   opts: INewTestMessageInput
 ): ITestEndMessage;
 
-export declare function bailoutMessage(opts: {
-  error: unknown;
-}): IBailOutMessage;
+export declare function errorMessage(opts: { error: unknown }): IBailOutMessage;
+
+interface IReporter {
+  (messageStream: AsyncIterable<Message>): Promise<void>;
+}
+
+interface ILogOptions {
+  log?: (message: any) => void;
+  serialize?: (value: any) => string;
+}
+
+export declare function createJSONReporter(opts: ILogOptions): IReporter;
+
+export declare function createTAPReporter(opts: ILogOptions): IReporter;
+
+export declare function createDiffReporter(): IReporter;

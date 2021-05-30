@@ -1,4 +1,5 @@
 import {
+  compose,
   defaultLogger,
   defaultSerializer,
   eventuallySetExitCode,
@@ -7,9 +8,12 @@ import {
 export default ({
   log = defaultLogger,
   serialize = defaultSerializer,
-} = {}) => async (messageStream) => {
-  for await (const message of messageStream) {
-    eventuallySetExitCode(message);
-    log(serialize(message));
-  }
+} = {}) => {
+  const print = compose([log, serialize]);
+  return async (messageStream) => {
+    for await (const message of messageStream) {
+      eventuallySetExitCode(message);
+      print(message);
+    }
+  };
 };
