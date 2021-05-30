@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "assertion library for zora",
   "type": "module",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
