@@ -7,13 +7,13 @@ Zora is one of the lightest (if not the lightest), yet one of the fastest Javasc
 
 Its design principles follow the line:
 
-* Runs with any Javascript environment ([Nodejs](https://nodejs.org/en/), [Deno](https://deno.land/), Browser ): you don't need specific test runner to run your testing program, it is __just__ a regular javascript program
+* Runs with any Javascript environment ([Nodejs](https://nodejs.org/en/), [Deno](https://deno.land/), Browser ): you don't need any specific test runner to run your testing program, it is _just_ a regular javascript program
 * Is fast and simple: a [small codebase](https://packagephobia.com/result?p=zora) achieving the [best performances](../perfs) to deliver the best developer experience
 * Follows the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy): a set of focused, composable small software to deliver the best flexibility with the minimum overhead, rather than a huge monolith hard to tweak, with a large set options.
 
 ## Usage
 
-The library is a __regular__ Javascript module and can be directly imported from a CDN:
+The library is a _regular_ Javascript module and can be directly imported from a CDN:
 
 ```Javascript
 import {test} from 'https://unpkg.com/zora@latest/dist/index.js'
@@ -96,6 +96,9 @@ When you start a test suite with the ``test`` function. The spec functions you p
 
 For the best performances, all the spec functions run concurrently unless you specifically wait for them within an asynchronous function (if for some reason, you want to run some test one after the other, in a serial mode).
 
+<details>
+    <summary>control-flow.js</summary>
+
 ```Javascript
 import {test} from 'zora';
 
@@ -158,9 +161,12 @@ test('grouped', async t => {
 });
 ```
 
+</details>
+
+
 ## Environment variables
 
-You can __configure__ the testing program with environment variables. With nodejs, simply pass it with the command line:
+You can _configure_ the testing program with environment variables. With nodejs, simply pass it with the command line:
 
 ``ZORA_REPORTER=json node path/to/testing/program.js``
 
