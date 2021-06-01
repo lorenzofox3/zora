@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  reporters:
+    name: reporters package
+    runs-on: ubuntu-latest
+    container: node:15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install common dependencies
+        run: npm ci
+      - name: Test
+        run: cd reporters && npm ci && npm run build && npm t
+
+  zora:
+    name: zora
+    runs-on: ubuntu-latest
+    container: node:15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install common dependencies
+        run: npm ci
+      - name: Build reporters
+        run: cd reporters && npm ci && npm run build
+      - name: Build and test zora
+        run: cd zora && npm ci && npm run build && npm t
+
+  cli:
+    name: cli package
+    runs-on: ubuntu-latest
+    container: node:15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install common dependencies
+        run: npm ci
+      - name: Build common
+        run: cd packages/common && npm ci && npm run build
+      - name: Build parser
+        run: cd packages/parser && npm ci && npm run build
+      - name: Build generator
+        run: cd packages/generator && npm ci && npm run build
+      - name: Test cli
+        run: cd packages/CLI && npm ci && npm t
