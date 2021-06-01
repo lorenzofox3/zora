@@ -1,11 +1,6 @@
 import { Operator } from './utils.js';
 import eq from 'fast-deep-equal';
 
-const aliasMethodHook = (methodName) =>
-  function (...args) {
-    return this[methodName](...args);
-  };
-
 export const equal = (
   actual,
   expected,
@@ -108,21 +103,21 @@ export const throws = (func, expected, description = 'should throw') => {
 
 export const Assert = {
   equal,
-  equals: aliasMethodHook('equal'),
-  eq: aliasMethodHook('equal'),
-  deepEqual: aliasMethodHook('equal'),
-  same: aliasMethodHook('equal'),
+  equals: equal,
+  eq: equal,
+  deepEqual: equal,
+  same: equal,
   notEqual,
-  notEquals: aliasMethodHook('notEqual'),
-  notEq: aliasMethodHook('notEqual'),
-  notDeepEqual: aliasMethodHook('notEqual'),
-  notSame: aliasMethodHook('notEqual'),
+  notEquals: notEqual,
+  notEq: notEqual,
+  notDeepEqual: notEqual,
+  notSame: notEqual,
   is,
   isNot,
   ok,
-  truthy: aliasMethodHook('ok'),
+  truthy: ok,
   notOk,
-  falsy: aliasMethodHook('notOk'),
+  falsy: notOk,
   fail,
   throws,
 };
