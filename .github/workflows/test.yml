@@ -17,10 +17,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install common dependencies
         run: npm ci
+      - name: Build reporters
+        run: cd reporters && npm ci && npm run build
       - name: Build zora
         run: cd zora && npm ci && npm run build
-      - name: Test
-        run: cd reporters && npm ci && npm run build && npm t
+      - name: Test reporters
+        run: cd reporters && npm t
 
   zora:
     name: zora package
