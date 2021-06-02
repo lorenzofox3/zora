@@ -3,7 +3,7 @@ import { Assert as AssertPrototype } from './assert.js';
 
 const noop = () => {};
 
-const hookOnAssert = (assert, { onResult }) =>
+const hook = (onResult) => (assert) =>
   Object.fromEntries(
     Object.keys(AssertPrototype).map((methodName) => [
       methodName,
@@ -16,15 +16,13 @@ export default (
     onResult: noop,
   }
 ) => {
-  const resultCallback = (item) => {
+  const hookOnAssert = hook((item) => {
     const result = decorateWithLocation(item);
     onResult(result);
     return result;
-  };
-
-  return hookOnAssert(Object.create(AssertPrototype), {
-    onResult: resultCallback,
   });
+
+  return hookOnAssert(Object.create(AssertPrototype));
 };
 
 export const Assert = AssertPrototype;
