@@ -28,9 +28,11 @@ const getAssertionLocation = () => {
 };
 
 export const decorateWithLocation = (result) => {
-  if (!result.pass) {
-    // todo make it immutable
-    result.at = getAssertionLocation();
+  if (result.pass === false) {
+    return {
+      ...result,
+      at: getAssertionLocation(),
+    };
   }
   return result;
 };
