@@ -9,31 +9,17 @@ on:
       - v5
 
 jobs:
-  reporters:
+  all:
     name: reporters package
     runs-on: ubuntu-latest
-    container: node:15
+    container: node:16
     steps:
       - uses: actions/checkout@v2
-      - name: Install common dependencies
-        run: npm ci
-      - name: Build reporters
-        run: cd reporters && npm ci && npm run build
-      - name: Build zora
-        run: cd zora && npm ci && npm run build
-      - name: Test reporters
-        run: cd reporters && npm t
+      - name: Install
+        run: npm run pinstall
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm t
 
-  zora:
-    name: zora package
-    runs-on: ubuntu-latest
-    container: node:15
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install common dependencies
-        run: npm ci
-      - name: Build reporters
-        run: cd reporters && npm ci && npm run build
-      - name: Build and test zora
-        run: cd zora && npm ci && npm run build && npm t
 
