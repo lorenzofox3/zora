@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        run: npm run pinstall
+        run: for f in $GITHUB_WORKSPACE/. $GITHUB_WORKSPACE/assert $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm ci; done;
       - name: Build
-        run: npm run build
+        run: for f in $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm run build; done;
       - name: Test
-        run: npm t
+        run: for f in $GITHUB_WORKSPACE/assert $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm t; done;
 
 
