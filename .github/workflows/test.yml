@@ -19,11 +19,10 @@ jobs:
         shell: bash
         run: for f in $PWD/{.,assert,reporters,zora}; do cd $f && npm ci; done;
       - name: Build
-        run: for f in $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm run build; done;
-      - name: Test
-        run: for f in $GITHUB_WORKSPACE/assert $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm t; done;
-      - name: TRY
         shell: bash
-        run: for f in $GITHUB_WORKSPACE/{assert,zora} $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm t; done;
+        run: for f in $PWD/{reporters,zora}; do cd $f && npm run build; done;
+      - name: Test
+        shell: bash
+        run: for f in $PWD/{assert,reporters,zora}; do cd $f && npm t; done;
 
 
