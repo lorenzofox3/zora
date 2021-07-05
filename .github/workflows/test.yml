@@ -16,13 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        run: for f in $GITHUB_WORKSPACE/. $GITHUB_WORKSPACE/assert $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm ci; done;
-      - name: Build
-        run: for f in $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm run build; done;
-      - name: Test
-        run: for f in $GITHUB_WORKSPACE/assert $GITHUB_WORKSPACE/reporters $GITHUB_WORKSPACE/zora; do cd $f && npm t; done;
-      - name: TRY
         shell: bash
-        run: for f in $GITHUB_WORKSPACE/{assert,zora}; do cd $f && npm t; done;
+        run: npm pinstall
 
 
