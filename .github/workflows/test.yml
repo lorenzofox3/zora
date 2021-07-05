@@ -8,6 +8,10 @@ on:
     branches:
       - v5
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   all:
     name: reporters package
@@ -16,13 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        shell: bash
         run: for f in $PWD/{.,assert,reporters,zora}; do cd $f && npm ci; done;
       - name: Build
-        shell: bash
         run: for f in $PWD/{reporters,zora}; do cd $f && npm run build; done;
       - name: Test
-        shell: bash
         run: for f in $PWD/{assert,reporters,zora}; do cd $f && npm t; done;
 
 
