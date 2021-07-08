@@ -9,7 +9,6 @@ import {
   createJSONReporter,
   createDiffReporter,
 } from 'zora-reporters';
-import { hold, report } from 'zora';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,6 +17,7 @@ const reporterMap = {
   diff: createDiffReporter(),
   tap: createTAPReporter(),
   json: createJSONReporter(),
+  log: createJSONReporter(),
 };
 
 const DEFAULT_FILE_PATTERNS = [
@@ -35,26 +35,34 @@ const {
   ['--reporter']: reporter = 'diff',
   ['--only']: only = false,
   ['--help']: help = false,
+  ['--module-loader']: moduleLoader = 'es',
   _: filePatterns,
 } = arg({
   ['--reporter']: String,
   ['--only']: Boolean,
   ['--help']: Boolean,
+  ['--module-loader']: String,
   ['-R']: '--reporter',
 });
 
 (async () => {
-  hold();
-
   if (help) {
     createReadStream(resolve(__dirname, './usage.txt')).pipe(process.stdout);
     return;
   }
 
+  // we set the env var before loading zora
   if (only) {
     process.env.ZORA_ONLY = true;
   }
 
+  // loading zora to hold the singleton -> look for loading strategy (cjs vs es)
+  const { hold, report } = await import(
+    moduleLoader === 'cjs' ? 'zora/cjs' : 'zora'
+  );
+  hold();
+
+  // default to diff reporter
   const reporterInstance = reporterMap[reporter] || reporter.diff;
 
   const files = await globby(
@@ -66,10 +74,12 @@ const {
     return;
   }
 
-  for (const file of files) {
-    const filePath = resolve(process.cwd(), file);
-    await import(filePath);
-  }
+  await Promise.all(
+    files.map((file) => {
+      const filePath = resolve(process.cwd(), file);
+      return import(filePath);
+    })
+  );
 
   await report({
     reporter: reporterInstance,

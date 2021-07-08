@@ -18,7 +18,9 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./cjs": "./dist/index.cjs",
+    "./es": "./dist/index.js"
   },
   "prettier": {
     "singleQuote": true

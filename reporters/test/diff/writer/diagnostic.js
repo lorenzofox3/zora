@@ -206,17 +206,5 @@ test(`diagnostic messages`, (t) => {
         `expected a <emphasis>Object</emphasis> but got a <emphasis>undefined</emphasis>`
       );
     });
-
-    t.test(`expected and actual have same type`, (t) => {
-      t.test(`getDiffCharThemedMessage`, (t) => {
-        const getMessage = getDiffCharThemedMessage(theme);
-        const { expected, actual } = getMessage({
-          actual: 'fob',
-          expected: 'foo',
-        });
-        t.eq(expected, 'fo<diffExpected>o</diffExpected>');
-        t.eq(actual, 'fo<diffActual>b</diffActual>');
-      });
-    });
   });
 });
