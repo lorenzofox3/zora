@@ -11,14 +11,14 @@ import {
 } from 'zora-reporters';
 import { hold, report } from 'zora';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const reporterMap = {
   diff: createDiffReporter(),
   tap: createTAPReporter(),
   json: createJSONReporter(),
 };
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const DEFAULT_FILE_PATTERNS = [
   '**/test.js',
@@ -30,6 +30,7 @@ const DEFAULT_FILE_PATTERNS = [
   '!**/node_modules',
   '!node_modules',
 ];
+
 const {
   ['--reporter']: reporter = 'diff',
   ['--only']: only = false,
