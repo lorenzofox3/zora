@@ -51,3 +51,8 @@ test(`serialize`, ({ test }) => {
     );
   });
 });
+
+test('foo bar bim', ({ ok }) => {
+  ok(true);
+  // throw new Error('unexpected');
+});

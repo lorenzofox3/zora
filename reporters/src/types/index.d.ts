@@ -60,8 +60,8 @@ export interface ILogOptions {
   serialize?: (value: any) => string;
 }
 
-export declare function createJSONReporter(opts: ILogOptions): IReporter;
+export declare function createJSONReporter(opts?: ILogOptions): IReporter;
 
-export declare function createTAPReporter(opts: ILogOptions): IReporter;
+export declare function createTAPReporter(opts?: ILogOptions): IReporter;
 
 export declare function createDiffReporter(): IReporter;

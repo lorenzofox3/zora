@@ -68,20 +68,6 @@ test(`tap writer`, ({ test }) => {
       );
       check(['ok 66 - some test']);
     });
-
-    skip('skipped assertion', ({ eq }) => {
-      const { writer, check } = createTestWriter({ eq });
-      writer.printAssertion(
-        {
-          data: {
-            pass: true,
-            description: 'some test',
-          },
-        },
-        { id: 66 }
-      );
-      check(['ok 66 - some test']);
-    });
   });
 
   test('print summary', ({ eq }) => {

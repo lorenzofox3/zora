@@ -174,7 +174,25 @@ test(`diagnostic messages`, (t) => {
     );
   });
 
-  t.skip(`throws diagnostic message`, (t) => {});
+  t.test(`throws diagnostic message`, (t) => {
+    t.test(`did not throw`, (t) => {
+      t.eq(
+        getMessage({ operator: Operator.THROWS }),
+        `expected <emphasis>to throw</emphasis> but it did not`
+      );
+    });
+
+    t.test('throws not matching error', (t) => {
+      t.eq(
+        getMessage({
+          operator: Operator.THROWS,
+          actual: 'foo',
+          expected: /bar/,
+        }),
+        `expected the error thrown to match <emphasis>/bar/</emphasis> but it matched <emphasis>foo</emphasis>`
+      );
+    });
+  });
 
   t.test(`equal diagnostic message`, (t) => {
     const getMessage = getEqualDiagnosticMessage(theme);

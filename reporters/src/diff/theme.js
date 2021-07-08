@@ -29,3 +29,7 @@ export const createTheme = ({
     diffActual: error,
   };
 };
+
+export const dark = createTheme();
+
+export const light = createTheme();
