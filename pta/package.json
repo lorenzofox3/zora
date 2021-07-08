@@ -4,7 +4,7 @@
   "description": "Test runner for nodejs using zora",
   "type": "module",
   "bin": {
-    "zr": "src/bin.js"
+    "pta": "src/bin.js"
   },
   "exports": {
     "./package.json": "./package.json"
