@@ -170,7 +170,7 @@ You can _configure_ the testing program with environment variables. With nodejs,
 
 ``ZORA_REPORTER=json node path/to/testing/program.js``
 
-In the browser, you just have to set it as a global before the testing program runs:
+In the browser, you have to set it as a global before the testing program runs:
 
 ```HTML
 <script>

@@ -44,6 +44,7 @@ export {
 } from '../../../reporters/src/types/index';
 export { Assert } from '../../../assert/src/index';
 export declare function hold(): void;
+export declare function report(opts: IReportOptions): ReturnType<IReporter>;
 export declare function createHarness(opts: IHarnessOptions): ITestHarness;
 export declare const test: ITestFunction;
 export declare const only: ITestFunction;
