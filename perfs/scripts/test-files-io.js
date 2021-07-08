@@ -1,6 +1,6 @@
-import arg from "arg";
-import { writeFileSync } from "fs";
-import { join } from "path";
+import arg from 'arg';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 const range = (number = 1) =>
   Array.from({
@@ -8,13 +8,13 @@ const range = (number = 1) =>
   }).map((_, index) => index + 1);
 
 const {
-  ["--files"]: filesCount = 10,
-  ["--tests"]: testCount = 8,
-  ["--idle"]: waitTime = 30,
+  ['--files']: filesCount = 10,
+  ['--tests']: testCount = 8,
+  ['--idle']: waitTime = 30,
 } = arg({
-  "--files": Number,
-  "--tests": Number,
-  "--idle": Number,
+  '--files': Number,
+  '--tests': Number,
+  '--idle': Number,
 });
 
 const errorRate = 5;
@@ -100,37 +100,37 @@ test.run();
 const zoraIndex = `
 ${range(filesCount)
   .map((i) => `import './test/test${i}.js'`)
-  .join(";\n")}
+  .join(';\n')}
 `;
 
 for (let i = 1; i <= filesCount; i++) {
   const zoraPath = join(
     process.cwd(),
-    "/suites/zora/test/",
-    "test" + i + ".js"
+    '/suites/zora/test/',
+    'test' + i + '.js'
   );
-  const avaPath = join(process.cwd(), "/suites/ava/test/", "test" + i + ".js");
+  const avaPath = join(process.cwd(), '/suites/ava/test/', 'test' + i + '.js');
   const mochaPath = join(
     process.cwd(),
-    "/suites/mocha/test/",
-    "test" + i + ".js"
+    '/suites/mocha/test/',
+    'test' + i + '.js'
   );
   const tapePath = join(
     process.cwd(),
-    "/suites/tape/test/",
-    "test" + i + ".js"
+    '/suites/tape/test/',
+    'test' + i + '.js'
   );
   const jestPath = join(
     process.cwd(),
-    "/suites/jest/__tests__/",
-    "test" + i + ".js"
+    '/suites/jest/__tests__/',
+    'test' + i + '.js'
   );
-  const uvuPath = join(process.cwd(), "/suites/uvu/test", "test" + i + ".js");
+  const uvuPath = join(process.cwd(), '/suites/uvu/test', 'test' + i + '.js');
   writeFileSync(zoraPath, zoraCode);
   writeFileSync(avaPath, avaCode);
   writeFileSync(mochaPath, mochaCode);
   writeFileSync(tapePath, tapeCode);
   writeFileSync(jestPath, jestCode);
   writeFileSync(uvuPath, uvuCode);
-  writeFileSync(join(process.cwd(), "/suites/zora/index.js"), zoraIndex);
+  writeFileSync(join(process.cwd(), '/suites/zora/bin.js'), zoraIndex);
 }
