@@ -3,7 +3,8 @@
   "workspaces": [
     "assert",
     "zora",
-    "reporters"
+    "reporters",
+    "pta"
   ],
   "scripts": {
     "format": "prettier --write **/{src,test}",

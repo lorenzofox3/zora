@@ -1,0 +1,29 @@
+{
+  "name": "pta",
+  "version": "1.0.0",
+  "description": "Test runner for nodejs using zora",
+  "type": "module",
+  "bin": {
+    "zr": "src/bin.js"
+  },
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "scripts": {},
+  "author": "@lorenzofox3 <Laurent RENARD>",
+  "license": "MIT",
+  "prettier": {
+    "singleQuote": true
+  },
+  "keywords": [
+    "zora",
+    "test",
+    "testing",
+    "cli",
+    "test-runner"
+  ],
+  "dependencies": {
+    "arg": "~5.0.0",
+    "globby": "~11.0.4"
+  }
+}
