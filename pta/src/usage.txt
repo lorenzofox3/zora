@@ -2,7 +2,7 @@ Usage
     pta [<file> ...]
 
   Options
-    --only             Runs zora in "only mode"
+    --only                  Runs zora in "only mode"
 
     --reporter, -R          One of tap, log. Otherwise it will use the default reporter
 
