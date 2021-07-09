@@ -73,19 +73,6 @@ test(`no only mode should throw when testing program uses "only"`, async (t) => 
 //     }
 // });
 
-// t.test(`"skip" test should be skipped and build marked as passed`, async t => {
-//     try {
-//         const {stderr, stdout} = await run({
-//             args: ['*.js'],
-//             cwd: 'test/samples/skip'
-//         });
-//         t.ok(stdout);
-//         t.notOk(stderr);
-//     } catch (e) {
-//         t.fail(`should not have any error`);
-//     }
-// });
-
 test('--help should output the help content', async (t) => {
   try {
     const { stderr, stdout } = await run({ args: ['--help'] });
@@ -96,31 +83,34 @@ test('--help should output the help content', async (t) => {
   }
 });
 
-// t.test('use tap reporter', async t => {
-//     try {
-//         const {stderr, stdout} = await run({
-//             args: ['*.js', '-r', 'tap'],
-//             cwd: 'test/samples/dummy'
-//         });
-//         t.eq(stdout, loadFileContent('test/samples/dummy/tap.txt'));
-//         t.notOk(stderr);
-//     } catch (e) {
-//         t.fail(`should not have any error`);
-//     }
-// });
+test('use tap reporter', async (t) => {
+  try {
+    const { stderr, stdout } = await run({
+      args: ['*.js', '-R', 'tap'],
+      cwd: 'test/samples/dummy',
+    });
+    t.eq(stdout, loadFileContent('test/samples/dummy/tap.txt'));
+    t.notOk(stderr);
+  } catch (e) {
+    t.fail(`should not have any error`);
+  }
+});
 
-// t.test('use log reporter', async t => {
-//     try {
-//         const {stderr, stdout} = await run({
-//             args: ['*.js', '-r', 'log'],
-//             cwd: 'test/samples/dummy/'
-//         });
-//         t.eq(stdout.replace(/"executionTime":\d+,/g, '"executionTime":{TIME},'), loadFileContent('test/samples/dummy/log.txt'));
-//         t.notOk(stderr);
-//     } catch (e) {
-//         t.fail(`should not have any error`);
-//     }
-// });
+test('use log reporter', async (t) => {
+  try {
+    const { stderr, stdout } = await run({
+      args: ['*.js', '-R', 'log'],
+      cwd: 'test/samples/dummy/',
+    });
+    t.eq(
+      stdout.replace(/"executionTime":\d+,/g, '"executionTime":{TIME},'),
+      loadFileContent('test/samples/dummy/log.txt')
+    );
+    t.notOk(stderr);
+  } catch (e) {
+    t.fail(`should not have any error`);
+  }
+});
 
 test(`should load cjs files`, async (t) => {
   try {

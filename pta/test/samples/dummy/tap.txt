@@ -1,9 +1,9 @@
 TAP version 13
-# test.js
+# sample
 ok 1 - woot woot
-1..1
 
-# ok
-# success: 1
-# skipped: 0
-# failure: 0
+1..1
+# tests 1
+# pass  1
+# fail  0
+# skip  0

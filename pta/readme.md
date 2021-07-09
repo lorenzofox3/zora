@@ -1,3 +1,22 @@
+#PTA
+
+Test runner for any zora testing program, using node (version >= 16). 
+
+## Installation
+
+``npm i -g pta``
+
+## Usage
+
+example: 
+
+``pta test/**/*.js``
+
+Note: it should work with both module format commonjs and ES 
+
+## Options
+
+```
 Usage
     pta [<file> ...]
 
@@ -21,3 +40,5 @@ Usage
     - **/test/**/*.js
     - **/tests/**/*.js
     - **/__tests__/**/*.js
+```
+

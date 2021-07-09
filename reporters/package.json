@@ -1,6 +1,6 @@
 {
   "name": "zora-reporters",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "a set of reporter for zora testing library",
   "type": "module",
   "types": "dist/zora-reporters.d.ts",

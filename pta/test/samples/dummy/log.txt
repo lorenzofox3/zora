@@ -1,5 +1,3 @@
-{"type":"TEST_START","data":{"description":"test.js"},"offset":0}
-{"type":"ASSERTION","data":{"pass":true,"actual":true,"expected":"truthy value","description":"woot woot","operator":"ok"},"offset":1}
-{"type":"TEST_END","data":{"pass":true,"executionTime":{TIME},"description":"test.js"},"offset":1}
-{"type":"ASSERTION","data":{"pass":true,"executionTime":{TIME},"description":"test.js"},"offset":0}
-{"type":"TEST_END","data":{"pass":true},"offset":0}
+{"type":"TEST_START","data":{"description":"sample","skip":false}}
+{"type":"ASSERTION","data":{"pass":true,"actual":true,"expected":"truthy value","description":"woot woot","operator":"ok"}}
+{"type":"TEST_END","data":{"description":"sample","executionTime":0}}

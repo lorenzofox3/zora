@@ -2,12 +2,13 @@
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createReadStream } from 'fs';
+import { readFile } from 'fs/promises';
 import arg from 'arg';
 import globby from 'globby';
 import {
-  createTAPReporter,
-  createJSONReporter,
   createDiffReporter,
+  createJSONReporter,
+  createTAPReporter,
 } from 'zora-reporters';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,7 +18,7 @@ const reporterMap = {
   diff: createDiffReporter(),
   tap: createTAPReporter(),
   json: createJSONReporter(),
-  log: createJSONReporter(),
+  log: createJSONReporter(), // alias for "json"
 };
 
 const DEFAULT_FILE_PATTERNS = [
@@ -35,7 +36,7 @@ const {
   ['--reporter']: reporter = 'diff',
   ['--only']: only = false,
   ['--help']: help = false,
-  ['--module-loader']: moduleLoader = 'es',
+  ['--module-loader']: moduleLoader,
   _: filePatterns,
 } = arg({
   ['--reporter']: String,
@@ -58,13 +59,11 @@ const {
 
   // loading zora to hold the singleton -> look for loading strategy (cjs vs es)
   const { hold, report } = await import(
-    moduleLoader === 'cjs' ? 'zora/cjs' : 'zora'
+    await getZoraPackagePath({ moduleLoader })
   );
   hold();
 
-  // default to diff reporter
   const reporterInstance = reporterMap[reporter] || reporter.diff;
-
   const files = await globby(
     filePatterns.length ? filePatterns : DEFAULT_FILE_PATTERNS
   );
@@ -85,3 +84,20 @@ const {
     reporter: reporterInstance,
   });
 })();
+
+async function getZoraPackagePath({ moduleLoader }) {
+  // force to user choice
+  if (moduleLoader) {
+    return moduleLoader === 'cjs' ? 'zora/cjs' : 'zora';
+  }
+
+  // try to get it from package.json
+  const packageJsonPath = resolve(process.cwd(), './package.json');
+  try {
+    const file = await readFile(packageJsonPath, { encoding: 'utf-8' });
+    const { type } = JSON.parse(file);
+    return type === 'module' ? 'zora' : 'zora/cjs';
+  } catch (e) {
+    return 'zora';
+  }
+}

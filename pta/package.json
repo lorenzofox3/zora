@@ -1,6 +1,6 @@
 {
   "name": "pta",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "Test runner for nodejs using zora",
   "type": "module",
   "bin": {
@@ -9,12 +9,15 @@
   "exports": {
     "./package.json": "./package.json"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "node test/samples/index.js"
+  },
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
   "prettier": {
     "singleQuote": true
   },
+  "files": ["src"],
   "keywords": [
     "zora",
     "test",
