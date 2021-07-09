@@ -48,30 +48,30 @@ test(`no only mode should throw when testing program uses "only"`, async (t) => 
   }
 });
 
-// t.test(`errored test suite should exit the process with code 1`, async t => {
-//     try {
-//         await run({
-//             args: ['*.js'],
-//             cwd: 'test/samples/errored/'
-//         });
-//         t.fail('should not pass');
-//     } catch (e) {
-//         t.eq(e.code, 1, 'exit code should be 1');
-//         t.ok(e.stderr.startsWith(`Error: some error`));
-//     }
-// });
+test(`errored test suite should exit the process with code 1`, async (t) => {
+  try {
+    await run({
+      args: ['*.js'],
+      cwd: 'test/samples/errored/',
+    });
+    t.fail('should not pass');
+  } catch (e) {
+    t.eq(e.code, 1, 'exit code should be 1');
+    t.ok(e.stderr.includes(`Error: some error`));
+  }
+});
 
-// t.test(`failing test suite should exit the process with code 1`, async t => {
-//     try {
-//         await run({
-//             args: ['*.js'],
-//             cwd: 'test/samples/failing'
-//         });
-//         t.fail('should not pass');
-//     } catch (e) {
-//         t.eq(e.code, 1, 'exit code should be 1');
-//     }
-// });
+test(`failing test suite should exit the process with code 1`, async (t) => {
+  try {
+    await run({
+      args: ['*.js'],
+      cwd: 'test/samples/failing',
+    });
+    t.fail('should not pass');
+  } catch (e) {
+    t.eq(e.code, 1, 'exit code should be 1');
+  }
+});
 
 test('--help should output the help content', async (t) => {
   try {
