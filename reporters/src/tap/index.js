@@ -3,9 +3,9 @@ import {
   defaultLogger,
   defaultSerializer,
   eventuallySetExitCode,
+  filter,
 } from '../utils.js';
 import { createCounter } from '../counter.js';
-import { filter } from '@lorenzofox3/for-await';
 import { createWriter } from './writer.js';
 
 const isNotTestEnd = ({ type }) => type !== MESSAGE_TYPE.TEST_END;
@@ -37,23 +37,21 @@ const writeMessage = ({ writer, nextId }) => {
   return (message) => writerTable[message.type]?.(message);
 };
 
-export default ({
-  log = defaultLogger,
-  serialize = defaultSerializer,
-} = {}) => async (messageStream) => {
-  const writer = createWriter({
-    log,
-    serialize,
-  });
-  const counter = createCounter();
-  const write = writeMessage({ writer, nextId: counter.nextId });
-  const stream = filterOutTestEnd(messageStream);
+export default ({ log = defaultLogger, serialize = defaultSerializer } = {}) =>
+  async (messageStream) => {
+    const writer = createWriter({
+      log,
+      serialize,
+    });
+    const counter = createCounter();
+    const write = writeMessage({ writer, nextId: counter.nextId });
+    const stream = filterOutTestEnd(messageStream);
 
-  writer.printHeader();
-  for await (const message of stream) {
-    counter.increment(message);
-    write(message);
-    eventuallySetExitCode(message);
-  }
-  writer.printSummary(counter);
-};
+    writer.printHeader();
+    for await (const message of stream) {
+      counter.increment(message);
+      write(message);
+      eventuallySetExitCode(message);
+    }
+    writer.printSummary(counter);
+  };

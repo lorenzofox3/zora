@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { createReadStream } from 'fs';
 import { readFile } from 'fs/promises';
 import arg from 'arg';
@@ -76,7 +76,7 @@ const {
   await Promise.all(
     files.map((file) => {
       const filePath = resolve(process.cwd(), file);
-      return import(filePath);
+      return import(pathToFileURL(filePath));
     })
   );
 

@@ -1,3 +1,5 @@
+Test runner for zora spec files
+
 Usage
     pta [<file> ...]
 

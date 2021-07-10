@@ -31,7 +31,6 @@
     "singleQuote": true
   },
   "dependencies": {
-    "@lorenzofox3/for-await": "~0.2.1",
     "arg": "~5.0.0",
     "colorette": "~1.2.2",
     "diff": "~5.0.0"

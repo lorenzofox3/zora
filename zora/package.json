@@ -9,7 +9,14 @@
     "unit",
     "tap",
     "assertion",
-    "assert"
+    "assert",
+    "tdd",
+    "bdd",
+    "ava",
+    "tape",
+    "jest",
+    "uvu",
+    "mocha"
   ],
   "type": "module",
   "types": "dist/zora.d.ts",

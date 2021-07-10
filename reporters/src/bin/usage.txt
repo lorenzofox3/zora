@@ -1,0 +1,11 @@
+Transforms a zora testing protocol message stream into a specific reporting format
+
+Usage
+    zr
+
+  Options
+    --reporter, -R          One of tap, diff.
+
+  Examples
+    zr -R tap < some/file.txt
+    ZORA_REPORTER=json node zora/program.js | zr -R diff
