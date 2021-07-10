@@ -1,4 +1,6 @@
-Test runner for zora spec files
+
+Synopsis
+    Test runner for zora spec files
 
 Usage
     pta [<file> ...]
@@ -23,3 +25,4 @@ Usage
     - **/test/**/*.js
     - **/tests/**/*.js
     - **/__tests__/**/*.js
+

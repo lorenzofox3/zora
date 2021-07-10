@@ -15,11 +15,7 @@ const reporterMap = {
   tap: createTAPReporter({}),
 };
 
-const {
-  ['--reporter']: reporter = 'diff',
-  ['--help']: help,
-  _: files,
-} = arg({
+const { ['--reporter']: reporter = 'diff', ['--help']: help } = arg({
   ['--help']: Boolean,
   ['--reporter']: String,
   ['-R']: '--reporter',
