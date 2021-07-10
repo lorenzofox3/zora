@@ -3,9 +3,11 @@ name: Tests
 on:
   push:
     branches:
+      - master
       - v5
   pull_request:
     branches:
+      - master
       - v5
 
 defaults:
@@ -22,7 +24,7 @@ jobs:
       - name: Install
         run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
       - name: Build
-        run: for f in $PWD/{reporters,zora}; do cd $f && npm run build; done;
+        run: cd zora && npm run build
       - name: Test
         run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t; done;
 
