@@ -30,7 +30,7 @@
   "dependencies": {
     "arg": "~5.0.0",
     "globby": "~11.0.4",
-    "zora-reporters": "^1.0.0-alpha.1"
+    "zora-reporters": "^1.0.0-alpha.2"
   },
   "peerDependencies": {
     "zora": "^5.0.0-beta.1"
