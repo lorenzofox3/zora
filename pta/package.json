@@ -30,6 +30,6 @@
     "globby": "~11.0.4"
   },
   "peerDependencies": {
-    "zora": "^5.0.0-alpha.1"
+    "zora": "^5.0.0-beta.1"
   }
 }
