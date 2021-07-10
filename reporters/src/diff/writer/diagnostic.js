@@ -1,4 +1,3 @@
-import { Operator } from '../../../../assert/src/utils.js';
 import {
   okDiagnostic,
   notOkDiagnostic,
@@ -12,14 +11,14 @@ import {
 
 export default ({ theme }) => {
   const operators = {
-    [Operator.OK]: okDiagnostic(theme),
-    [Operator.NOT_OK]: notOkDiagnostic(theme),
-    [Operator.FAIL]: failDiagnostic(theme),
-    [Operator.NOT_EQUAL]: notEqualDiagnostic(theme),
-    [Operator.IS]: isDiagnostic(theme),
-    [Operator.IS_NOT]: isNotDiagnostic(theme),
-    [Operator.THROWS]: throwsDiagnostic(theme),
-    [Operator.EQUAL]: equalDiagnostic(theme),
+    ok: okDiagnostic(theme),
+    notOk: notOkDiagnostic(theme),
+    fail: failDiagnostic(theme),
+    notEqual: notEqualDiagnostic(theme),
+    is: isDiagnostic(theme),
+    isNot: isNotDiagnostic(theme),
+    throws: throwsDiagnostic(theme),
+    equal: equalDiagnostic(theme),
   };
 
   const unknown = ({ operator }) =>
