@@ -16,7 +16,7 @@
   "scripts": {
     "test": "node ./test/index.js",
     "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node src/bin.js",
-    "dev": "nodemon --exec  'ZORA_REPORTER=json node ./test/index.js | node src/bin.js'"
+    "dev": "nodemon --exec 'ZORA_REPORTER=json node ./test/index.js | node src/bin.js'"
   },
   "files": [
     "src"

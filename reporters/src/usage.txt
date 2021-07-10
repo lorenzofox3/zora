@@ -6,7 +6,7 @@ Usage
     zr
 
   Options
-    --reporter, -R          One of tap, diff.
+    --reporter, -R          One of "tap", "diff"(default).
 
   Examples
     zr -R tap < some/file.txt
