@@ -1,0 +1,9 @@
+TAP version 13
+# sample
+ok 1 - woot woot
+
+1..1
+# tests 1
+# pass  1
+# fail  0
+# skip  0

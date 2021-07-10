@@ -1,0 +1,28 @@
+{
+  "name": "es",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/index.js",
+    "dev": "nodemon test/index.js",
+    "test:only": "ZORA_ONLY=true npm t",
+    "test:coverage": "c8 node test/index.js",
+    "test:pta-as-runner": "pta ./test/specs/",
+    "test:pretty-reporter": "ZORA_REPORTER=json node test/index.js | zr",
+    "test:json-pipeline": "ZORA_REPORTER=json node test/index.js | grep '\"pass\":false' | fx .data" ,
+    "test:tap-pipeline": "node test/index.js | tap-difflet"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "is-even": "~1.0.0"
+  },
+  "devDependencies": {
+    "c8": "~7.7.2",
+    "fx": "~20.0.2",
+    "nodemon": "~2.0.7",
+    "tap-difflet": "~0.7.2"
+  }
+}

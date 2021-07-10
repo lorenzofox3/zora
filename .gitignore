@@ -14,7 +14,7 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
-# nyc test coverage
+# nyc __tests__ coverage
 .nyc_output
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
@@ -37,10 +37,6 @@ jspm_packages
 .node_repl_history
 
 .idea
-test/dist
-benchmarks
-dist
-src/*.js
-sample.html
 
-benchmarks
+dist
+suites

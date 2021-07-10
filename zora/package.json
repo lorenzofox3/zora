@@ -1,0 +1,47 @@
+{
+  "name": "zora",
+  "version": "5.0.0-beta.1",
+  "description": "the lightest yet the fastest javascript testing library",
+  "main": "./dist/index.cjs",
+  "keywords": [
+    "test",
+    "testing",
+    "unit",
+    "tap",
+    "assertion",
+    "assert",
+    "tdd",
+    "bdd",
+    "ava",
+    "tape",
+    "jest",
+    "uvu",
+    "mocha"
+  ],
+  "type": "module",
+  "types": "dist/zora.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./cjs": "./dist/index.cjs",
+    "./es": "./dist/index.js"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "scripts": {
+    "build:types": "rollup -c rollup-types.js",
+    "build:js": "rollup -c rollup.js",
+    "build": "npm run build:js && npm run build:types",
+    "build:watch": "rollup -w -c rollup.js",
+    "test": "node test/run.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "@lorenzofox3 <Laurent RENARD>",
+  "license": "MIT"
+}

@@ -1,0 +1,16 @@
+TAP version 13
+# tester 1
+ok 1 - assert1
+not ok 2 - foo should equal bar
+  ---
+    actual: "foo"
+    expected: "bar"
+    operator: "equal"
+    at:{STACK}
+  ...
+
+1..2
+# tests 2
+# pass  1
+# fail  1
+# skip  0

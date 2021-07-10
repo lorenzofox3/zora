@@ -1,0 +1,15 @@
+TAP version 13
+# circular ref in diagnostic
+not ok 1 - should be equivalent
+  ---
+    actual: {"foo":"bar","b":{"key":"prop","a":"[__CIRCULAR_REF__]"}}
+    expected: {"foo":"bar","b":{"key":"prop"}}
+    operator: "equal"
+    at:{STACK}
+  ...
+
+1..1
+# tests 1
+# pass  0
+# fail  1
+# skip  0

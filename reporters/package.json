@@ -1,0 +1,34 @@
+{
+  "name": "zora-reporters",
+  "version": "1.0.0-alpha.2",
+  "description": "a set of reporter for zora testing library",
+  "type": "module",
+  "types": "./src/types/index.d.ts",
+  "bin": {
+    "zr": "./src/bin.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "test": "node ./test/index.js",
+    "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node src/bin.js",
+    "dev": "nodemon --exec 'ZORA_REPORTER=json node ./test/index.js | node src/bin.js'"
+  },
+  "files": [
+    "src"
+  ],
+  "author": "@lorenzofox3 <Laurent RENARD>",
+  "license": "MIT",
+  "prettier": {
+    "singleQuote": true
+  },
+  "dependencies": {
+    "arg": "~5.0.0",
+    "colorette": "~1.2.2",
+    "diff": "~5.0.0"
+  }
+}

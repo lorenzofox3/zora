@@ -1,0 +1,12 @@
+TAP version 13
+# hello world
+ok 1 - should be truthy
+ok 2 - blah # SKIP
+ok 3 - for some reason # SKIP
+ok 4 - failing text # SKIP
+
+1..4
+# tests 4
+# pass  1
+# fail  0
+# skip  3

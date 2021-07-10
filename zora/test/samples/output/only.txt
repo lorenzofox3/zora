@@ -1,0 +1,10 @@
+TAP version 13
+ok 1 - should not run # SKIP
+# should run
+ok 2 - I ran
+
+1..2
+# tests 2
+# pass  1
+# fail  0
+# skip  1
