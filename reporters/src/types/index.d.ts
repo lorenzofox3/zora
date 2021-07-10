@@ -27,13 +27,13 @@ interface ITestEndMessage extends IMessage<ITestEndMessageInput> {
   type: 'TEST_END';
 }
 
-interface IBailOutMessage extends IMessage<{ error: unknown }> {
-  type: 'BAIL_OUT';
+interface IErrorMessage extends IMessage<{ error: unknown }> {
+  type: 'ERROR';
 }
 
 export type Message =
   | IAssertionMessage
-  | IBailOutMessage
+  | IErrorMessage
   | ITestEndMessage
   | INewTestMessage;
 
@@ -49,7 +49,7 @@ export declare function testEndMessage(
   opts: INewTestMessageInput
 ): ITestEndMessage;
 
-export declare function errorMessage(opts: { error: unknown }): IBailOutMessage;
+export declare function errorMessage(opts: { error: unknown }): IErrorMessage;
 
 export interface IReporter {
   (messageStream: AsyncIterable<Message>): Promise<void>;
