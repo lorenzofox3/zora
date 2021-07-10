@@ -8,10 +8,11 @@
   ],
   "scripts": {
     "format": "prettier --write **/{src,test}",
-    "clean": "rm -rf {.,reporters,zora,assert,pta}/{node_modules,dist,package-lock.json};",
-    "pinstall": "for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm i; done;",
-    "build": "for f in $PWD/{reporters,zora}; do cd $f && npm run build; done;",
-    "clean:install": "npm run clean && npm run pinstall && npm run build",
+    "clean": "rm -rf {.,reporters,zora,assert,pta}/{node_modules,dist,package-lock.json}",
+    "install:frech": "for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm i; done;",
+    "install:ci": "for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;",
+    "build": "cd ./zora && npm run build",
+    "clean:install": "npm run clean && npm run install:frech && npm run build",
     "test": "for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t; done;"
   },
   "devDependencies": {

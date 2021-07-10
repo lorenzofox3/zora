@@ -10,7 +10,7 @@
     "test:coverage": "c8 node test/index.js",
     "test:node-as-runner": "echo \"process.exit();\" | node -r ./test/specs/*.js",
     "test:pta-as-runner": "pta ./test/specs/",
-    "test:pretty-reporter": "ZORA_REPORTER=json node test/index.js | ../../reporters/src/bin.js",
+    "test:pretty-reporter": "ZORA_REPORTER=json node test/index.js | zr",
     "test:bash-one-liner": "for f in $(find ${@:-$PWD/test/specs} | grep 'js$'); do echo \"require('$f')\";done | node | grep '^not\\|^\\s'",
     "test:json-pipeline": "ZORA_REPORTER=json node test/index.js | grep '\"pass\":false' | fx .data" ,
     "test:tap-pipeline": "node test/index.js | tap-difflet"

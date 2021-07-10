@@ -103,7 +103,7 @@ test('use log reporter', async (t) => {
       cwd: 'test/samples/dummy/',
     });
     t.eq(
-      stdout.replace(/"executionTime":\d+,/g, '"executionTime":{TIME},'),
+      stdout.replace(/"executionTime":\d+/g, '"executionTime":{TIME}'),
       loadFileContent('test/samples/dummy/log.txt')
     );
     t.notOk(stderr);
