@@ -28,5 +28,8 @@
   "dependencies": {
     "arg": "~5.0.0",
     "globby": "~11.0.4"
+  },
+  "peerDependencies": {
+    "zora": "^5.0.0-alpha.1"
   }
 }
