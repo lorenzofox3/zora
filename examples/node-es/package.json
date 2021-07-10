@@ -10,7 +10,7 @@
     "test:only": "ZORA_ONLY=true npm t",
     "test:coverage": "c8 node test/index.js",
     "test:pta-as-runner": "pta ./test/specs/",
-    "test:pretty-reporter": "ZORA_REPORTER=json node test/index.js | ../../reporters/src/bin/index.js",
+    "test:pretty-reporter": "ZORA_REPORTER=json node test/index.js | ../../reporters/src/bin.js",
     "test:json-pipeline": "ZORA_REPORTER=json node test/index.js | grep '\"pass\":false' | fx .data" ,
     "test:tap-pipeline": "node test/index.js | tap-difflet"
   },

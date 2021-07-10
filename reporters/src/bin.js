@@ -3,9 +3,9 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import { EOL } from 'os';
 import arg from 'arg';
-import { createTAPReporter, createDiffReporter } from '../index.js';
+import { createTAPReporter, createDiffReporter } from './index.js';
 import { createReadStream } from 'fs';
-import { compose, filter, map, split } from '../utils.js';
+import { compose, filter, map, split } from './utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

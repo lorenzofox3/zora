@@ -4,9 +4,6 @@
   "description": "a set of reporter for zora testing library",
   "type": "module",
   "types": "dist/zora-reporters.d.ts",
-  "bin": {
-    "zr": "src/bin/index.js"
-  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -17,10 +14,10 @@
   "scripts": {
     "build:js": "rollup -c rollup.js",
     "build:types": "rollup -c rollup-types.js",
-    "build": "npm run build:js && npm run build:types",
+    "build": "npm run build:js && npm run build:types && cp ./src/{bin.js,usage.txt} ./dist",
     "test": "node ./test/index.js",
-    "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js",
-    "dev": "nodemon --exec  'ZORA_REPORTER=json node ./test/index.js | node ./src/bin/index.js'"
+    "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node src/bin.js",
+    "dev": "nodemon --exec  'ZORA_REPORTER=json node ./test/index.js | node src/bin.js'"
   },
   "files": [
     "dist"
