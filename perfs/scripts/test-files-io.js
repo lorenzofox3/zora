@@ -132,5 +132,5 @@ for (let i = 1; i <= filesCount; i++) {
   writeFileSync(tapePath, tapeCode);
   writeFileSync(jestPath, jestCode);
   writeFileSync(uvuPath, uvuCode);
-  writeFileSync(join(process.cwd(), '/suites/zora/bin.js'), zoraIndex);
+  writeFileSync(join(process.cwd(), '/suites/zora/index.js'), zoraIndex);
 }
