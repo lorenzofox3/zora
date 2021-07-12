@@ -37,7 +37,7 @@ create the reporter with a factory which you can then pass to the ``report`` fun
 
 ```javascript
 import {hold, report, test} from 'zora';
-import {createDiffReporter} from './index.js';
+import {createDiffReporter} from 'zora-reporters';
 
 hold(); // prevent the default test harness to start its reporting
 
