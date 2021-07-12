@@ -15,7 +15,9 @@
     "test:pta": "pta dist/test/specs/*.js",
     "test:tap-pipeline": "node -r source-map-support/register dist/test/index.js | tap-difflet",
     "test:watch": "nodemon -r source-map-support/register --watch dist/ dist/test/index.js",
-    "dev": "concurrently -n ts,test -c purple,cyan \"npm run build:watch\" \"npm run test:watch\""
+    "test:pta:watch": "nodemon -r source-map-support/register --watch dist/  node_modules/.bin/pta dist/test/specs/*.js",
+    "dev": "concurrently -n ts,test -c purple,cyan \"npm run build:watch\" \"npm run test:watch\"",
+    "dev:pta": "concurrently -n ts,test -c purple,cyan \"npm run build:watch\" \"npm run test:pta:watch\""
   },
   "author": "",
   "license": "ISC",
