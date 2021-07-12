@@ -31,7 +31,8 @@
     "tap-difflet": "~0.7.2",
     "ts-node": "~10.1.0",
     "typescript": "~4.3.5",
-    "zora": "~5.0.0-beta.1"
+    "zora": "~5.0.0-beta.1",
+    "zora-reporters": "~1.0.0-alpha.2"
   },
   "dependencies": {
     "is-even": "~1.0.0"
