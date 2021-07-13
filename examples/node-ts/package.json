@@ -15,7 +15,7 @@
     "test": "node -r source-map-support/register dist/test/index.js",
     "test:coverage": "c8 --all -x dist/test -x test node -r source-map-support/register dist/test/index.js",
     "test:pretty": "ZORA_REPORTER=json node -r source-map-support/register dist/test/index.js | zr",
-    "test:pta": "pta dist/test/specs/*.js",
+    "test:pta":"node -r source-map-support/register node_modules/.bin/pta dist/test/specs/*.js",
     "test:tap-pipeline": "node -r source-map-support/register dist/test/index.js | tap-difflet",
     "test:watch": "nodemon -r source-map-support/register --watch dist/ dist/test/index.js",
     "test:pta:watch": "nodemon -r source-map-support/register --watch dist/  node_modules/.bin/pta dist/test/specs/*.js",
