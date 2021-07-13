@@ -6,11 +6,14 @@
   "directories": {
     "test": "test"
   },
+  "engines": {
+    "node": "16"
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "node -r source-map-support/register dist/test/index.js",
-    "test:coverage": "c8 --reporter html --all -x dist/test -x test node -r source-map-support/register dist/test/index.js",
+    "test:coverage": "c8 --all -x dist/test -x test node -r source-map-support/register dist/test/index.js",
     "test:pretty": "ZORA_REPORTER=json node -r source-map-support/register dist/test/index.js | zr",
     "test:pta": "pta dist/test/specs/*.js",
     "test:tap-pipeline": "node -r source-map-support/register dist/test/index.js | tap-difflet",
