@@ -1,0 +1,19 @@
+{
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "@lorenzofox3/for-await": "~0.2.1",
+    "playwright": "~1.12.3",
+    "vite": "^2.4.2",
+    "ws": "~7.5.3",
+    "zora": "~5.0.0-beta.1"
+  },
+  "dependencies": {
+    "is-even": "~1.0.0"
+  }
+}
