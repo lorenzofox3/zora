@@ -12,7 +12,8 @@
   },
   "scripts": {
     "test": "node ./test/index.js",
-    "test:watch": "nodemon ./test/index.js"
+    "test:watch": "nodemon ./test/index.js",
+    "dev": "npm run test:watch"
   },
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
