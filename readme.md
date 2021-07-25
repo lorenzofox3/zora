@@ -1,8 +1,6 @@
 # Zora
 
-**The next version (v5) in beta of the zora testing library, its test runner (pta), etc.**
-
-If you wish to read the documentation for v4, please refer to the [v4 branch](https://github.com/lorenzofox3/zora/tree/v4)
+If you wish to read the documentation for the older version v4, please refer to the [v4 branch](https://github.com/lorenzofox3/zora/tree/v4)
 
 All the projects related to [zora](./zora), the testing library
 
