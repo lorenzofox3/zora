@@ -1,5 +1,5 @@
 import { hold, report } from 'zora';
-import { map } from '../util.js';
+import { map } from './util.js';
 hold();
 
 const passThroughReporter = map((message) => message);
@@ -21,11 +21,11 @@ const createSocketReporter = (opts = {}) =>
     function sendObj(obj) {
       return socket.send(JSON.stringify(obj));
     }
-    //
-    // socket.addEventListener('error', (err) => {
-    //   console.error(err);
-    //   reject(err);
-    // });
+
+    socket.addEventListener('error', (err) => {
+      console.error(err);
+      reject(err);
+    });
   });
 
 const devToolReporter = async (stream) => {

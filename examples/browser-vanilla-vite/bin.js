@@ -1,19 +1,41 @@
 import { createServer } from 'vite';
-import { on } from 'events';
+import { pathToFileURL } from 'url';
 import WebSocket from 'ws';
 import { createDiffReporter } from 'zora-reporters';
+import { compose, map } from './test/util.js';
+
+const fileServerPort = process.env.FILE_SERVER_POIRT || 3000;
+const webSocketPort = process.env.WS_SERVER_PORT || 8000;
+
+const locateOnFS = map((message) => {
+  if (message.data?.pass !== false) {
+    return message;
+  }
+
+  const { at, ...restOfData } = message.data;
+  const { pathname } = new URL(at);
+  const onFS = new URL(pathname, pathToFileURL(process.cwd()));
+
+  return {
+    ...message,
+    data: {
+      ...restOfData,
+      at: onFS,
+    },
+  };
+});
 
 (async () => {
-  const reporter = createDiffReporter();
+  const reporter = compose([createDiffReporter(), locateOnFS]);
 
   const fileServer = await createServer({
     server: {
-      port: 3000,
+      port: fileServerPort,
     },
   });
 
   const webSocketServer = new WebSocket.Server({
-    port: 8000,
+    port: webSocketPort,
   });
 
   webSocketServer.on('connection', (ws) => {
