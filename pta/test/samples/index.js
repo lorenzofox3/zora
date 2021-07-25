@@ -126,7 +126,7 @@ test(`should load cjs files`, async (t) => {
   }
 });
 
-test(`should work with es files`, async (t) => {
+test(`should run test suite with es modules and import syntax`, async (t) => {
   try {
     const { stderr, stdout } = await run({
       args: ['test/*.{js,mjs}'],
