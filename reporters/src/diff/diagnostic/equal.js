@@ -6,19 +6,28 @@ import { compose } from '../../utils.js';
 const actualParts = ({ added }) => added !== true;
 const expectedParts = ({ removed }) => removed !== true;
 
-const mapActualParts = (theme) => ({ value, removed }) =>
-  removed ? theme.diffActual(value) : value;
+const mapActualParts =
+  (theme) =>
+  ({ value, removed }) =>
+    removed ? theme.diffActual(value) : value;
 
-const mapExpectedParts = (theme) => ({ value, added }) =>
-  added ? theme.diffExpected(value) : value;
+const mapExpectedParts =
+  (theme) =>
+  ({ value, added }) =>
+    added ? theme.diffExpected(value) : value;
 
-export const getDiffCharThemedMessage = (theme) => ({ actual, expected }) => {
-  const diffs = diffChars(actual, expected);
-  return {
-    actual: diffs.filter(actualParts).map(mapActualParts(theme)).join(''),
-    expected: diffs.filter(expectedParts).map(mapExpectedParts(theme)).join(''),
+export const getDiffCharThemedMessage =
+  (theme) =>
+  ({ actual, expected }) => {
+    const diffs = diffChars(actual, expected);
+    return {
+      actual: diffs.filter(actualParts).map(mapActualParts(theme)).join(''),
+      expected: diffs
+        .filter(expectedParts)
+        .map(mapExpectedParts(theme))
+        .join(''),
+    };
   };
-};
 
 const diffStrings = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
@@ -36,10 +45,12 @@ const diffStrings = (theme) => {
   };
 };
 
-const diffNumbers = (theme) => ({ expected, actual }) =>
-  `expected number to be ${theme.successBadge(
-    expected
-  )} but got ${theme.errorBadge(actual)}`;
+const diffNumbers =
+  (theme) =>
+  ({ expected, actual }) =>
+    `expected number to be ${theme.successBadge(
+      expected
+    )} but got ${theme.errorBadge(actual)}`;
 
 const diffDates = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
@@ -57,10 +68,12 @@ const diffDates = (theme) => {
   };
 };
 
-const diffBooleans = (theme) => ({ expected, actual }) =>
-  `expected boolean to be ${theme.emphasis(expected)} but got ${theme.emphasis(
-    actual
-  )}`;
+const diffBooleans =
+  (theme) =>
+  ({ expected, actual }) =>
+    `expected boolean to be ${theme.emphasis(
+      expected
+    )} but got ${theme.emphasis(actual)}`;
 
 export const expandNewLines = (lines) =>
   lines.flatMap((line) => {

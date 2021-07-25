@@ -1,4 +1,4 @@
-import {test } from 'zora';
+import { test } from 'zora';
 import sum from '../src/sum.js';
 
 test('valid sum', (t) => {

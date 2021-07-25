@@ -2,8 +2,10 @@ const hasSome = (label) => (counter) => counter[label] > 0;
 const hasFailure = hasSome('failure');
 const hasSkip = hasSome('skip');
 
-const getPad = ({ total }) => (number) =>
-  String(number).padStart(String(total).length + 2);
+const getPad =
+  ({ total }) =>
+  (number) =>
+    String(number).padStart(String(total).length + 2);
 
 export default ({ theme }) => {
   return {

@@ -6,6 +6,6 @@ test('is-even component', ({ test }) => {
   test('isEvent getter should be true at first', (t) => {
     const comp = shallowMount(document.createElement('is-even'));
     t.eq(comp.isEven, true);
-    t.eq(comp.value, 2);
+    t.eq(comp.value, 42);
   });
 });

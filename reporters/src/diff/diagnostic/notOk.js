@@ -1,4 +1,5 @@
-export default (theme) => ({ actual }) =>
-  `expected ${theme.emphasis('"falsy"')} but got ${theme.emphasis(
-    JSON.stringify(actual)
-  )}`;
+export default (theme) =>
+  ({ actual }) =>
+    `expected ${theme.emphasis('"falsy"')} but got ${theme.emphasis(
+      JSON.stringify(actual)
+    )}`;
