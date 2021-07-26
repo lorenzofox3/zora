@@ -25,4 +25,4 @@ Its design principles follow the line:
 
 ## Contributing
 
-If you wish to contribute to the project, please refer to the [guidelines]('./contributing.md)
+If you wish to contribute to the project, please refer to the [guidelines](./contributing.md)
