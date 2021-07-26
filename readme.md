@@ -22,3 +22,7 @@ Its design principles follow the line:
 * Runs with any Javascript environment ([Nodejs](https://nodejs.org/en/), [Deno](https://deno.land/), Browser ): you don't need any specific test runner to run your testing program, it is _just_ a regular javascript program
 * Is fast and simple: a [small codebase](https://packagephobia.com/result?p=zora) achieving the [best performances](./perfs) to deliver the best developer experience
 * Follows the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy): a set of focused, composable small software to deliver the best flexibility with the minimum overhead, rather than a huge monolith hard to tweak, with a large set options.
+
+## Contributing
+
+If you wish to contribute to the project, please refer to the [guidelines]('./contributing.md)
