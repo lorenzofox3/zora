@@ -3,14 +3,14 @@ import { compose } from '../utils.js';
 import { bold, underline } from 'colorette';
 import { withMargin } from './utils.js';
 
-const badge = (fn) => compose([fn, withMargin, String]);
+const badge = (fn) => compose([bold, fn, withMargin, String]);
 
 export const createTheme = ({
-  bgError = colors.bgRedBright,
-  bgSuccess = colors.bgGreenBright,
-  bgSkip = colors.bgYellowBright,
+  bgError = colors.bgRed,
+  bgSuccess = colors.bgGreen,
+  bgSkip = colors.bgYellow,
   disableFont = colors.gray,
-  badgeFont = colors.whiteBright,
+  badgeFont = colors.whiteBright, // might be more readable as colors.black
   adornerFont = colors.cyan,
 } = {}) => {
   const success = compose([bgSuccess, badgeFont]);
