@@ -3,7 +3,7 @@ import { compose } from '../utils.js';
 import { bold, underline } from 'colorette';
 import { withMargin } from './utils.js';
 
-const badge = (fn) => compose([bold, fn, withMargin, String]);
+const badge = (fn) => compose([fn, bold, withMargin, String]);
 
 export const createTheme = ({
   bgError = colors.bgRed,
