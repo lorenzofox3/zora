@@ -10,7 +10,7 @@ export const createTheme = ({
   bgSuccess = colors.bgGreen,
   bgSkip = colors.bgYellow,
   disableFont = colors.gray,
-  badgeFont = colors.whiteBright, // might be more readable as colors.black
+  badgeFont = colors.whiteBright,
   adornerFont = colors.cyan,
 } = {}) => {
   const success = compose([bgSuccess, badgeFont]);
