@@ -11,7 +11,7 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./src/index.js"
-    }\
+    }
   },
   "scripts": {
     "test": "node ./test/index.js",
