@@ -1,6 +1,6 @@
 {
   "name": "zora-reporters",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a set of reporter for zora testing library",
   "type": "module",
   "types": "./src/types/index.d.ts",
@@ -11,7 +11,7 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./src/index.js"
-    }
+    }\
   },
   "scripts": {
     "test": "node ./test/index.js",
