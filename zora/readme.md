@@ -8,7 +8,7 @@
 The library is a _regular_ Javascript module and can be directly imported from a CDN:
 
 ```Javascript
-import {test} from 'https://unpkg.com/zora@latest/dist/bin.js'
+import {test} from 'https://unpkg.com/zora@latest/dist/index.js'
 
 test(`hello from zora`, ({ok}) => {
     ok(true, 'it worked');
