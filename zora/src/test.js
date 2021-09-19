@@ -6,7 +6,7 @@ import {
   testEndMessage,
 } from 'zora-reporters';
 
-const defaultOptions = Object.freeze({ skip: false });
+const defaultOptions = Object.freeze({ skip: false, expectAssertions: undefined });
 const noop = () => {};
 
 const isTest = (assertionLike) =>
@@ -23,7 +23,7 @@ Assert.only = () => {
 };
 
 export const test = (description, spec, opts = defaultOptions) => {
-  const { skip = false } = opts;
+  const { skip = false, expectAssertions = undefined } = opts;
   const assertions = [];
   let executionTime;
   let done = false;
@@ -74,6 +74,10 @@ ${spec.toString()}`);
 
       if (error) {
         yield errorMessage({ error });
+      }
+      
+      if (expectAssertions !== undefined && assertions.length !== expectAssertions) {
+        yield assertionMessage(equal(assertions.length, expectAssertions, 'expectAssertions'));
       }
 
       yield testEndMessage({ description, executionTime });
