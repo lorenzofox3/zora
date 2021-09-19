@@ -77,7 +77,7 @@ ${spec.toString()}`);
       }
       
       if (expectAssertions !== undefined && assertions.length !== expectAssertions) {
-        yield assertionMessage(equal(assertions.length, expectAssertions, 'expectAssertions'));
+        yield assertionMessage(Assert.equal(assertions.length, expectAssertions, 'expectAssertions'));
       }
 
       yield testEndMessage({ description, executionTime });

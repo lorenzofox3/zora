@@ -23,6 +23,7 @@ export interface ISpecFunction {
 
 export interface ITestOptions {
   skip?: boolean;
+  expectAssertions?: number
 }
 
 export interface ITestFunction {
