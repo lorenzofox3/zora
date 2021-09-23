@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - v5
   pull_request:
     branches:
       - master
-      - v5
 
 defaults:
   run:
