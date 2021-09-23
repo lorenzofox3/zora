@@ -24,7 +24,7 @@ jobs:
       - name: Install
         run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
       - name: Build
-        run: cd zora && npm run build
+        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm run build --if-present; done;
       - name: Test
-        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t; done;
+        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t --if-present; done;
 
