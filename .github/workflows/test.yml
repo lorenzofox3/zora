@@ -22,7 +22,7 @@ jobs:
       - name: Install
         run: npm i && npm ci --workspaces;
       - name: ping
-        run: node ./node_modules/.bin/rollup --version
+        run: npm --version
       - name: Build
         run: npm run build
       - name: Test
