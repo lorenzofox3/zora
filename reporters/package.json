@@ -3,23 +3,29 @@
   "version": "1.0.1",
   "description": "a set of reporter for zora testing library",
   "type": "module",
-  "types": "./src/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "types": "./dist/zora-reporters.d.ts",
   "bin": {
     "zr": "./src/bin.js"
   },
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "export": "./dist/index.cjs"
     }
   },
   "scripts": {
     "test": "node ./test/index.js",
+    "build:types": "rollup -c rollup-types.js",
+    "build:cjs": "rollup -c rollup.js",
+    "build": "npm run build:types && npm run build:cjs",
     "test:pretty": "ZORA_REPORTER=json node ./test/index.js | node src/bin.js",
     "dev": "nodemon --exec 'ZORA_REPORTER=json node ./test/index.js | node src/bin.js'"
   },
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
