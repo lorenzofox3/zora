@@ -14,15 +14,18 @@ defaults:
 
 jobs:
   all:
-    name: reporters package
+    name: zora projects
     runs-on: ubuntu-latest
     container: node:16
     steps:
       - uses: actions/checkout@v2
       - name: Install
+        shell: bash
         run: npm run install:ci;
       - name: Build
+        shell: bash
         run: npm run build
       - name: Test
+        shell: bash
         run: npm t
 
