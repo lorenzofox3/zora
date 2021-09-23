@@ -20,12 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        shell: bash
         run: npm i && npm ci --workspaces;
+      - name: ping
+        run: node ./node_modules/.bin/rollup --version
       - name: Build
-        shell: bash
         run: npm run build
       - name: Test
-        shell: bash
         run: npm t
 
