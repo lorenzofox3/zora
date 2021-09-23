@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+      - v5
   pull_request:
     branches:
       - master
+      - v5
 
 defaults:
   run:
@@ -14,17 +16,15 @@ defaults:
 
 jobs:
   all:
-    name: zora projects
+    name: reporters package
     runs-on: ubuntu-latest
     container: node:16
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        run: npm i && npm ci --workspaces;
-      - name: ping
-        run: npm --version
+        run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
       - name: Build
-        run: npm run build
+        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm ci --if-present; done;
       - name: Test
-        run: npm t
+        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t --if-present; done;
 
