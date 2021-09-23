@@ -20,9 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
+        run: npm run install:ci;
       - name: Build
-        run: cd zora && npm run build
+        run: npm run build
       - name: Test
-        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t; done;
+        run: npm t
 

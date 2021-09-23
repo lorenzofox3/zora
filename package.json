@@ -11,9 +11,9 @@
     "clean": "rm -rf {.,reporters,zora,assert,pta}/{node_modules,dist,package-lock.json}",
     "install:fresh": "for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm i; done;",
     "install:ci": "for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;",
-    "build": "npm run format && cd ./zora && npm run build",
+    "build": "npm run format && npm run build --workspaces --if-present",
     "clean:install": "npm run clean && npm run install:fresh && npm run build",
-    "test": "for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t; done;"
+    "test": "npm t --workspaces --if-present"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "~19.0.0",
