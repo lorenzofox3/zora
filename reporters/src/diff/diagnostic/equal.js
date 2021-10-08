@@ -55,7 +55,7 @@ const diffNumbers =
 const diffBigInts =
   (theme) =>
   ({ expected, actual }) =>
-    `expected number to be ${theme.successBadge(
+    `expected bigint to be ${theme.successBadge(
       expected
     )} but got ${theme.errorBadge(actual)}`;
 

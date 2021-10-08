@@ -38,7 +38,7 @@ test(`diagnostic messages`, (t) => {
         }),
         `diff in strings:
   <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
-  
+
   <errorBadge>-</errorBadge> fo<diffActual>b</diffActual>
   <successBadge>+</successBadge> fo<diffExpected>o</diffExpected>`
       );
@@ -59,7 +59,7 @@ test(`diagnostic messages`, (t) => {
         }),
         `diff in dates:
   <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
-  
+
   <errorBadge>-</errorBadge> 2021-0<diffActual>5</diffActual>-01T00:00:00.000Z
   <successBadge>+</successBadge> 2021-0<diffExpected>6</diffExpected>-01T00:00:00.000Z`
       );
@@ -82,7 +82,7 @@ test(`diagnostic messages`, (t) => {
         getMessage({ expected, actual }),
         `diff in objects:
   <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
-  
+
      <disable>{</disable>
   <errorBadge>-</errorBadge>   "foo": "baz",
   <successBadge>+</successBadge>   "foo": "bar",
