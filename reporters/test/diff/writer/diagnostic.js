@@ -102,6 +102,15 @@ test(`diagnostic messages`, (t) => {
         `expected number to be <successBadge>5</successBadge> but got <errorBadge>3</errorBadge>`
       );
     });
+
+    t.test(`expected and actual are BigInt's`, (t) => {
+      const expected = 5n;
+      const actual = 3n;
+      t.eq(
+        getMessage({ expected, actual }),
+        `expected bigint to be <successBadge>5n</successBadge> but got <errorBadge>3n</errorBadge>`
+      );
+    });
   });
 
   t.test(`ok diagnostic message`, (t) => {
