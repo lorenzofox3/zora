@@ -108,7 +108,7 @@ test(`diagnostic messages`, (t) => {
       const actual = 3n;
       t.eq(
         getMessage({ expected, actual }),
-        `expected bigint to be <successBadge>5n</successBadge> but got <errorBadge>3n</errorBadge>`
+        `expected bigint to be <successBadge>5</successBadge> but got <errorBadge>3</errorBadge>`
       );
     });
   });
