@@ -39,7 +39,7 @@ const diffStrings = (theme) => {
 
     return `diff in strings:
   ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
-  
+
   ${theme.errorBadge('-')} ${actualMessage}
   ${theme.successBadge('+')} ${expectedMessage}`;
   };
@@ -49,6 +49,13 @@ const diffNumbers =
   (theme) =>
   ({ expected, actual }) =>
     `expected number to be ${theme.successBadge(
+      expected
+    )} but got ${theme.errorBadge(actual)}`;
+
+const diffBigInts =
+  (theme) =>
+  ({ expected, actual }) =>
+    `expected bigint to be ${theme.successBadge(
       expected
     )} but got ${theme.errorBadge(actual)}`;
 
@@ -62,7 +69,7 @@ const diffDates = (theme) => {
 
     return `diff in dates:
   ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
-  
+
   ${theme.errorBadge('-')} ${actualMessage}
   ${theme.successBadge('+')} ${expectedMessage}`;
   };
@@ -111,7 +118,7 @@ const diffObjects = (theme) => {
   const diffJSON = getDiffJSONThemedMessage(theme);
   return ({ expected, actual }) => `diff in objects:
   ${theme.errorBadge('- actual')} ${theme.successBadge('+ expected')}
-  
+
 ${diffJSON({ actual, expected })}`;
 };
 
@@ -127,6 +134,7 @@ export default (theme) => {
 
   const sameTypeDiff = {
     ['number']: diffNumbers(theme),
+    ['bigint']: diffBigInts(theme),
     ['string']: diffStrings(theme),
     ['boolean']: diffBooleans(theme),
     ['object']: ({ expected, actual }) => {
