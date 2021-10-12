@@ -3,6 +3,7 @@ export const MESSAGE_TYPE = {
   ASSERTION: 'ASSERTION',
   TEST_END: 'TEST_END',
   ERROR: 'ERROR',
+  UNKNOWN: 'UNKNOWN',
 };
 
 export const newTestMessage = ({ description, skip }) => ({
@@ -27,5 +28,12 @@ export const errorMessage = ({ error }) => ({
   type: MESSAGE_TYPE.ERROR,
   data: {
     error,
+  },
+});
+
+export const unknownMessage = ({ message }) => ({
+  type: MESSAGE_TYPE.UNKNOWN,
+  data: {
+    message,
   },
 });

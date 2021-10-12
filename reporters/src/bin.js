@@ -6,6 +6,7 @@ import arg from 'arg';
 import { createTAPReporter, createDiffReporter } from './index.js';
 import { createReadStream } from 'fs';
 import { compose, filter, map, split } from './utils.js';
+import { createJSONParser } from './message-parser.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,11 +16,19 @@ const reporterMap = {
   tap: createTAPReporter({}),
 };
 
-const { ['--reporter']: reporter = 'diff', ['--help']: help } = arg({
+const {
+  ['--reporter']: reporter = 'diff',
+  ['--help']: help,
+  ['--strict-mode']: strictMode = false,
+} = arg({
   ['--help']: Boolean,
   ['--reporter']: String,
+  ['--strict-mode']: Boolean,
   ['-R']: '--reporter',
 });
+
+const splitLines = split(EOL);
+const compact = filter(Boolean);
 
 (async () => {
   if (help) {
@@ -27,11 +36,11 @@ const { ['--reporter']: reporter = 'diff', ['--help']: help } = arg({
     return;
   }
 
-  const getInputStream = compose([
-    map(JSON.parse),
-    filter(Boolean),
-    split(EOL),
-  ]);
+  const parse = createJSONParser({
+    strictMode,
+  });
+
+  const getInputStream = compose([parse, compact, splitLines]);
 
   const inputStream = getInputStream(process.stdin);
 
