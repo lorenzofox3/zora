@@ -1,6 +1,7 @@
 // common
 import './counter.js';
 import './utils.js';
+import './message-parser.js';
 
 // tap
 import './tap/writer.js';

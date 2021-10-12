@@ -9,7 +9,7 @@ export const createJSONParser = ({ strictMode = false }) =>
         if (strictMode) {
           throw new Error(`could not parse line "${line}"`);
         } else {
-          unknownMessage({ message: line });
+          yield unknownMessage({ message: line });
         }
       }
     }
