@@ -7,6 +7,7 @@ Usage
 
   Options
     --reporter, -R          One of "tap", "diff"(default).
+    --strict-mode           If true, throws an error when the stream parser finds a message it cannot understand (default false)
 
   Examples
     zr -R tap < some/file.txt
