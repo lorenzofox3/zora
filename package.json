@@ -6,6 +6,10 @@
     "reporters",
     "pta"
   ],
+  "engines": {
+    "node": ">=15",
+    "npm": ">=7"
+  },
   "scripts": {
     "format": "prettier --write **/{src,test}",
     "clean": "rm -rf {.,reporters,zora,assert,pta}/{node_modules,dist,package-lock.json}",
