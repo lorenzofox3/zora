@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "the lightest yet the fastest javascript testing library",
   "main": "./dist/index.cjs",
   "keywords": [
@@ -43,5 +43,9 @@
     "dist"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lorenzofox3/zora.git"
+  }
 }
