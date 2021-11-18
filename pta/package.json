@@ -1,6 +1,6 @@
 {
   "name": "pta",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Test runner for nodejs using zora",
   "type": "module",
   "bin": {
@@ -16,6 +16,10 @@
   "license": "MIT",
   "prettier": {
     "singleQuote": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lorenzofox3/zora.git"
   },
   "files": [
     "src"
