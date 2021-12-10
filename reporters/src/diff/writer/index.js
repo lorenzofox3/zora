@@ -14,9 +14,10 @@ export const createWriter = ({
   const summary = getSummaryMessage({ theme });
 
   const printDiagnostic = (diag) => {
-    const { operator } = diag;
+    const { description, operator } = diag;
     print('');
     const operatorString = theme.operator(`[${operator}]`);
+    print(description);
     print(`${operatorString} ${diagnostics(diag)}`);
   };
 
