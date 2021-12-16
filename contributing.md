@@ -13,7 +13,7 @@ However, if your intention is to improve the documentation, there is no need to 
 You'll need [nodejs](https://nodejs.org/en/) (version >= 15) installed on your machine. You will need npm (version >= 7) too as we are using npm workspaces.  
 
 1. clone the project
-2. run ``npm run install:ci && npm run build``
+2. run ``npm run clean:install && npm run build``
 3. you can make a quick check everything is ok by running ``npm t``
 
 This is a monorepo with various _sub packages_. Most of the time, you will work on a project at the same time, and they come with a dev script.
