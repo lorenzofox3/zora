@@ -42,7 +42,8 @@ export {
   createTAPReporter,
   ILogOptions,
 } from '../../../reporters/src/types/index';
-export { Assert } from '../../../assert/src/index';
+
+export let Assert: IAssert;
 export declare function hold(): void;
 export declare function report(opts: IReportOptions): ReturnType<IReporter>;
 export declare function createHarness(opts: IHarnessOptions): ITestHarness;
