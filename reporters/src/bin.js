@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { EOL } from 'os';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { createReadStream } from 'node:fs';
+import { EOL } from 'node:os';
+
 import arg from 'arg';
+
 import { createTAPReporter, createDiffReporter } from './index.js';
-import { createReadStream } from 'fs';
 import { compose, filter, map, split } from './utils.js';
 import { createJSONParser } from './message-parser.js';
 
