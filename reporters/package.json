@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "test": "pta ./src/{diff,log,tap,.}/{.,**}/*.test.js",
+    "test": "pta ./src/*.test.js ./src/**/*.test.js ./src/diff/*.test.js ./src/diff/**/*.test.js",
     "build:types": "rollup -c rollup-types.js",
     "build:cjs": "rollup -c rollup.js",
     "build": "npm run build:types && npm run build:cjs",
