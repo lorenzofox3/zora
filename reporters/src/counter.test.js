@@ -1,11 +1,11 @@
 import { test } from 'zora';
-import { createCounter } from '../src/counter.js';
+import { createCounter } from './counter.js';
 import {
   testEndMessage,
   newTestMessage,
   errorMessage,
   assertionMessage,
-} from '../src/protocol.js';
+} from './protocol.js';
 
 test('counter', ({ test }) => {
   test('with tests end message, should not increment any value', ({ eq }) => {

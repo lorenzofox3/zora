@@ -1,5 +1,5 @@
 import { test } from 'zora';
-import getSummaryMessage from '../../../src/diff/writer/summary.js';
+import getSummaryMessage from './summary.js';
 
 const theme = new Proxy(
   {},

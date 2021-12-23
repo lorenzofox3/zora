@@ -1,6 +1,6 @@
 import { test } from 'zora';
-import { newTestMessage, testEndMessage } from '../src/protocol.js';
-import { createJSONParser } from '../src/message-parser.js';
+import { newTestMessage, testEndMessage } from './protocol.js';
+import { createJSONParser } from './message-parser.js';
 
 const bufferStream = async (stream) => {
   const buffer = [];

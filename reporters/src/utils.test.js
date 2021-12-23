@@ -1,5 +1,5 @@
 import { test } from 'zora';
-import { defaultSerializer as stringify } from '../src/utils.js';
+import { defaultSerializer as stringify } from './utils.js';
 
 test(`serialize`, ({ test }) => {
   test('literals', ({ eq }) => {

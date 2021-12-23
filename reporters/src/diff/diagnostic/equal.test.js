@@ -1,9 +1,5 @@
 import { test } from 'zora';
-import {
-  diffLine,
-  expandNewLines,
-  getDiffCharThemedMessage,
-} from '../../../src/diff/diagnostic/equal.js';
+import { diffLine, expandNewLines, getDiffCharThemedMessage } from './equal.js';
 
 const theme = new Proxy(
   {},

@@ -1,10 +1,5 @@
 import { test } from 'zora';
-import {
-  leftPad,
-  rightPad,
-  typeAsString,
-  withMargin,
-} from '../../src/diff/utils.js';
+import { leftPad, rightPad, typeAsString, withMargin } from './utils.js';
 
 test('utils', (t) => {
   t.test(`typeAsString`, (t) => {

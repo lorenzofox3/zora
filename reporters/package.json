@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "test": "node ./test/index.js",
+    "test": "pta ./src/{.,**}/{.,diff,diff/**}/*.test.js",
     "build:types": "rollup -c rollup-types.js",
     "build:cjs": "rollup -c rollup.js",
     "build": "npm run build:types && npm run build:cjs",
@@ -40,5 +40,8 @@
     "arg": "~5.0.0",
     "colorette": "~1.2.2",
     "diff": "~5.0.0"
+  },
+  "devDependencies": {
+    "pta": "~1.0.2"
   }
 }

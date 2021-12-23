@@ -1,5 +1,5 @@
 import { test } from 'zora';
-import { createWriter } from '../../src/tap/writer.js';
+import { createWriter } from './writer.js';
 
 const createTestWriter = ({ eq }) => {
   const logs = [];

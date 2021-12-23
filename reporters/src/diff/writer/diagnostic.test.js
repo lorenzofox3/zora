@@ -1,7 +1,7 @@
 import { test } from 'zora';
 import { Operator } from '../../../../assert/src/utils.js';
-import getDiagnosticMessage from '../../../src/diff/writer/diagnostic.js';
-import getEqualDiagnosticMessage from '../../../src/diff/diagnostic/equal.js';
+import getDiagnosticMessage from './diagnostic.js';
+import getEqualDiagnosticMessage from '../diagnostic/equal.js';
 
 const theme = new Proxy(
   {},
