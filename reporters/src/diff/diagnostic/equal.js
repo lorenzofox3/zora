@@ -1,24 +1,28 @@
-import { diffChars, diffJson } from 'diff';
+import { EOL } from 'node:os';
+import { inspect } from 'node:util';
+
+import { diffChars, diffLines } from 'diff';
+
 import { leftPad, typeAsString } from '../utils.js';
-import { EOL } from 'os';
-import { compose } from '../../utils.js';
+import { compose, defaultSerializer } from '../../utils.js';
 
 const actualParts = ({ added }) => added !== true;
 const expectedParts = ({ removed }) => removed !== true;
+const serializeJSON = (value) =>
+  inspect(value, { sorted: true, compact: false });
 
 const mapActualParts =
-  (theme) =>
+  ({ diffActual }) =>
   ({ value, removed }) =>
-    removed ? theme.diffActual(value) : value;
+    removed ? diffActual(value) : value;
 
 const mapExpectedParts =
-  (theme) =>
+  ({ diffExpected }) =>
   ({ value, added }) =>
-    added ? theme.diffExpected(value) : value;
+    added ? diffExpected(value) : value;
 
-export const getDiffCharThemedMessage =
-  (theme) =>
-  ({ actual, expected }) => {
+export const getDiffCharThemedMessage = (theme) => {
+  return ({ actual, expected }) => {
     const diffs = diffChars(actual, expected);
     return {
       actual: diffs.filter(actualParts).map(mapActualParts(theme)).join(''),
@@ -28,9 +32,13 @@ export const getDiffCharThemedMessage =
         .join(''),
     };
   };
+};
 
-const diffStrings = (theme) => {
+const diffMultiLineStrings = (theme) => {};
+
+const diffSingleLineStrings = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
+
   return ({ expected, actual }) => {
     const { expected: expectedMessage, actual: actualMessage } = diffChars({
       expected,
@@ -46,18 +54,18 @@ const diffStrings = (theme) => {
 };
 
 const diffNumbers =
-  (theme) =>
+  ({ successBadge, errorBadge }) =>
   ({ expected, actual }) =>
-    `expected number to be ${theme.successBadge(
-      expected
-    )} but got ${theme.errorBadge(actual)}`;
+    `expected number to be ${successBadge(expected)} but got ${errorBadge(
+      actual
+    )}`;
 
 const diffBigInts =
-  (theme) =>
+  ({ successBadge, errorBadge }) =>
   ({ expected, actual }) =>
-    `expected bigint to be ${theme.successBadge(
-      expected
-    )} but got ${theme.errorBadge(actual)}`;
+    `expected bigint to be ${successBadge(expected)} but got ${errorBadge(
+      actual
+    )}`;
 
 const diffDates = (theme) => {
   const diffChars = getDiffCharThemedMessage(theme);
@@ -76,11 +84,9 @@ const diffDates = (theme) => {
 };
 
 const diffBooleans =
-  (theme) =>
+  ({ emphasis }) =>
   ({ expected, actual }) =>
-    `expected boolean to be ${theme.emphasis(
-      expected
-    )} but got ${theme.emphasis(actual)}`;
+    `expected boolean to be ${emphasis(expected)} but got ${emphasis(actual)}`;
 
 export const expandNewLines = (lines) =>
   lines.flatMap((line) => {
@@ -94,22 +100,24 @@ export const expandNewLines = (lines) =>
       }));
   });
 
-export const diffLine = (theme) => (diff) => {
-  if (diff.added) {
-    return `${theme.successBadge('+')} ${diff.value}`;
-  }
+export const getThemedLineDiff =
+  ({ successBadge, errorBadge, disable }) =>
+  ({ added, removed, value }) => {
+    if (added) {
+      return `${successBadge('+')} ${value}`;
+    }
 
-  if (diff.removed) {
-    return `${theme.errorBadge('-')} ${diff.value}`;
-  }
+    if (removed) {
+      return `${errorBadge('-')} ${value}`;
+    }
 
-  return leftPad(3, theme.disable(diff.value));
-};
+    return leftPad(3, disable(value));
+  };
 
 const getDiffJSONThemedMessage = (theme) => {
-  const getLineDiff = diffLine(theme);
+  const getLineDiff = getThemedLineDiff(theme);
   return ({ actual, expected }) => {
-    const diff = diffJson(actual, expected);
+    const diff = diffLines(serializeJSON(actual), serializeJSON(expected));
     return expandNewLines(diff).map(getLineDiff).map(leftPad(2)).join(EOL);
   };
 };
@@ -135,11 +143,11 @@ export default (theme) => {
   const sameTypeDiff = {
     ['number']: diffNumbers(theme),
     ['bigint']: diffBigInts(theme),
-    ['string']: diffStrings(theme),
+    ['string']: diffSingleLineStrings(theme),
     ['boolean']: diffBooleans(theme),
     ['object']: ({ expected, actual }) => {
       if (expected.constructor === Date) {
-        return diffDates(theme)({ expected, actual });
+        return diffDates(theme)({ actual, expected });
       }
       return diffObjects(theme)({ actual, expected });
     },

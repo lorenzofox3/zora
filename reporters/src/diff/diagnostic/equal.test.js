@@ -1,5 +1,9 @@
 import { test } from 'zora';
-import { diffLine, expandNewLines, getDiffCharThemedMessage } from './equal.js';
+import {
+  getThemedLineDiff,
+  expandNewLines,
+  getDiffCharThemedMessage,
+} from './equal.js';
 
 const theme = new Proxy(
   {},
@@ -50,7 +54,7 @@ test('getDiffJSONThemedMessage', (t) => {
   });
 
   t.test(`diffLine`, (t) => {
-    const diff = diffLine(theme);
+    const diff = getThemedLineDiff(theme);
     t.eq(
       diff({ added: true, value: 'foo' }),
       '<successBadge>+</successBadge> foo'
