@@ -84,11 +84,11 @@ test(`diagnostic messages`, (t) => {
   <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
 
      <disable>{</disable>
-  <errorBadge>-</errorBadge>   "foo": "baz",
-  <successBadge>+</successBadge>   "foo": "bar",
-     <disable>  "nested": {</disable>
-  <errorBadge>-</errorBadge>     "answer": 43
-  <successBadge>+</successBadge>     "answer": 42
+  <errorBadge>-</errorBadge>   foo: 'baz',
+  <successBadge>+</successBadge>   foo: 'bar',
+     <disable>  nested: {</disable>
+  <errorBadge>-</errorBadge>     answer: 43
+  <successBadge>+</successBadge>     answer: 42
      <disable>  }</disable>
      <disable>}</disable>`
       );
