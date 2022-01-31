@@ -21,7 +21,7 @@ export type ErrorAssertionFunction = {
     expected: RegExp | Function,
     description?: string
   ): IAssertionResult<string | Function>;
-  (fn: Function, description?: string): IAssertionResult<unknown>;
+  (fn: Function, description?: string): IAssertionResult<string>;
 };
 
 export interface MessageAssertionFunction {
