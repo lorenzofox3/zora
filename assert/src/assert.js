@@ -92,7 +92,7 @@ export const throws = (func, expected, description = 'should throw') => {
     pass = actual instanceof expected;
     actual = actual.constructor;
   } else {
-    actual = 'error thrown';
+    actual = pass ? 'error thrown' : 'no error thrown';
   }
 
   return {

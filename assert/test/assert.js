@@ -361,7 +361,7 @@ test('throws', ({ eq }) => {
       pass: false,
       description: 'should throw',
       expected: 'any error thrown',
-      actual: 'error thrown',
+      actual: 'no error thrown',
       operator: 'throws',
     }
   );
