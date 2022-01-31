@@ -341,4 +341,28 @@ test('throws', ({ eq }) => {
     },
     'expected is a constructor, failing'
   );
+
+  eq(
+    throws(() => {
+      throw new Error('whatever');
+    }, 'custom description'),
+    {
+      pass: true,
+      description: 'custom description',
+      expected: 'any error thrown',
+      actual: 'error thrown',
+      operator: 'throws',
+    }
+  );
+
+  eq(
+    throws(() => {}),
+    {
+      pass: false,
+      description: 'should throw',
+      expected: 'any error thrown',
+      actual: 'error thrown',
+      operator: 'throws',
+    }
+  );
 });

@@ -91,11 +91,14 @@ export const throws = (func, expected, description = 'should throw') => {
   } else if (typeof expected === 'function' && caught) {
     pass = actual instanceof expected;
     actual = actual.constructor;
+  } else {
+    actual = 'error thrown';
   }
+
   return {
     pass,
     actual,
-    expected,
+    expected: expected ?? 'any error thrown',
     description: description,
     operator: Operator.THROWS,
   };
