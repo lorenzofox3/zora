@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "the lightest yet the fastest javascript testing library",
   "main": "./dist/index.cjs",
   "keywords": [
