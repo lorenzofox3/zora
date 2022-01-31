@@ -18,7 +18,12 @@ export interface BooleanAssertionFunction {
 }
 
 export interface ErrorAssertionFunction {
-    (fn: Function, expected?: RegExp | Function, description ?: string): AssertionResult<string | RegExp | Function>;
+    (
+        fn: Function,
+        expected: RegExp | Function,
+        description?: string
+    ): IAssertionResult<string | Function>;
+    (fn: Function, description?: string): IAssertionResult<string>;
 }
 
 export interface MessageAssertionFunction {
