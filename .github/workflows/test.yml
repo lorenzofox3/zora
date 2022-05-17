@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - v5
   pull_request:
     branches:
       - master
-      - v5
 
 defaults:
   run:
@@ -24,7 +22,7 @@ jobs:
       - name: Install
         run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
       - name: Build
-        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm run build --if-present; done;
+        run: npm run build
       - name: Test
-        run: for f in $PWD/{assert,reporters,zora,pta}; do cd $f && npm t --if-present; done;
+        run: npm t
 
