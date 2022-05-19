@@ -8,10 +8,6 @@ on:
     branches:
       - master
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   all:
     name: build and test
