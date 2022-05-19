@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   all:
     name: build and test
@@ -18,7 +22,7 @@ jobs:
       - name: Install
         run: npm run install:ci
       - name: Build
-        run: npm run build --unsafe-perm=true
+        run: npm run build
       - name: Test
         run: npm t
 
