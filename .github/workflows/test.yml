@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   all:
-    name: reporters package
+    name: build and test
     runs-on: ubuntu-latest
     container: node:16
     steps:
