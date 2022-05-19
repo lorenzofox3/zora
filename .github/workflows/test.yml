@@ -18,7 +18,7 @@ jobs:
       - name: Install
         run: npm run install:ci
       - name: Build
-        run: npm run build
+        run: npm run build --unsafe-perm=true
       - name: Test
         run: npm t
 
