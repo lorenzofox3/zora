@@ -14,13 +14,12 @@ defaults:
 
 jobs:
   all:
-    name: reporters package
+    name: build and test
     runs-on: ubuntu-latest
-    container: node:16
     steps:
       - uses: actions/checkout@v2
       - name: Install
-        run: for f in $PWD/{.,assert,reporters,zora,pta}; do cd $f && npm ci; done;
+        run: npm run install:ci
       - name: Build
         run: npm run build
       - name: Test

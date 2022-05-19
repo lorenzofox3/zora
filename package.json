@@ -2,8 +2,8 @@
   "name": "zora",
   "workspaces": [
     "assert",
-    "zora",
     "reporters",
+    "zora",
     "pta"
   ],
   "engines": {
@@ -13,8 +13,8 @@
   "scripts": {
     "format": "prettier --write **/{src,test}",
     "clean": "rm -rf {.,reporters,zora,assert,pta}/{node_modules,dist,package-lock.json}",
-    "install:fresh": "npm i && npm i --workspaces --if-present",
-    "install:ci": "npm ci && npm ci --workspaces --if-present",
+    "install:fresh": "npm i && npm i --workspaces",
+    "install:ci": "npm ci --include=dev",
     "build": "npm run build --workspaces --if-present",
     "clean:install": "npm run clean && npm run install:fresh && npm run build",
     "test": "npm t --workspaces --if-present"
