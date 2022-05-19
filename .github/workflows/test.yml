@@ -16,7 +16,6 @@ jobs:
   all:
     name: build and test
     runs-on: ubuntu-latest
-    container: node:16
     steps:
       - uses: actions/checkout@v2
       - name: Install
