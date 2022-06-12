@@ -5,11 +5,11 @@
     "dev": "node bin.js"
   },
   "devDependencies": {
-    "@lorenzofox3/for-await": "~0.2.1",
-    "playwright": "~1.12.3",
-    "vite": "^2.4.2",
-    "ws": "~7.5.3",
-    "zora": "~5.0.0-beta.1"
+    "@lorenzofox3/for-await": "^0.2.2",
+    "playwright": "^1.22.2",
+    "vite": "^2.9.12",
+    "ws": "^8.8.0",
+    "zora": "*"
   },
   "dependencies": {
     "is-even": "~1.0.0"

@@ -39,6 +39,9 @@
     "build:watch": "rollup -w -c rollup.js",
     "test": "node test/run.js"
   },
+  "devDependencies": {
+    "zora-assert": "*"
+  },
   "files": [
     "dist"
   ],
