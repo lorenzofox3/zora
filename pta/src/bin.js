@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-import { dirname, resolve } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { createReadStream } from 'fs';
-import { readFile } from 'fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createReadStream } from 'node:fs';
+import { readFile } from ' node:fs/promises';
+import process from 'node:process';
+
 import arg from 'arg';
-import globby from 'globby';
+import { globby } from 'globby';
 import {
   createDiffReporter,
   createJSONReporter,
