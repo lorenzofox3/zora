@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { readFileSync } from 'node:fs';

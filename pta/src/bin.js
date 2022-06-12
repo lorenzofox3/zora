@@ -2,8 +2,10 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import process from 'node:process';
-import { createReadStream } from 'node:fs';
-import { readFile } from ' node:fs/promises';
+import { promisify } from 'node:util';
+import { createReadStream, readFile as baseReadFile } from 'node:fs';
+
+const readFile = promisify(baseReadFile);
 
 import arg from 'arg';
 import { globby } from 'globby';
