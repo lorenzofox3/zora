@@ -1,7 +1,15 @@
 import { Assert, createAssert } from './test.js';
 
 export const createHarness = ({ onlyMode = false } = {}) => {
-  const tests = [];
+  const onNewTest;
+  const tests = new Repeater((push, stop) => {
+    onNewTest = push;
+    process.on('beforeExit', async (code) => {
+      await stop()
+      process.exit(0)
+    });
+  });
+
 
   // WARNING if the "onlyMode is passed to any harness, all the harnesses will be affected.
   // However, we do not expect multiple harnesses to be used in the same process
@@ -12,7 +20,7 @@ export const createHarness = ({ onlyMode = false } = {}) => {
   }
 
   const { test, skip, only } = createAssert({
-    onResult: (test) => tests.push(test),
+    onResult: (test) => onNewTest(test),
   });
 
   // for convenience
@@ -30,7 +38,7 @@ export const createHarness = ({ onlyMode = false } = {}) => {
 };
 
 async function* createMessageStream(tests) {
-  for (const test of tests) {
+  for await (const test of tests) {
     yield* test;
   }
 }
