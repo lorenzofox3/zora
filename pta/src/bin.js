@@ -77,12 +77,10 @@ const {
     return;
   }
 
-  await Promise.all(
-    files.map((file) => {
-      const filePath = resolve(process.cwd(), file);
-      return import(pathToFileURL(filePath));
-    })
-  );
+  for (const file of files) {
+    const filePath = resolve(process.cwd(), file);
+    await import(pathToFileURL(filePath)); // load file in sequence so any top level await allows the tests to run sequentially if needed
+  }
 
   await report({
     reporter: reporterInstance,
