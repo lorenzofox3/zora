@@ -141,3 +141,17 @@ test(`should run test suite with es modules and import syntax`, async (t) => {
     t.fail(`should not have any error`);
   }
 });
+
+test('should run test serially when there are top level await', async (t) => {
+  try {
+    const { stderr, stdout } = await run({
+      args: ['*.spec.js'],
+      cwd: './test/samples/serial',
+    });
+    t.ok(stdout);
+    t.notOk(stderr);
+  } catch (e) {
+    console.log(e);
+    t.fail(`should not have any error`);
+  }
+});
