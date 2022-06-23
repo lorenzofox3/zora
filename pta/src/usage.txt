@@ -10,9 +10,6 @@ Usage
 
     --reporter, -R          One of tap, log. Otherwise it will use the default reporter
 
-    --module-loader         "es" or "cjs". Force the way files are loaded: "cjs" will use "require",
-                            "es" will use "import". If not specified it is inferred from the package.json
-
 
   Examples
     pta

@@ -40,12 +40,13 @@ const {
   ['--reporter']: reporter = 'diff',
   ['--only']: only = false,
   ['--help']: help = false,
-  ['--module-loader']: moduleLoader,
   _: filePatterns,
 } = arg({
   ['--reporter']: String,
   ['--only']: Boolean,
   ['--help']: Boolean,
+  // --module-loader is now ignored.
+  // kept in schema to avoid breaking user's existing usage.
   ['--module-loader']: String,
   ['-R']: '--reporter',
 });
@@ -61,10 +62,8 @@ const {
     process.env.ZORA_ONLY = true;
   }
 
-  // loading zora to hold the singleton -> look for loading strategy (cjs vs es)
-  const { hold, report } = await import(
-    await getZoraPackagePath({ moduleLoader })
-  );
+  // loading zora to hold the singleton
+  const { hold, report } = await import('zora');
   hold();
 
   const reporterInstance = reporterMap[reporter] || reporter.diff;
@@ -86,20 +85,3 @@ const {
     reporter: reporterInstance,
   });
 })();
-
-async function getZoraPackagePath({ moduleLoader }) {
-  // force to user choice
-  if (moduleLoader) {
-    return moduleLoader === 'cjs' ? 'zora/cjs' : 'zora';
-  }
-
-  // try to get it from package.json
-  const packageJsonPath = resolve(process.cwd(), './package.json');
-  try {
-    const file = await readFile(packageJsonPath, { encoding: 'utf-8' });
-    const { type } = JSON.parse(file);
-    return type === 'module' ? 'zora' : 'zora/cjs';
-  } catch (e) {
-    return 'zora';
-  }
-}
