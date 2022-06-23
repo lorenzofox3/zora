@@ -23,7 +23,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
+      "import": "./es.js",
       "require": "./dist/index.cjs"
     },
     "./cjs": "./dist/index.cjs",
@@ -43,7 +43,8 @@
     "zora-assert": "*"
   },
   "files": [
-    "dist"
+    "dist",
+    "es.js"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",
