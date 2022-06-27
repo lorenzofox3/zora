@@ -1,6 +1,6 @@
 # PTA
 
-Test runner for any zora testing program, using node (version >= 16). 
+Test runner for any zora testing program, using node (version >= 16).
 
 ## Installation
 
@@ -8,11 +8,11 @@ Test runner for any zora testing program, using node (version >= 16).
 
 ## Usage
 
-example: 
+example:
 
 ``pta test/**/*.js``
 
-Note: it should work with both module format commonjs and ES 
+Note: it should work with both module format commonjs and ES
 
 ## Options
 
@@ -24,9 +24,6 @@ Usage
     --only             Runs zora in "only mode"
 
     --reporter, -R          One of tap, log. Otherwise it will use the default reporter
-
-    --module-loader         "es" or "cjs". Force the way files are loaded: "cjs" will use "require",
-                            "es" will use "import". If not specified it is inferred from the package.json
 
 
   Examples
