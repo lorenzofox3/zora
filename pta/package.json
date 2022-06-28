@@ -1,6 +1,6 @@
 {
   "name": "pta",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Test runner for nodejs using zora",
   "type": "module",
   "bin": {
