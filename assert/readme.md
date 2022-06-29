@@ -26,6 +26,15 @@ export interface ErrorAssertionFunction {
     (fn: Function, description?: string): IAssertionResult<string>;
 }
 
+export type RejectsErrorAssertionFunction = {
+  (
+    fn: Promise<any> | (() => Promise<any>),
+    expected: RegExp | Function,
+    description?: string
+  ): Promise<IAssertionResult<string | Function>>;
+  (fn: Promise<any> | (() => Promise<any>), description?: string): Promise<IAssertionResult<string>>;
+};
+
 export interface MessageAssertionFunction {
     (message?: string): AssertionResult<string>;
 }
@@ -76,6 +85,8 @@ interface Assert {
     fail: MessageAssertionFunction;
 
     throws: ErrorAssertionFunction;
+    
+    rejects: RejectsErrorAssertionFunction;
 }
 ```
 

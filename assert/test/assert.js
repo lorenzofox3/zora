@@ -8,6 +8,7 @@ import {
   notOk,
   ok,
   throws,
+  rejects,
 } from '../src/assert.js';
 
 test('"equal" operator', ({ eq }) => {
@@ -363,6 +364,186 @@ test('throws', ({ eq }) => {
       expected: 'any error thrown',
       actual: 'no error thrown',
       operator: 'throws',
+    }
+  );
+});
+
+test('rejects (promise fn return)', async ({ eq }) => {
+  const regexp = /^totally/i;
+
+  class CustomError extends Error {
+    constructor() {
+      super('custom error');
+    }
+  }
+
+  eq(
+    await rejects(async () => {
+      throw new Error('Totally expected error');
+    }, regexp),
+    {
+      pass: true,
+      actual: 'Totally expected error',
+      expected: '/^totally/i',
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a regexp, passing'
+  );
+
+  eq(
+    await rejects(async () => {
+      throw new Error('not the expected error');
+    }, regexp),
+    {
+      pass: false,
+      actual: 'not the expected error',
+      expected: '/^totally/i',
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a regexp, failing'
+  );
+
+  eq(
+    await rejects(async () => {
+      throw new CustomError();
+    }, CustomError),
+    {
+      pass: true,
+      actual: CustomError,
+      expected: CustomError,
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a constructor, passing'
+  );
+
+  eq(
+    await rejects(async () => {
+      throw new Error();
+    }, CustomError),
+    {
+      pass: false,
+      actual: Error,
+      expected: CustomError,
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a constructor, failing'
+  );
+
+  eq(
+    await rejects(async () => {
+      throw new Error('whatever');
+    }, 'custom description'),
+    {
+      pass: true,
+      description: 'custom description',
+      expected: 'any error rejected',
+      actual: 'error rejected',
+      operator: 'rejects',
+    }
+  );
+
+  eq(
+    await rejects(async () => {}),
+    {
+      pass: false,
+      description: 'should reject',
+      expected: 'any error rejected',
+      actual: 'no error rejected',
+      operator: 'rejects',
+    }
+  );
+});
+
+test('rejects (promise)', async ({ eq }) => {
+  const regexp = /^totally/i;
+
+  class CustomError extends Error {
+    constructor() {
+      super('custom error');
+    }
+  }
+
+  eq(
+    await rejects(Promise.reject(
+      new Error('Totally expected error'),
+    ), regexp),
+    {
+      pass: true,
+      actual: 'Totally expected error',
+      expected: '/^totally/i',
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a regexp, passing'
+  );
+
+  eq(
+    await rejects(Promise.reject(
+      new Error('not the expected error'),
+    ), regexp),
+    {
+      pass: false,
+      actual: 'not the expected error',
+      expected: '/^totally/i',
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a regexp, failing'
+  );
+
+  eq(
+    await rejects(Promise.reject(
+      new CustomError(),
+    ), CustomError),
+    {
+      pass: true,
+      actual: CustomError,
+      expected: CustomError,
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a constructor, passing'
+  );
+
+  eq(
+    await rejects(Promise.reject(
+      new Error(),
+    ), CustomError),
+    {
+      pass: false,
+      actual: Error,
+      expected: CustomError,
+      description: 'should reject',
+      operator: 'rejects',
+    },
+    'expected is a constructor, failing'
+  );
+
+  eq(
+    await rejects(Promise.reject(
+      new Error('whatever'),
+    ), 'custom description'),
+    {
+      pass: true,
+      description: 'custom description',
+      expected: 'any error rejected',
+      actual: 'error rejected',
+      operator: 'rejects',
+    }
+  );
+
+  eq(
+    await rejects(Promise.resolve()),
+    {
+      pass: false,
+      description: 'should reject',
+      expected: 'any error rejected',
+      actual: 'no error rejected',
+      operator: 'rejects',
     }
   );
 });

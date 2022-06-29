@@ -104,6 +104,45 @@ export const throws = (func, expected, description = 'should throw') => {
   };
 };
 
+export const rejects = async (func, expected, description = 'should reject') => {
+  let caught;
+  let pass;
+  let actual;
+  if (typeof expected === 'string') {
+    [expected, description] = [void 0, expected];
+  }
+  try {
+    if (func instanceof Promise) {
+      await func
+    } else {
+      await func();
+    }
+  } catch (err) {
+    caught = { error: err };
+  }
+  pass = caught !== undefined;
+  actual = caught?.error;
+
+  if (expected instanceof RegExp) {
+    pass = expected.test(actual) || expected.test(actual && actual.message);
+    actual = actual?.message ?? actual;
+    expected = String(expected);
+  } else if (typeof expected === 'function' && caught) {
+    pass = actual instanceof expected;
+    actual = actual.constructor;
+  } else {
+    actual = pass ? 'error rejected' : 'no error rejected';
+  }
+
+  return {
+    pass,
+    actual,
+    expected: expected ?? 'any error rejected',
+    description: description,
+    operator: Operator.REJECTS,
+  };
+};
+
 export const Assert = {
   equal,
   equals: equal,
@@ -123,4 +162,5 @@ export const Assert = {
   falsy: notOk,
   fail,
   throws,
+  rejects,
 };
