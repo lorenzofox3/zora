@@ -1,12 +1,12 @@
-import { spawn } from 'child_process';
-import { resolve, extname } from 'path';
-import { readFile } from 'fs/promises';
-import { readdirSync } from 'fs';
+import { spawn } from 'node:child_process';
+import { resolve, extname } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
+import {execPath as node} from 'node:process'
 import { test } from 'zora';
 
-const node = process.execPath;
+const sampleRoot = resolve(process.cwd(), './test/samples/');
 
-const sampleRoot = resolve(process.cwd(), './test/samples/cases/');
 const spawnTest = (file) => {
   const env = {};
   if (file.startsWith('only')) {
@@ -27,15 +27,16 @@ const spawnTest = (file) => {
     });
   });
 };
-const files = readdirSync(sampleRoot).filter(
-  (f) => extname(f) === '.js' && f !== 'late_collect.js'
-); // late collect will be checked separately
 
-for (const f of files) {
+const testCases = readdirSync(sampleRoot).filter(
+  (f) => extname(f) === '.js'
+);
+
+for (const f of testCases) {
   test(`testing file ${f}`, async ({ eq }) => {
     const actualOutput = await spawnTest(f);
-    const outputFile = `../output/${[f.split('.')[0], 'txt'].join('.')}`;
-    const expectedOutput = await readFile(resolve(sampleRoot, outputFile), {
+    const outputFile = resolve(sampleRoot, `${[f.split('.')[0], 'txt'].join('.')}`);
+    const expectedOutput = await readFile(outputFile, {
       encoding: 'utf8',
     });
     eq(actualOutput, expectedOutput);
