@@ -23,8 +23,8 @@ const spawnTest = (file) => {
       env,
     });
 
-    cp.stdout.on('data', bufferChunk(stdout));
-    cp.stderr.on('data', bufferChunk(stderr));
+    cp.stdout.on('data', (chunk) => (stdout += chunk));
+    cp.stderr.on('data', (chunk) => (stderr += chunk));
 
     cp.on('exit', () => {
       resolve({
@@ -37,7 +37,8 @@ const spawnTest = (file) => {
 
 const directoryFiles = readdirSync(sampleRoot);
 const testCases = directoryFiles.filter(
-  (f) => extname(f) === '.js' && !ONLY_ERROR.includes(f)
+  (f) =>
+    extname(f) === '.js' && !ONLY_ERROR.includes(f) && f !== 'late_collect.js'
 );
 
 for (const f of testCases) {
@@ -67,4 +68,11 @@ test(`ONLY mode is not set`, ({ eq }) => {
   }
 });
 
-const bufferChunk = (buffer) => (chunk) => (buffer += chunk);
+test('testing late_collect.js', async ({ ok }) => {
+  const { stderr } = await spawnTest('late_collect.js');
+  ok(
+    stderr.includes(`Error: test "late collection"
+tried to collect an assertion after it has run to its completion.
+You might have forgotten to wait for an asynchronous task to complete`)
+  );
+});
