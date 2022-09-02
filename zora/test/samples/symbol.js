@@ -1,4 +1,4 @@
-import { test } from 'zora/dist/zora.js';
+import { test } from 'zora';
 
 test('symbol tester 1', (t) => {
   t.equal(Symbol('foo'), Symbol('bar'), 'Symbol foo should equal Symbol bar');

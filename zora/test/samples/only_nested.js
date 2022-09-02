@@ -1,4 +1,4 @@
-import { only, test } from 'zora/dist/zora.js';
+import { only, test } from 'zora';
 
 test('should not run', (t) => {
   t.fail('I should not run ');

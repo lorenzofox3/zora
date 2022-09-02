@@ -1,4 +1,4 @@
-import { test } from 'zora/dist/zora.js';
+import { test } from 'zora';
 
 const wait = (time) =>
   new Promise((resolve) => {

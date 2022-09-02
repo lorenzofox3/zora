@@ -1,4 +1,4 @@
-import { test } from 'zora/dist/zora.js';
+import { test } from 'zora';
 
 test('will not go to the end', (t) => {
   t.ok(true, 'okay');

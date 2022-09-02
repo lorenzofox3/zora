@@ -1,4 +1,4 @@
-import { Assert, test } from 'zora/dist/zora.js';
+import { Assert, test } from 'zora';
 
 Assert.isFoo = (value, description = 'should be "foo"') => ({
   pass: value === 'foo',

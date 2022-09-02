@@ -1,4 +1,4 @@
-import { test, skip } from 'zora/dist/zora.js';
+import { test, skip } from 'zora';
 
 test('hello world', (t) => {
   t.ok(true);
