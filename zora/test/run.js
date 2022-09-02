@@ -5,6 +5,7 @@ import { readdirSync } from 'node:fs';
 import {execPath as node} from 'node:process'
 import { test } from 'zora';
 
+const ONLY_ERROR = ['no_only_mode.js','no_only_mode_nested.js']
 const sampleRoot = resolve(process.cwd(), './test/samples/');
 
 const spawnTest = (file) => {
@@ -13,32 +14,44 @@ const spawnTest = (file) => {
     env.ZORA_ONLY = true;
   }
   return new Promise((resolve) => {
-    let output = '';
+    let stdout = '';
+    let stderr = '';
 
     const cp = spawn(node, [file], {
       cwd: sampleRoot,
-      stdio: ['pipe', 'pipe', 'ignore'],
+      stdio: ['pipe', 'pipe', 'pipe'],
       env,
     });
 
-    cp.stdout.on('data', (chunk) => (output += chunk));
+    cp.stdout.on('data', (chunk) => (stdout += chunk));
+    cp.stderr.on('data', (chunk) => (stderr+= chunk))
     cp.on('exit', () => {
-      resolve(output.replace(/at:.*/g, 'at:{STACK}'));
+      resolve({stdout: stdout.replace(/at:.*/g, 'at:{STACK}'), stderr: stderr.replace(/at:.*/g, 'at:{STACK}')});
     });
   });
 };
 
-const testCases = readdirSync(sampleRoot).filter(
-  (f) => extname(f) === '.js'
+const directoryFiles = readdirSync(sampleRoot);
+const testCases = directoryFiles.filter(
+  (f) => extname(f) === '.js' && !ONLY_ERROR.includes(f)
 );
 
 for (const f of testCases) {
   test(`testing file ${f}`, async ({ eq }) => {
-    const actualOutput = await spawnTest(f);
+    const { stdout } = await spawnTest(f);
     const outputFile = resolve(sampleRoot, `${[f.split('.')[0], 'txt'].join('.')}`);
     const expectedOutput = await readFile(outputFile, {
       encoding: 'utf8',
     });
-    eq(actualOutput, expectedOutput);
+    eq(stdout, expectedOutput);
   });
 }
+
+test(`ONLY mode is not set`, ({ eq }) => {
+  for (const f of directoryFiles.filter(f => ONLY_ERROR.includes(f))) {
+    test(`testing file ${f}`, async ({ ok }) => {
+      const { stderr } = await spawnTest(f);
+      ok(stderr.includes(`Error: Can not use "only" method when not in "run only" mode`))
+    });
+  }
+})

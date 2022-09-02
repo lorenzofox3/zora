@@ -1,4 +1,4 @@
-import {test, only} from '../../../dist/bundle/module.js';
+import {test, only} from 'zora';
 
 test('should not run', t => {
     t.fail('I should not run ');
