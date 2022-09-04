@@ -214,4 +214,11 @@ test(`diagnostic messages`, (t) => {
       );
     });
   });
+
+  t.test(`timeout diagnostic`, (t) => {
+    t.eq(
+      getMessage({ operator: 'timeout', actual: 'timeout description' }),
+      `timeout description`
+    );
+  });
 });
