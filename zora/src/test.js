@@ -28,8 +28,9 @@ Assert.only = () => {
 };
 
 const createTimeoutResult = ({ timeout }) => ({
+  operator: 'timeout',
   pass: false,
-  actual: `test takes longer than ${timeout}ms to run`,
+  actual: `test takes longer than ${timeout}ms to complete`,
   expected: `test takes less than ${timeout}ms to complete`,
   description:
     'The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info',
