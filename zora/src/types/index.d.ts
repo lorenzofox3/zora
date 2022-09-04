@@ -23,6 +23,7 @@ export interface ISpecFunction {
 
 export interface ITestOptions {
   skip?: boolean;
+  timeout?: number;
 }
 
 export interface ITestFunction {

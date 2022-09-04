@@ -5,8 +5,13 @@ import {
   newTestMessage,
   testEndMessage,
 } from 'zora-reporters';
+import { findConfigurationValue } from './env.js';
 
-const defaultOptions = Object.freeze({ skip: false });
+const DEFAULT_TIMEOUT = 5_000;
+const defaultOptions = Object.freeze({
+  skip: false,
+  timeout: findConfigurationValue('ZORA_TIMEOUT') || DEFAULT_TIMEOUT,
+});
 const noop = () => {};
 
 const isTest = (assertionLike) =>
@@ -22,8 +27,17 @@ Assert.only = () => {
   throw new Error(`Can not use "only" method when not in "run only" mode`);
 };
 
+const createTimeoutResult = ({ timeout }) => ({
+  operator: 'timeout',
+  pass: false,
+  actual: `test takes longer than ${timeout}ms to complete`,
+  expected: `test takes less than ${timeout}ms to complete`,
+  description:
+    'The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info',
+});
+
 export const test = (description, spec, opts = defaultOptions) => {
-  const { skip = false } = opts;
+  const { skip = false, timeout = DEFAULT_TIMEOUT } = opts;
   const assertions = [];
   let executionTime;
   let done = false;
@@ -49,8 +63,18 @@ ${spec.toString()}`);
 
   const testRoutine = (async function () {
     try {
+      let timeoutId;
       const start = Date.now();
-      const result = await specFn();
+      const result = await Promise.race([
+        specFn(),
+        new Promise((resolve) => {
+          timeoutId = setTimeout(() => {
+            onResult(createTimeoutResult({ timeout }));
+            resolve();
+          }, timeout);
+        }),
+      ]);
+      clearTimeout(timeoutId);
       executionTime = Date.now() - start;
       return result;
     } catch (e) {
