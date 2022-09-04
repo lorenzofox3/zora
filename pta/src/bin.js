@@ -2,10 +2,7 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import process from 'node:process';
-import { promisify } from 'node:util';
-import { createReadStream, readFile as baseReadFile } from 'node:fs';
-
-const readFile = promisify(baseReadFile);
+import { createReadStream } from 'node:fs';
 
 import arg from 'arg';
 import { globby } from 'globby';
@@ -40,11 +37,13 @@ const {
   ['--reporter']: reporter = 'diff',
   ['--only']: only = false,
   ['--help']: help = false,
+  ['--timeout']: defaultTimeout = 5000,
   _: filePatterns,
 } = arg({
   ['--reporter']: String,
   ['--only']: Boolean,
   ['--help']: Boolean,
+  ['--timeout']: Number,
   // --module-loader is now ignored.
   // kept in schema to avoid breaking user's existing usage.
   ['--module-loader']: String,
@@ -61,6 +60,8 @@ const {
   if (only) {
     process.env.ZORA_ONLY = true;
   }
+
+  process.env.ZORA_TIMEOUT = defaultTimeout;
 
   // loading zora to hold the singleton
   const { hold, report } = await import('zora');
