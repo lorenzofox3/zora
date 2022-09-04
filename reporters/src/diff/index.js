@@ -15,7 +15,9 @@ const writeMessage = ({ writer, stack }) => {
     [MESSAGE_TYPE.ASSERTION](message) {
       if (isAssertionFailing(message)) {
         writer.printFailingTestPath(stack);
-        writer.printLocation(message.data.at);
+        if (message.data.at) {
+          writer.printLocation(message.data.at);
+        }
         writer.printDiagnostic(message.data);
       }
     },

@@ -6,3 +6,4 @@ export { default as isDiagnostic } from './is.js';
 export { default as isNotDiagnostic } from './isNot.js';
 export { default as throwsDiagnostic } from './throws.js';
 export { default as equalDiagnostic } from './equal.js';
+export { default as timeoutDiagnostic } from './timeout.js';

@@ -7,6 +7,7 @@ import {
   isNotDiagnostic,
   throwsDiagnostic,
   equalDiagnostic,
+  timeoutDiagnostic,
 } from '../diagnostic/index.js';
 
 export default ({ theme }) => {
@@ -19,6 +20,7 @@ export default ({ theme }) => {
     isNot: isNotDiagnostic(theme),
     throws: throwsDiagnostic(theme),
     equal: equalDiagnostic(theme),
+    timeout: timeoutDiagnostic(theme),
   };
 
   const unknown = ({ operator }) =>
