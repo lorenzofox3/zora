@@ -1,13 +1,13 @@
 TAP version 13
 # broken promise
-not ok 1 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#zora_timeout for more info
+not ok 1 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info
   ---
     actual: "test takes longer than 500ms to run"
     expected: "test takes less than 500ms to complete"
   ...
 # timeout in a nested test
 # nested
-not ok 2 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#zora_timeout for more info
+not ok 2 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info
   ---
     actual: "test takes longer than 500ms to run"
     expected: "test takes less than 500ms to complete"
@@ -16,7 +16,7 @@ not ok 2 - The test did no complete on time. refer to https://github.com/lorenzo
 # on time
 ok 3 - should be truthy
 # too late
-not ok 4 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#zora_timeout for more info
+not ok 4 - The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info
   ---
     actual: "test takes longer than 500ms to run"
     expected: "test takes less than 500ms to complete"

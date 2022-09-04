@@ -214,6 +214,32 @@ only('some test', t => {
 
 </details>
 
+### ZORA_TIMEOUT
+
+In milliseconds: change the default test timeout value (see below)
+
+## test timeout
+
+If a test hangs or takes too long to complete, it will report a failure. By default, the threshold is 5000ms. You can change that global value thanks to the ``ZORA_TIMEOUT`` environment variable.
+You can change that value for a given text as well, thanks to the options object:
+
+<details>
+    <summary>timeout example</summary>
+
+```Javascript
+test(
+  'broken promise',
+  ({ ok }) => {
+    return new Promise(() => {}).then(() => {
+      ok(true);
+    });
+  },
+  { timeout: 500 }
+);
+```
+
+</details>
+
 ## skip a test
 
 You can skip a test using the root level ``skip`` function or within a test suite using the ``skip`` method of the assertion object

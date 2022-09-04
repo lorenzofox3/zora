@@ -7,9 +7,10 @@ import {
 } from 'zora-reporters';
 import { findConfigurationValue } from './env.js';
 
+const DEFAULT_TIMEOUT = 5_000;
 const defaultOptions = Object.freeze({
   skip: false,
-  timeout: findConfigurationValue('ZORA_TIMEOUT') || 5_000,
+  timeout: findConfigurationValue('ZORA_TIMEOUT') || DEFAULT_TIMEOUT,
 });
 const noop = () => {};
 
@@ -26,8 +27,16 @@ Assert.only = () => {
   throw new Error(`Can not use "only" method when not in "run only" mode`);
 };
 
+const createTimeoutResult = ({ timeout }) => ({
+  pass: false,
+  actual: `test takes longer than ${timeout}ms to run`,
+  expected: `test takes less than ${timeout}ms to complete`,
+  description:
+    'The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#test-timeout for more info',
+});
+
 export const test = (description, spec, opts = defaultOptions) => {
-  const { skip = false, timeout = 2_000 } = opts;
+  const { skip = false, timeout = DEFAULT_TIMEOUT } = opts;
   const assertions = [];
   let executionTime;
   let done = false;
@@ -59,13 +68,7 @@ ${spec.toString()}`);
         specFn(),
         new Promise((resolve) => {
           timeoutId = setTimeout(() => {
-            onResult({
-              pass: false,
-              actual: `test takes longer than ${timeout}ms to run`,
-              expected: `test takes less than ${timeout}ms to complete`,
-              description:
-                'The test did no complete on time. refer to https://github.com/lorenzofox3/zora/tree/master/zora#zora_timeout for more info',
-            });
+            onResult(createTimeoutResult({ timeout }));
             resolve();
           }, timeout);
         }),
