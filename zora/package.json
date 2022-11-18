@@ -2,7 +2,6 @@
   "name": "zora",
   "version": "5.1.0",
   "description": "the lightest yet the fastest javascript testing library",
-  "main": "./dist/index.cjs",
   "keywords": [
     "test",
     "testing",
@@ -19,16 +18,23 @@
     "mocha"
   ],
   "type": "module",
-  "types": "dist/zora.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./es.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/zora.d.ts",
+        "default": "./es.js"
+      },
+      "require": {
+        "types": "./dist/zora.d.ts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./cjs": "./dist/index.cjs",
     "./es": "./dist/index.js"
   },
+  "types": "dist/zora.d.ts",
+  "main": "./dist/index.cjs",
   "prettier": {
     "singleQuote": true
   },
