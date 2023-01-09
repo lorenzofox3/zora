@@ -89,6 +89,27 @@ test(`tap writer`, ({ test }) => {
         `  ...`,
       ]);
     });
+    test('es6 Map failing assertion', ({ eq }) => {
+      const { writer, check } = createTestWriter({ eq });
+      writer.printAssertion(
+        {
+          data: {
+            pass: false,
+            actual: new Map([['a', 123]]),
+            expected: new Map([['b', 456]]),
+            description: 'some failing test',
+          },
+        },
+        { id: 666 }
+      );
+      check([
+        'not ok 666 - some failing test',
+        `  ---`,
+        `    actual: {"Map":{"a":123}}`,
+        `    expected: {"Map":{"b":456}}`,
+        `  ...`,
+      ]);
+    });
   });
 
   test('print summary', ({ eq }) => {

@@ -4,7 +4,8 @@ const isNode = typeof process !== 'undefined';
 
 export const flatDiagnostic = ({ pass, description, ...rest }) => rest;
 
-const createReplacer = () => {
+export const createReplacer = () => {
+  const TypedArray = Object.getPrototypeOf(Uint8Array);
   const visited = new Set();
   return (key, value) => {
     if (isObject(value)) {
@@ -17,6 +18,16 @@ const createReplacer = () => {
 
     if (typeof value === 'symbol') {
       return value.toString();
+    }
+
+    if (value instanceof Map) {
+      return { Map: Object.fromEntries(value) };
+    }
+    if (value instanceof Set) {
+      return { Set: Array.from(value) };
+    }
+    if (value instanceof TypedArray) {
+      return { [value.constructor?.name || 'TypedArray']: Array.from(value) };
     }
 
     return value;

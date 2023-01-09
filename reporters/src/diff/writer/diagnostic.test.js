@@ -94,6 +94,34 @@ test(`diagnostic messages`, (t) => {
       );
     });
 
+    t.test(`expected an actual are Maps`, (t) => {
+      const expected = new Map([
+        ['a', 123],
+        ['nested', { answer: 42 }],
+      ]);
+      const actual = new Map([
+        ['a', 124],
+        ['nested', { answer: 42 }],
+      ]);
+
+      t.eq(
+        getMessage({ expected, actual }),
+        `\
+diff in objects:
+  <errorBadge>- actual</errorBadge> <successBadge>+ expected</successBadge>
+
+     <disable>{</disable>
+     <disable>  "Map": {</disable>
+  <errorBadge>-</errorBadge>     "a": 124,
+  <successBadge>+</successBadge>     "a": 123,
+     <disable>    "nested": {</disable>
+     <disable>      "answer": 42</disable>
+     <disable>    }</disable>
+     <disable>  }</disable>
+     <disable>}</disable>`
+      );
+    });
+
     t.test(`expected and actual are numbers`, (t) => {
       const expected = 5;
       const actual = 3;

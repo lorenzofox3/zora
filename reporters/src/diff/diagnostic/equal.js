@@ -1,7 +1,7 @@
 import { diffChars, diffJson } from 'diff';
 import { leftPad, typeAsString } from '../utils.js';
 import { EOL } from 'os';
-import { compose } from '../../utils.js';
+import { compose, createReplacer } from '../../utils.js';
 
 const actualParts = ({ added }) => added !== true;
 const expectedParts = ({ removed }) => removed !== true;
@@ -141,6 +141,9 @@ export default (theme) => {
       if (expected.constructor === Date) {
         return diffDates(theme)({ expected, actual });
       }
+
+      expected = JSON.parse(JSON.stringify(expected, createReplacer()));
+      actual = JSON.parse(JSON.stringify(actual, createReplacer()));
       return diffObjects(theme)({ actual, expected });
     },
   };

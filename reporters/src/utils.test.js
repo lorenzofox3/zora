@@ -26,6 +26,18 @@ test(`serialize`, ({ test }) => {
     );
   });
 
+  test(`ES6 structures`, ({ test }) => {
+    test(`Map`, ({ eq }) => {
+      eq(stringify(new Map([['a', 123]])), `{"Map":{"a":123}}`);
+    });
+    test(`Set`, ({ eq }) => {
+      eq(stringify(new Set(['a', 'b'])), `{"Set":["a","b"]}`);
+    });
+    test(`TypedArray`, ({ eq }) => {
+      eq(stringify(Uint8Array.from([1, 2, 3])), `{"Uint8Array":[1,2,3]}`);
+    });
+  });
+
   test(`circular dependencies`, ({ eq }) => {
     const a = {
       foo: 'bar',
