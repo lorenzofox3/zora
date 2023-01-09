@@ -9,7 +9,7 @@ export const createTheme = ({
   bgError = colors.bgRed,
   bgSuccess = colors.bgGreen,
   bgSkip = colors.bgYellow,
-  disableFont = colors.gray,
+  disableFont = colors.dim,
   badgeFont = colors.whiteBright,
   adornerFont = colors.cyan,
 } = {}) => {
