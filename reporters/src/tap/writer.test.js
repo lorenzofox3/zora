@@ -68,6 +68,27 @@ test(`tap writer`, ({ test }) => {
       );
       check(['ok 66 - some test']);
     });
+    test('simple failing assertion', ({ eq }) => {
+      const { writer, check } = createTestWriter({ eq });
+      writer.printAssertion(
+        {
+          data: {
+            pass: false,
+            actual: { a: 123 },
+            expected: { b: 456 },
+            description: 'some failing test',
+          },
+        },
+        { id: 666 }
+      );
+      check([
+        'not ok 666 - some failing test',
+        `  ---`,
+        `    actual: {"a":123}`,
+        `    expected: {"b":456}`,
+        `  ...`,
+      ]);
+    });
   });
 
   test('print summary', ({ eq }) => {
