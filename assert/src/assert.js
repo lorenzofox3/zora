@@ -1,5 +1,5 @@
 import { Operator } from './utils.js';
-import eq from 'fast-deep-equal';
+import eq from 'fast-deep-equal/es6/index.js';
 
 export const equal = (
   actual,

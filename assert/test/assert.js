@@ -106,6 +106,62 @@ test('"equal" operator', ({ eq }) => {
     },
     'should return a passing assert result when two object are deeply equal'
   );
+
+  eq(
+    equal(new Map(), new Map([['a', 123]]), 'a description'),
+    {
+      pass: false,
+      actual: new Map(),
+      expected: new Map([['a', 123]]),
+      description: 'a description',
+      operator: 'equal',
+    },
+    'should return a failing assert result when two Maps are different'
+  );
+
+  eq(
+    equal(
+      { map: new Map([['a', 123]]) },
+      { map: new Map([['a', 123]]) },
+      'a description'
+    ),
+    {
+      pass: true,
+      actual: { map: new Map([['a', 123]]) },
+      expected: { map: new Map([['a', 123]]) },
+      description: 'a description',
+      operator: 'equal',
+    },
+    'should return a passing assert result when two nested Maps are the same'
+  );
+
+  eq(
+    equal(new Set(), new Set(['a', 'b']), 'a description'),
+    {
+      pass: false,
+      actual: new Set(),
+      expected: new Set(['a', 'b']),
+      description: 'a description',
+      operator: 'equal',
+    },
+    'should return a failing assert result when two Sets are different'
+  );
+
+  eq(
+    equal(
+      { set: new Set(['a', 'b']) },
+      { set: new Set(['a', 'b']) },
+      'a description'
+    ),
+    {
+      pass: true,
+      actual: { set: new Set(['a', 'b']) },
+      expected: { set: new Set(['a', 'b']) },
+      description: 'a description',
+      operator: 'equal',
+    },
+    'should return a passing assert result when two nested Sets are the same'
+  );
 });
 
 test('"not equal" operator', ({ eq }) => {
