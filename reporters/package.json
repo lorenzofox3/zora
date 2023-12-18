@@ -37,8 +37,8 @@
     "singleQuote": true
   },
   "dependencies": {
-    "arg": "~5.0.2",
-    "colorette": "2.0.17",
-    "diff": "~5.1.0"
+    "arg": "^5.0.2",
+    "colorette": "^2.0.20",
+    "diff": "^5.1.0"
   }
 }

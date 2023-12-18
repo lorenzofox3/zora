@@ -32,11 +32,11 @@
     "test-runner"
   ],
   "dependencies": {
-    "arg": "~5.0.2",
-    "globby": "~13.1.1",
+    "arg": "^5.0.2",
+    "globby": "^14.0.0",
     "zora-reporters": "*"
   },
   "peerDependencies": {
-    "zora": "^5.0.0"
+    "zora": "^5.2.0"
   }
 }
