@@ -1,9 +1,9 @@
-import {test, only} from 'zora';
+import { test, only } from 'zora';
 
-test('should not run', t => {
-    t.fail('I should not run ');
+test('should not run', (t) => {
+  t.fail('I should not run ');
 });
 
-only('should run', t => {
-    t.ok(true, 'I ran');
+only('should run', (t) => {
+  t.ok(true, 'I ran');
 });
