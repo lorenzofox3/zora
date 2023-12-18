@@ -25,14 +25,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/is-even": "~1.0.0",
-    "c8": "~7.11.3",
-    "nodemon": "~2.0.16",
+    "@types/is-even": "~1.0.2",
+    "c8": "~8.0.1",
+    "nodemon": "~3.0.2",
     "npm-run-all": "~4.1.5",
     "pta": "*",
     "source-map-support": "~0.5.21",
     "tap-difflet": "~0.7.2",
-    "typescript": "~4.3.5",
+    "typescript": "~5.3.3",
     "zora": "*",
     "zora-reporters": "*"
   },

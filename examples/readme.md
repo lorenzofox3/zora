@@ -2,7 +2,6 @@
 
 A list of example projects with various dev environments: 
 
-* [simple node library written in commonjs style](./node-cjs)
 * [simple node library written as an ecmascript module](./node-es)
 * [simple node library written in typescript](./node-ts)
 
