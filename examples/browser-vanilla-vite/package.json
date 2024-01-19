@@ -7,7 +7,7 @@
   "devDependencies": {
     "@lorenzofox3/for-await": "^0.2.2",
     "playwright": "^1.22.2",
-    "vite": "^2.9.16",
+    "vite": "^2.9.17",
     "ws": "^8.8.0",
     "zora": "*"
   },
