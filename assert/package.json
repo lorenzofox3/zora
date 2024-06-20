@@ -7,12 +7,13 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
     }
   },
   "scripts": {
     "test": "node ./test/index.js",
-    "test:watch": "nodemon ./test/index.js",
+    "test:watch": "node --watch ./test/index.js",
     "dev": "npm run test:watch"
   },
   "author": "@lorenzofox3 <Laurent RENARD>",
