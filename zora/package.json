@@ -1,6 +1,6 @@
 {
   "name": "zora",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "the lightest yet the fastest javascript testing library",
   "keywords": [
     "test",
