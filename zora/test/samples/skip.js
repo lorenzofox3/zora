@@ -1,4 +1,4 @@
-import { test, skip } from 'zora';
+import { test, skip } from '../../src/index.js';
 
 test('hello world', (t) => {
   t.ok(true);

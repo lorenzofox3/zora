@@ -1,4 +1,4 @@
-import { test } from 'zora';
+import { test } from '../../src/index.js';
 
 test(`late collection`, async (t) => {
   t.ok(true);

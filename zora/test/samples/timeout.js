@@ -1,10 +1,11 @@
-import { test } from 'zora';
+import { test } from '../../src/index.js';
 import { setTimeout } from 'node:timers/promises';
 
 test(
   'broken promise',
   ({ ok }) => {
-    return new Promise(() => {}).then(() => {
+    return new Promise(() => {
+    }).then(() => {
       ok(true);
     });
   },
@@ -15,7 +16,8 @@ test('timeout in a nested test', ({ test }) => {
   test(
     'nested',
     ({ ok }) => {
-      return new Promise(() => {}).then(() => {
+      return new Promise(() => {
+      }).then(() => {
         ok(true);
       });
     },

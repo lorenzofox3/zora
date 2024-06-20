@@ -1,4 +1,4 @@
-import { test } from 'zora';
+import { test } from '../../src/index.js';
 
 const wait = (time) =>
   new Promise((resolve) => {

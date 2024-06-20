@@ -18,23 +18,20 @@
     "mocha"
   ],
   "type": "module",
+  "main": "./dist/index.cjs",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/zora.d.ts",
-        "default": "./es.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "require": {
-        "types": "./dist/zora.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    },
-    "./cjs": "./dist/index.cjs",
-    "./es": "./dist/index.js"
+    }
   },
-  "types": "dist/zora.d.ts",
-  "main": "./dist/index.cjs",
   "prettier": {
     "singleQuote": true
   },
@@ -49,8 +46,7 @@
     "zora-assert": "*"
   },
   "files": [
-    "dist",
-    "es.js"
+    "dist"
   ],
   "author": "@lorenzofox3 <Laurent RENARD>",
   "license": "MIT",

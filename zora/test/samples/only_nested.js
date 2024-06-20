@@ -1,4 +1,4 @@
-import { only, test } from 'zora';
+import { only, test } from '../../src/index.js';
 
 test('should not run', (t) => {
   t.fail('I should not run ');

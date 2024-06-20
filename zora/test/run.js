@@ -3,7 +3,7 @@ import { resolve, extname } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { readdirSync } from 'node:fs';
 import { execPath as node } from 'node:process';
-import { test } from 'zora';
+import { test } from '../src/index.js';
 
 const ONLY_ERROR = ['no_only_mode.js', 'no_only_mode_nested.js'];
 const sampleRoot = resolve(process.cwd(), './test/samples/');

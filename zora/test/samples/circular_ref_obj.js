@@ -1,4 +1,4 @@
-import { test } from 'zora';
+import { test } from '../../src/index.js';
 
 test('circular ref in diagnostic', (t) => {
   const b = { key: 'prop' };

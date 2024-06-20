@@ -1,4 +1,4 @@
-import { Assert, test } from 'zora';
+import { Assert, test } from '../../src/index.js';
 
 Assert.isFoo = (value, description = 'should be "foo"') => ({
   pass: value === 'foo',
@@ -6,7 +6,7 @@ Assert.isFoo = (value, description = 'should be "foo"') => ({
   actual: value,
   operator: 'isFoo',
   description,
-  other: 'property',
+  other: 'property'
 });
 
 test('tester 1', (t) => {

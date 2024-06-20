@@ -1,4 +1,4 @@
-import { test } from 'zora';
+import { test } from '../../src/index.js';
 
 test('tester 1', (t) => {
   t.ok(true, 'assert1');
