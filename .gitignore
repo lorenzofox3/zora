@@ -40,3 +40,5 @@ jspm_packages
 
 dist
 suites
+
+.DS_Store
