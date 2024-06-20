@@ -1,7 +1,5 @@
 # Zora
 
-If you wish to read the documentation for the older version v4, please refer to the [v4.1.0 tag](https://github.com/lorenzofox3/zora/tree/v4.1.0), the migration path will be available in the [relevant discussion](https://github.com/lorenzofox3/zora/discussions/99)
-
 All the projects related to [zora](./zora), the testing library
 
 * [zora](./zora): the testing library
