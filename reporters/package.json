@@ -1,6 +1,6 @@
 {
   "name": "zora-reporters",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "a set of reporter for zora testing library",
   "type": "module",
   "main": "./dist/index.cjs",
