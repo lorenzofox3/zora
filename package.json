@@ -20,7 +20,7 @@
     "test": "npm t --workspaces --if-present"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26",
+    "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "prettier": "^3.1.1",
     "rollup": "^4.9.1",
