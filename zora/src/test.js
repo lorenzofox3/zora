@@ -62,18 +62,16 @@ ${spec.toString()}`);
       };
 
   const testRoutine = (async function () {
+    const { promise, resolve } = Promise.withResolvers();
+
     try {
-      let timeoutId;
       const start = Date.now();
-      const result = await Promise.race([
-        specFn(),
-        new Promise((resolve) => {
-          timeoutId = setTimeout(() => {
-            onResult(createTimeoutResult({ timeout }));
-            resolve();
-          }, timeout);
-        }),
-      ]);
+      const timeoutId = setTimeout(() => {
+        const timeoutResult = createTimeoutResult({ timeout });
+        onResult(timeoutResult);
+        resolve(timeoutResult);
+      }, timeout);
+      const result = await Promise.race([specFn(), promise]);
       clearTimeout(timeoutId);
       executionTime = Date.now() - start;
       return result;
