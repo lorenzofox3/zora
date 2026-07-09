@@ -1,17 +1,25 @@
-import * as colors from 'colorette';
+import { styleText } from 'node:util';
 import { compose } from '../utils.js';
-import { bold, underline } from 'colorette';
 import { withMargin } from './utils.js';
+
+const bold = (s) => styleText('bold', s);
+const underline = (s) => styleText('underline', s);
+const bgRed = (s) => styleText('bgRed', s);
+const bgGreen = (s) => styleText('bgGreen', s);
+const bgYellow = (s) => styleText('bgYellow', s);
+const gray = (s) => styleText('gray', s);
+const whiteBright = (s) => styleText('whiteBright', s);
+const cyan = (s) => styleText('cyan', s);
 
 const badge = (fn) => compose([fn, bold, withMargin, String]);
 
 export const createTheme = ({
-  bgError = colors.bgRed,
-  bgSuccess = colors.bgGreen,
-  bgSkip = colors.bgYellow,
-  disableFont = colors.gray,
-  badgeFont = colors.whiteBright,
-  adornerFont = colors.cyan,
+  bgError = bgRed,
+  bgSuccess = bgGreen,
+  bgSkip = bgYellow,
+  disableFont = gray,
+  badgeFont = whiteBright,
+  adornerFont = cyan,
 } = {}) => {
   const success = compose([bgSuccess, badgeFont]);
   const error = compose([bgError, badgeFont]);
