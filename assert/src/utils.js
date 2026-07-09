@@ -9,30 +9,10 @@ export const Operator = {
   THROWS: 'throws',
 };
 
-const specFnRegexp = /zora_spec_fn/;
-const zoraInternal = /zora\/dist/;
-const filterStackLine = (l) =>
-  (l && !zoraInternal.test(l) && !l.startsWith('Error')) ||
-  specFnRegexp.test(l);
-
-const getAssertionLocation = () => {
-  const err = new Error();
-  const stack = (err.stack || '')
+export const getAssertionLocation = ({ rawStack }) => {
+  const stackline = (rawStack || '')
     .split('\n')
     .map((l) => l.trim())
-    .filter(filterStackLine);
-  const userLandIndex = stack.findIndex((l) => specFnRegexp.test(l));
-  const stackline =
-    userLandIndex >= 1 ? stack[userLandIndex - 1] : stack[0] || 'N/A';
-  return stackline.replace(/^at|^@/, '');
-};
-
-export const decorateWithLocation = (result) => {
-  if (result.pass === false) {
-    return {
-      ...result,
-      at: getAssertionLocation(),
-    };
-  }
-  return result;
+    .find((l) => l && !l.startsWith('Error'));
+  return (stackline || 'N/A').replace(/^at|^@/, '').trim();
 };
