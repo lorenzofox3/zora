@@ -17,10 +17,10 @@ Usage
     pta test/{unit,int}/**/*.js
 
   If no argument is provided, the CLI will use the following patterns:
-    - **/test.js
-    - **/*.spec.js
-    - **/*.test.js
-    - **/test/**/*.js
-    - **/tests/**/*.js
-    - **/__tests__/**/*.js
+    - **/test.{js,cjs,mjs,ts,mts,cts}
+    - **/*.spec.{js,cjs,mjs,ts,mts,cts}
+    - **/*.test.{js,cjs,mjs,ts,mts,cts}
+    - **/test/**/*.{js,cjs,mjs,ts,mts,cts}
+    - **/tests/**/*.{js,cjs,mjs,ts,mts,cts}
+    - **/__tests__/**/*.{js,cjs,mjs,ts,mts,cts}
 

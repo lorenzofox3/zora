@@ -23,12 +23,12 @@ const reporterMap = {
 };
 
 const DEFAULT_FILE_PATTERNS = [
-  '**/test.{js,cjs,mjs}',
-  '**/*.spec.{js,cjs,mjs}',
-  '**/*.test.{js,cjs,mjs}',
-  '**/test/**/*.{js,cjs,mjs}',
-  '**/tests/**/*.{js,cjs,mjs}',
-  '**/__tests__/**/*.{js,cjs,mjs}',
+  '**/test.{js,cjs,mjs,ts,mts,cts}',
+  '**/*.spec.{js,cjs,mjs,ts,mts,cts}',
+  '**/*.test.{js,cjs,mjs,ts,mts,cts}',
+  '**/test/**/*.{js,cjs,mjs,ts,mts,cts}',
+  '**/tests/**/*.{js,cjs,mjs,ts,mts,cts}',
+  '**/__tests__/**/*.{js,cjs,mjs,ts,mts,cts}',
   '!**/node_modules',
   '!node_modules',
 ];
