@@ -42,3 +42,5 @@ dist
 suites
 
 .DS_Store
+
+package-lock.json

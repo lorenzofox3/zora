@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to release'
+        required: true
+        type: choice
+        options: [zora, reporters, pta]
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options: [patch, minor, major]
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release-${{ inputs.package }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Resolve package metadata
+        id: meta
+        run: |
+          case "${{ inputs.package }}" in
+            zora) NPM_NAME="zora" ;;
+            reporters) NPM_NAME="zora-reporters" ;;
+            pta) NPM_NAME="pta" ;;
+          esac
+          echo "dir=${{ inputs.package }}" >> "$GITHUB_OUTPUT"
+          echo "npm_name=$NPM_NAME" >> "$GITHUB_OUTPUT"
+
+      - run: npm install
+      - run: npm test
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build package
+        run: npm run build -w ${{ steps.meta.outputs.dir }} --if-present
+
+      - name: Bump version
+        id: version
+        run: |
+          npm version ${{ inputs.release_type }} --no-git-tag-version -w ${{ steps.meta.outputs.dir }}
+          NEW=$(node -p "require('./${{ steps.meta.outputs.dir }}/package.json').version")
+          TAG="${{ steps.meta.outputs.npm_name }}@${NEW}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        run: |
+          PREV=$(git describe --tags --match "${{ steps.meta.outputs.npm_name }}@*" --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$PREV" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREV}..HEAD"
+          fi
+          {
+            echo "## ${{ steps.version.outputs.tag }}"
+            echo ""
+            git log $RANGE --pretty=format:"- %s" -- ${{ steps.meta.outputs.dir }}/ \
+              | { grep -v "^- chore(${{ inputs.package }}): release " || true; }
+          } > /tmp/release-notes.md
+
+      - name: Commit, tag, and push
+        run: |
+          git add ${{ steps.meta.outputs.dir }}/package.json
+          git commit -m "chore(${{ inputs.package }}): release ${{ steps.version.outputs.tag }}"
+          git tag ${{ steps.version.outputs.tag }}
+          git push origin master
+          git push origin ${{ steps.version.outputs.tag }}
+
+      - name: Publish to npm
+        run: npm publish -w ${{ steps.meta.outputs.dir }}
+
+      - name: Create GitHub Release
+        run: |
+          gh release create ${{ steps.version.outputs.tag }} \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes-file /tmp/release-notes.md
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -17,12 +17,12 @@ jobs:
     name: build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.18.0
       - name: Install
-        run: npm run install:ci
+        run: npm install
       - name: Build
         run: npm run build
       - name: Test
