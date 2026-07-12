@@ -90,7 +90,9 @@ jobs:
           git push origin ${{ steps.version.outputs.tag }}
 
       - name: Publish to npm
-        run: npm publish -w ${{ steps.meta.outputs.dir }}
+        run: |
+          npm install -g npm@latest
+          npm publish -w ${{ steps.meta.outputs.dir }}
 
       - name: Create GitHub Release
         run: |
