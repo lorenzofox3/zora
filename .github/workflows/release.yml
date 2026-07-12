@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.18.0
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - name: Resolve package metadata
@@ -91,7 +91,7 @@ jobs:
 
       - name: Publish to npm
         run: |
-          npm install -g npm@24
+          npm install -g npm
           npm publish -w ${{ steps.meta.outputs.dir }}
 
       - name: Create GitHub Release
