@@ -91,7 +91,7 @@ jobs:
 
       - name: Publish to npm
         run: |
-          npm install -g npm@latest
+          npm install -g npm@24
           npm publish -w ${{ steps.meta.outputs.dir }}
 
       - name: Create GitHub Release
